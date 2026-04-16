@@ -35,6 +35,7 @@ public class TCWeaponCapabilityPresets {
 
 	public static final Function<Item, CapabilityItem.Builder> TC_SLEDGE_HAMMER = (item) -> {
 		WeaponCapability.Builder builder = WeaponCapability.builder()
+			.constructor(WeaponCapability::new)
 			.category(WeaponCategories.GREATSWORD)
 			.styleProvider((playerpatch) -> Styles.TWO_HAND)
 			.collider(SLEDGE_HAMMER)
