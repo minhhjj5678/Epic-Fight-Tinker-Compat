@@ -44,20 +44,20 @@ public class TCWeaponCapability extends WeaponCapability {
 
             ModifierProfile profile = null;
             for (ModifierProfile modifierProfile : this.modifierProfiles) {
-                ModifierId modifierId = modifierProfile.getModifierId();
+                ModifierId modifierId = modifierProfile.modifierId();
                 if (modifierId == null) {
                     continue;
                 }
 
                 int level = toolStack.getModifierLevel(modifierId);
-                if (level > 0 && (profile == null || modifierProfile.getPriority() > profile.getPriority())) {
+                if (level > 0 && (profile == null || modifierProfile.priority() > profile.priority())) {
                     profile = modifierProfile;
                 }
             }
 
             if (profile != null) {
-                Style resolvedStyle = profile.getStyleProvider().apply(patch);
-                MoveSet moveSet = profile.getMoveSets().get(resolvedStyle);
+                Style resolvedStyle = profile.styleProvider().apply(patch);
+                MoveSet moveSet = profile.moveSets().get(resolvedStyle);
                 if (moveSet != null) {
                     CONTEXT_PROFILE.set(profile);
                     return moveSet;
@@ -70,14 +70,14 @@ public class TCWeaponCapability extends WeaponCapability {
             return styleMoveSet;
         }
 
-        return this.defaultMoveSet != null ? this.defaultMoveSet : (MoveSet)this.moveSets.get(Styles.COMMON);
+        return this.defaultMoveSet != null ? this.defaultMoveSet : this.moveSets.get(Styles.COMMON);
     }
 
     @Override
     public WeaponCategory getWeaponCategory() {
         ModifierProfile profile = CONTEXT_PROFILE.get();
-        if (profile != null && profile.getWeaponCategory() != null) {
-            return profile.getWeaponCategory();
+        if (profile != null && profile.weaponCategory() != null) {
+            return profile.weaponCategory();
         }
         return super.getWeaponCategory();
     }
@@ -85,8 +85,8 @@ public class TCWeaponCapability extends WeaponCapability {
     @Override
     public Collider getWeaponCollider() {
         ModifierProfile profile = CONTEXT_PROFILE.get();
-        if (profile != null && profile.getCollider() != null) {
-            return profile.getCollider();
+        if (profile != null && profile.collider() != null) {
+            return profile.collider();
         }
         return super.getWeaponCollider();
     }
