@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "epicfighttinkercompat:speary"
+    "epicfighttinkercompat:speary",
+    "epicfighttinkercompat:torment_blade",
+    "epicfighttinkercompat:ruine_blade",
+    "epicfighttinkercompat:agony_spear"
   ]
 }

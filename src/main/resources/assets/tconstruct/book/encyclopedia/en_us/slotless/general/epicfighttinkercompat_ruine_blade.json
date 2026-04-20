@@ -1,0 +1,14 @@
+{
+  "modifier_id": "epicfighttinkercompat:ruine_blade",
+  "text": [
+    {
+      "text": "Changes cleaver moveset to the Ruine moveset."
+    }
+  ],
+  "more_text_space": true,
+  "effects": [
+    "Maximum of 1 level",
+    "Applies custom Ruine moveset and collider",
+    "Does not require a modifier slot"
+  ]
+}

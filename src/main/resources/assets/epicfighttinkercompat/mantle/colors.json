@@ -2,6 +2,9 @@
   "modifier.epicfighttinkercompat": {
     "so_sticky": "#55FF55",
     "weightless": "#55AAFF",
-    "speary": "#FFAA00"
+    "speary": "#FFAA00",
+    "torment_blade": "#2B2B2F",
+    "agony_spear": "#1F1F23",
+    "ruine_blade": "#7A3FD6"
   }
 }

@@ -1,11 +1,15 @@
 {
+  "condition": {
+    "type": "forge:mod_loaded",
+    "modid": "wom"
+  },
   "modules": [
     {
       "type": "tconstruct:requirements",
       "display_modifiers": [
         {
           "level": 1,
-          "name": "epicfighttinkercompat:agony_spear"
+          "name": "epicfighttinkercompat:speary"
         }
       ],
       "requirement": {
@@ -14,10 +18,10 @@
         "level": 0,
         "modifier": {
           "type": "tconstruct:single",
-          "modifier": "epicfighttinkercompat:agony_spear"
+          "modifier": "epicfighttinkercompat:speary"
         }
       },
-      "translation_key": "modifier.epicfighttinkercompat.speary.requirements"
+      "translation_key": "modifier.epicfighttinkercompat.agony_spear.requirements"
     }
   ],
   "level_display": "tconstruct:no_levels",

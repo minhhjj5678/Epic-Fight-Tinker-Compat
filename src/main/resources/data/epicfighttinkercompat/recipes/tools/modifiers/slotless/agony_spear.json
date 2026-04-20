@@ -1,0 +1,49 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "wom"
+    }
+  ],
+  "type": "tconstruct:modifier",
+  "allow_crystal": true,
+  "inputs": [
+    {
+      "ingredient": [
+        {
+          "item": "minecraft:skeleton_skull"
+        },
+        {
+          "item": "minecraft:wither_skeleton_skull"
+        },
+        {
+          "item": "minecraft:zombie_head"
+        },
+        {
+          "item": "minecraft:creeper_head"
+        },
+        {
+          "item": "minecraft:piglin_head"
+        },
+        {
+          "item": "minecraft:dragon_head"
+        },
+        {
+          "item": "minecraft:player_head"
+        }
+      ]
+    },
+    {
+      "ingredient": [
+        {
+          "item": "minecraft:amethyst_shard"
+        }
+      ]
+    }
+  ],
+  "level": 1,
+  "result": "epicfighttinkercompat:agony_spear",
+  "tools": {
+    "item": "tconstruct:javelin"
+  }
+}
