@@ -49,15 +49,6 @@
     {
       "type": "tconstruct:fixed_material_name",
       "index": 0
-    },
-    {
-      "type": "tconstruct:traits",
-      "traits": [
-        {
-          "name": "epicfighttinkercompat:epic_part_stats_calculator",
-          "level": 1
-        }
-      ]
     }
   ]
 }

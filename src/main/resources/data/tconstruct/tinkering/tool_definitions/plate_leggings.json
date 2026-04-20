@@ -39,15 +39,6 @@
       "index": 0
     },
     {
-      "type": "tconstruct:traits",
-      "traits": [
-        {
-          "name": "epicfighttinkercompat:epic_part_stats_calculator",
-          "level": 1
-        }
-      ]
-    },
-    {
       "type": "tconstruct:base_stats",
       "stats": {
         "epicfighttinkercompat:weight": 0.0,

@@ -62,11 +62,7 @@
     {
       "type": "tconstruct:traits",
       "traits": [
-        {
-          "level": 1,
-          "name": "epicfighttinkercompat:epic_part_stats_calculator"
-        },
-        {
+                {
           "level": 2,
           "name": "tconstruct:knockback"
         },
