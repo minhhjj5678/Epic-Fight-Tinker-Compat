@@ -1,52 +1,71 @@
 package com.minhhjjj.epicfighttinkercompat.tool.capabilities;
 
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
-import com.minhhjjj.epicfighttinkercompat.skill.AutoGuardPassiveSkill;
 import com.minhhjjj.epicfighttinkercompat.stats.EpicFightToolStats;
 import com.minhhjjj.epicfighttinkercompat.tool.EpicFightArmorStatsHelper;
 import com.mojang.datafixers.util.Pair;
-import yesman.epicfight.world.capabilities.item.WeaponCapability;
 import yesman.epicfight.world.capabilities.item.ArmorCapability;
-import yesman.epicfight.world.capabilities.item.WeaponCapabilityPresets;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.Styles;
-import yesman.epicfight.world.capabilities.item.CapabilityItem.WeaponCategories;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 
-import slimeknights.tconstruct.library.materials.stats.MaterialStatsId;
-import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
-import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
-import slimeknights.tconstruct.library.tools.nbt.StatsNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
-
-import yesman.epicfight.api.animation.LivingMotions;
-import yesman.epicfight.gameasset.Animations;
-import yesman.epicfight.gameasset.ColliderPreset;
-import yesman.epicfight.gameasset.EpicFightSounds;
-import yesman.epicfight.particle.EpicFightParticles;
-import yesman.epicfight.server.commands.arguments.SkillArgument;
-import yesman.epicfight.skill.Skill;
-import yesman.epicfight.skill.SkillCategories;
-import yesman.epicfight.skill.SkillSlots;
-import yesman.epicfight.skill.Skill.ActivateType;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.entity.ai.attribute.EpicFightAttributes;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
     private final LazyOptional<CapabilityItem> optionalCapability;
     public static final ResourceLocation EPIC_CAP_ID = ResourceLocation.fromNamespaceAndPath(EpicFightTinkerCompat.MODID, "weapon_cap");
+    private static final Map<String, Function<Item, CapabilityItem.Builder>> WEAPON_CAPABILITY_PRESETS;
+
+    static {
+        Map<String, Function<Item, CapabilityItem.Builder>> presets = new HashMap<>();
+        presets.put("cleaver", TCWeaponCapabilityPresets.CLEAVER);
+        presets.put("vein_hammer", TCWeaponCapabilityPresets.TC_SWORD);
+        presets.put("javelin", TCWeaponCapabilityPresets.JAVELIN);
+        presets.put("sword", TCWeaponCapabilityPresets.TC_SWORD);
+        presets.put("battlesign", TCWeaponCapabilityPresets.TC_SWORD);
+        presets.put("sledge_hammer", TCWeaponCapabilityPresets.TC_SLEDGE_HAMMER);
+        presets.put("axe", TCWeaponCapabilityPresets.TC_AXE);
+        presets.put("broad_axe", TCWeaponCapabilityPresets.TC_AXE);
+        presets.put("scythe", TCWeaponCapabilityPresets.SCYTHE);
+        presets.put("dagger", TCWeaponCapabilityPresets.TC_DAGGER);
+        presets.put("sky_staff", TCWeaponCapabilityPresets.STAFF);
+        presets.put("earth_staff", TCWeaponCapabilityPresets.STAFF);
+        presets.put("ender_staff", TCWeaponCapabilityPresets.STAFF);
+        presets.put("ichor_staff", TCWeaponCapabilityPresets.STAFF);
+        presets.put("melting_pan", TCWeaponCapabilityPresets.STAFF);
+        presets.put("throwing_axe", TCWeaponCapabilityPresets.STAFF);
+        presets.put("longbow", TCWeaponCapabilityPresets.LONGBOW);
+        presets.put("crossbow", TinkerCrossbowCapability.TCROSSBOW);
+        presets.put("pickaxe", TCWeaponCapabilityPresets.TC_PICKAXE);
+        presets.put("pickadze", TCWeaponCapabilityPresets.TC_PICKAXE);
+        presets.put("war_pick", TCWeaponCapabilityPresets.TC_PICKAXE);
+        presets.put("shovel", TCWeaponCapabilityPresets.TC_PICKAXE);
+        presets.put("excavator", TCWeaponCapabilityPresets.TC_PICKAXE);
+        presets.put("hoe", TCWeaponCapabilityPresets.TC_PICKAXE);
+        presets.put("kama", TCWeaponCapabilityPresets.TC_PICKAXE);
+        presets.put("mattock", TCWeaponCapabilityPresets.TC_PICKAXE);
+        presets.put("plate_shield", TCWeaponCapabilityPresets.TC_SHIELD);
+        presets.put("travelers_shield", TCWeaponCapabilityPresets.TC_SHIELD);
+        presets.put("swasher", TCWeaponCapabilityPresets.TC_SWORD);
+        WEAPON_CAPABILITY_PRESETS = Map.copyOf(presets);
+    }
 
     public TinkerWeaponCapabilityProvider(String weaponType, ToolStack tool) {
         CapabilityItem eCapabilityItem = createCapabilityItem(weaponType, tool);
@@ -58,84 +77,27 @@ public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
         }
     }
 
-    private CapabilityItem createCapabilityItem(String weaponType, ToolStack tool) {
-        double impactBonus = 0.0;
-        double strikesBonus = 0.0;
-        double armorNegationBonus = 0.0;
-
-        double weight = 0.0;
-        double stunArmor = 0.0;
-
-        if (tool != null) {
-            impactBonus = tool.getStats().get(EpicFightToolStats.IMPACT);
-            strikesBonus = tool.getStats().get(EpicFightToolStats.MAX_STRIKES);
-            armorNegationBonus = tool.getStats().get(EpicFightToolStats.ARMOR_NEGATION);
-            EpicFightArmorStatsHelper.ArmorStats armorStats = EpicFightArmorStatsHelper.resolveArmorStats(tool);
-            weight = armorStats.weight();
-            stunArmor = armorStats.stunArmor();
+    @SuppressWarnings("null")
+	private CapabilityItem createCapabilityItem(String weaponType, ToolStack tool) {
+        if (tool == null) {
+            return null;
         }
 
         CapabilityItem.Builder builder = null;
         if (tool.getItem() instanceof net.minecraft.world.item.ArmorItem) {
+            EpicFightArmorStatsHelper.ArmorStats armorStats = EpicFightArmorStatsHelper.resolveArmorStats(tool);
+            double weight = armorStats.weight();
+            double stunArmor = armorStats.stunArmor();
+
             builder = ArmorCapability.builder()
                 .item(tool.getItem())
                 .weight(weight)
                 .stunArmor(stunArmor);
         }
         else {
-            if (weaponType.equals("cleaver") || weaponType.equals("vein_hammer")) {
-                builder = WeaponCapabilityPresets.GREATSWORD.apply(tool.getItem());
-            }
-            else if (weaponType.equals("javelin")) {
-                builder = JavelinCapability.JAVELIN.apply(tool.getItem());
-            }
-            else if (weaponType.equals("sword") || weaponType.equals("battlesign")) {
-                builder = WeaponCapabilityPresets.SWORD.apply(tool.getItem());
-            }
-            else if (weaponType.equals("sledge_hammer")) {
-                builder = TCWeaponCapabilityPresets.TC_SLEDGE_HAMMER.apply(tool.getItem());
-            }
-            else if (weaponType.equals("axe") || weaponType.equals("broad_axe")) {
-                builder = WeaponCapabilityPresets.AXE.apply(tool.getItem());
-            }
-            else if (weaponType.equals("scythe")) {
-                builder = WeaponCapabilityPresets.GREATSWORD.apply(tool.getItem());
-            }
-            else if (weaponType.equals("dagger")) {
-                builder = WeaponCapabilityPresets.DAGGER.apply(tool.getItem());
-            }
-            else if (weaponType.equals("sky_staff") || weaponType.equals("earth_staff") || weaponType.equals("ender_staff") || weaponType.equals("ichor_staff")) {
-                builder = WeaponCapabilityPresets.TRIDENT.apply(tool.getItem());
-            }
-            else if (weaponType.equals("longbow")) {
-                builder = WeaponCapabilityPresets.BOW.apply(tool.getItem());
-            }
-            else if (weaponType.equals("crossbow")) {
-                builder = TinkerCrossbowCapability.TCROSSBOW.apply(tool.getItem());
-            }
-            else if (weaponType.equals("pickaxe") || weaponType.equals("pickadze") || weaponType.equals("war_pick")) {
-                builder = WeaponCapabilityPresets.PICKAXE.apply(tool.getItem());
-            }
-            else if (weaponType.equals("shovel")) {
-                builder = WeaponCapabilityPresets.SHOVEL.apply(tool.getItem());
-            }
-            else if (weaponType.equals("hoe") || weaponType.equals("kama") || weaponType.equals("mattock")) {
-                builder = WeaponCapabilityPresets.HOE.apply(tool.getItem());
-            }
-            else if (weaponType.equals("melting_pan")) {
-                builder = WeaponCapabilityPresets.TRIDENT.apply(tool.getItem());
-            }
-            else if (weaponType.equals("excavator")) {
-                builder = WeaponCapabilityPresets.SHOVEL.apply(tool.getItem());
-            }
-            else if (weaponType.equals("throwing_axe")) {
-                builder = WeaponCapabilityPresets.TRIDENT.apply(tool.getItem());
-            }
-            else if (weaponType.equals("plate_shield") || weaponType.equals("travelers_shield")) {
-                builder = WeaponCapabilityPresets.SHIELD.apply(tool.getItem());
-            }
-            else if (weaponType.equals("swasher")) {
-                builder = WeaponCapabilityPresets.FIST.apply(tool.getItem());
+            Function<Item, CapabilityItem.Builder> preset = WEAPON_CAPABILITY_PRESETS.get(weaponType);
+            if (preset != null) {
+                builder = preset.apply(tool.getItem());
             }
         }
 
@@ -143,25 +105,29 @@ public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
             return null;
         }
 
-        UUID modUUID = UUID.fromString("77777777-8888-9999-0000-111111111111");
-        
+        double impactBonus = tool.getStats().get(EpicFightToolStats.IMPACT);
+        double strikesBonus = tool.getStats().get(EpicFightToolStats.MAX_STRIKES);
+        double armorNegationBonus = tool.getStats().get(EpicFightToolStats.ARMOR_NEGATION);        
         if (!(tool.getItem() instanceof net.minecraft.world.item.ArmorItem)) {
             if (impactBonus != 0) {
+                UUID impactUUID = UUID.nameUUIDFromBytes((EpicFightTinkerCompat.MODID + ":" + weaponType + ":impact").getBytes(java.nio.charset.StandardCharsets.UTF_8));
                 builder.addStyleAttibutes(Styles.COMMON, Pair.of(
                     EpicFightAttributes.IMPACT.get(), 
-                    new AttributeModifier(modUUID, "Tinker Impact", impactBonus, AttributeModifier.Operation.ADDITION)
+                    new AttributeModifier(impactUUID, "Tinker Impact", impactBonus, AttributeModifier.Operation.ADDITION)
                 ));
             }
             if (strikesBonus != 0) {
+                UUID strikesUUID = UUID.nameUUIDFromBytes((EpicFightTinkerCompat.MODID + ":" + weaponType + ":strikes").getBytes(java.nio.charset.StandardCharsets.UTF_8));
                 builder.addStyleAttibutes(Styles.COMMON, Pair.of(
                     EpicFightAttributes.MAX_STRIKES.get(), 
-                    new AttributeModifier(modUUID, "Tinker Strikes", strikesBonus, AttributeModifier.Operation.ADDITION)
+                    new AttributeModifier(strikesUUID, "Tinker Strikes", strikesBonus, AttributeModifier.Operation.ADDITION)
                 ));
             }
             if (armorNegationBonus != 0) {
+                UUID armorUUID = UUID.nameUUIDFromBytes((EpicFightTinkerCompat.MODID + ":" + weaponType + ":armor_negation").getBytes(java.nio.charset.StandardCharsets.UTF_8));
                 builder.addStyleAttibutes(Styles.COMMON, Pair.of(
                     EpicFightAttributes.ARMOR_NEGATION.get(), 
-                    new AttributeModifier(modUUID, "Tinker Armor Negation", armorNegationBonus, AttributeModifier.Operation.ADDITION)
+                    new AttributeModifier(armorUUID, "Tinker Armor Negation", armorNegationBonus, AttributeModifier.Operation.ADDITION)
                 ));
             }
         }
