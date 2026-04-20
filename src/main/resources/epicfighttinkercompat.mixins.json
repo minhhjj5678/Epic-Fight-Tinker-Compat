@@ -8,13 +8,15 @@
     "sweepingedge.MixinEnchantmentHelper",
     "sweepingedge.MixinSweepWeaponAttack",
     "lifesteal.MixinToolAttackContext",
+    "doublejump.MixinDoubleJumpHandler",
+    "tool.MixinThrowingModule",
+    "tool.MixinToolStack"
+  ],
+  "client": [
     "tool.MixinItemSkinsReloadListener",
     "tool.MixinAnimationTrailParticle",
     "tool.MixinTrailProvider",
-    "tool.MixinRenderShield",
-    "doublejump.MixinDoubleJumpHandler"
-  ],
-  "client": [
+    "tool.MixinRenderItemBase",
     "doublejump.MixinPhantomAscentSkill"
   ],
   "injectors": {
