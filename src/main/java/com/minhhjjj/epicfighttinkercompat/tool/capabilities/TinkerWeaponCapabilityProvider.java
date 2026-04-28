@@ -4,6 +4,7 @@ import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import com.minhhjjj.epicfighttinkercompat.stats.EpicFightToolStats;
 import com.minhhjjj.epicfighttinkercompat.tool.EpicFightArmorStatsHelper;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.world.item.ItemStack;
 import yesman.epicfight.world.capabilities.item.ArmorCapability;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.Styles;
 
@@ -67,8 +68,8 @@ public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
         WEAPON_CAPABILITY_PRESETS = Map.copyOf(presets);
     }
 
-    public TinkerWeaponCapabilityProvider(String weaponType, ToolStack tool) {
-        CapabilityItem eCapabilityItem = createCapabilityItem(weaponType, tool);
+    public TinkerWeaponCapabilityProvider(String weaponType, ItemStack stack) {
+        CapabilityItem eCapabilityItem = createCapabilityItem(weaponType, stack);
 
         if (eCapabilityItem == null) {
             this.optionalCapability = LazyOptional.empty();
@@ -78,11 +79,8 @@ public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
     }
 
     @SuppressWarnings("null")
-	private CapabilityItem createCapabilityItem(String weaponType, ToolStack tool) {
-        if (tool == null) {
-            return null;
-        }
-
+	private CapabilityItem createCapabilityItem(String weaponType, ItemStack stack) {
+        ToolStack tool = ToolStack.from(stack);
         CapabilityItem.Builder builder = null;
         if (tool.getItem() instanceof net.minecraft.world.item.ArmorItem) {
             EpicFightArmorStatsHelper.ArmorStats armorStats = EpicFightArmorStatsHelper.resolveArmorStats(tool);
@@ -98,6 +96,9 @@ public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
             Function<Item, CapabilityItem.Builder> preset = WEAPON_CAPABILITY_PRESETS.get(weaponType);
             if (preset != null) {
                 builder = preset.apply(tool.getItem());
+                if (builder instanceof TCWeaponCapability.Builder tcBuilder) {
+                    tcBuilder.boundItem(stack.copy());
+                }
             }
         }
 

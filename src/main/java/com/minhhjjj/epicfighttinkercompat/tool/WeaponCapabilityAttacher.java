@@ -18,14 +18,12 @@ public class WeaponCapabilityAttacher {
     public static void onAttachCapabilty(AttachCapabilitiesEvent<ItemStack> event) {
         ItemStack stack = event.getObject();
         if (!(stack.getItem() instanceof IModifiable)) return;
-        ToolStack tool = ToolStack.from(stack);
-
         var itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
         if (itemId == null) return;
 
         String weaponType = itemId.getPath();
         if (weaponType.isEmpty()) return;
 
-        event.addCapability(TinkerWeaponCapabilityProvider.EPIC_CAP_ID, new TinkerWeaponCapabilityProvider(weaponType, tool));
+        event.addCapability(TinkerWeaponCapabilityProvider.EPIC_CAP_ID, new TinkerWeaponCapabilityProvider(weaponType, stack));
     }
 }
