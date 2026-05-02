@@ -10,7 +10,9 @@
     "lifesteal.MixinToolAttackContext",
     "doublejump.MixinDoubleJumpHandler",
     "tool.MixinThrowingModule",
-    "tool.MixinToolStack"
+    "tool.MixinModifiableItem",
+    "tool.MixinToolStack",
+    "skill.MixinGuardSkill"
   ],
   "client": [
     "tool.MixinItemSkinsReloadListener",
