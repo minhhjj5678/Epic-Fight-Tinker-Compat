@@ -1,12 +1,11 @@
 package com.minhhjjj.epicfighttinkercompat.tool.capabilities;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
+import reascer.wom.gameasset.WOMSkills;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
@@ -16,7 +15,9 @@ import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.api.ex_cap.core.data.MoveSet;
+import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.guard.GuardSkill;
+import yesman.epicfight.skill.passive.PassiveSkill;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
@@ -28,9 +29,9 @@ public class TCWeaponCapability extends WeaponCapability {
     protected final ItemStack boundItem;
     protected MoveSet defaultMoveSet;
     protected List<ModifierProfile> modifierProfiles;
+    protected ModifierProfile modifierProfile;
     private static final ModifierId THROWING_ID = new ModifierId(TConstruct.MOD_ID, "throwing");
     private static final ModifierId BLOCKING_ID = new ModifierId(TConstruct.MOD_ID, "blocking");
-    private static final ThreadLocal<ModifierProfile> CONTEXT_PROFILE = new ThreadLocal<>();
 
     protected TCWeaponCapability(CapabilityItem.Builder builder) {
         super(builder);
@@ -42,30 +43,12 @@ public class TCWeaponCapability extends WeaponCapability {
 
     @Override
     public MoveSet getCurrentSet(LivingEntityPatch<?> patch) {
-        ToolStack toolStack = getToolStack(patch);
-        CONTEXT_PROFILE.remove();
-
-        if (toolStack != null) {
-            ModifierProfile profile = null;
-            for (ModifierProfile modifierProfile : this.modifierProfiles) {
-                ModifierId modifierId = modifierProfile.modifierId();
-                if (modifierId == null) {
-                    continue;
-                }
-
-                int level = toolStack.getModifierLevel(modifierId);
-                if (level > 0 && (profile == null || modifierProfile.priority() > profile.priority())) {
-                    profile = modifierProfile;
-                }
-            }
-
-            if (profile != null) {
-                Style resolvedStyle = profile.styleProvider().apply(patch);
-                MoveSet moveSet = profile.moveSets().get(resolvedStyle);
-                if (moveSet != null) {
-                    CONTEXT_PROFILE.set(profile);
-                    return moveSet;
-                }
+        this.setModifierProfile(patch);
+        if (this.modifierProfile != null) {
+            Style resolvedStyle = this.modifierProfile.styleProvider().apply(patch);
+            MoveSet moveSet = this.modifierProfile.moveSets().get(resolvedStyle);
+            if (moveSet != null) {
+                return moveSet;
             }
         }
 
@@ -79,18 +62,18 @@ public class TCWeaponCapability extends WeaponCapability {
 
     @Override
     public WeaponCategory getWeaponCategory() {
-        ModifierProfile profile = CONTEXT_PROFILE.get();
-        if (profile != null && profile.weaponCategory() != null) {
-            return profile.weaponCategory();
+        this.setModifierProfile();
+        if (this.modifierProfile != null && this.modifierProfile.weaponCategory() != null) {
+            return this.modifierProfile.weaponCategory();
         }
         return super.getWeaponCategory();
     }
 
     @Override
     public Collider getWeaponCollider() {
-        ModifierProfile profile = CONTEXT_PROFILE.get();
-        if (profile != null && profile.collider() != null) {
-            return profile.collider();
+        this.setModifierProfile();
+        if (this.modifierProfile != null && this.modifierProfile.collider() != null) {
+            return this.modifierProfile.collider();
         }
         return super.getWeaponCollider();
     }
@@ -99,7 +82,7 @@ public class TCWeaponCapability extends WeaponCapability {
     public LivingMotion getLivingMotion(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
         InteractionHand checkedHand = Objects.requireNonNull(hand, "hand");
         if (entityPatch instanceof PlayerPatch<?> playerPatch && playerPatch.getOriginal().isCrouching() && playerPatch.getOriginal().isUsingItem() && playerPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.SPEAR) {
-            ItemStack heldItem = playerPatch.getOriginal().getMainHandItem();
+            ItemStack heldItem = playerPatch.getOriginal().getItemInHand(checkedHand);
             ItemStack useItem = Objects.requireNonNull(playerPatch.getOriginal().getUseItem(), "useItem");
             if (!heldItem.isEmpty() && ItemStack.isSameItemSameTags(heldItem, useItem) && ToolStack.from(heldItem).getModifierLevel(Objects.requireNonNull(THROWING_ID, "throwing modifier id")) > 0) {
                 return LivingMotions.AIM;
@@ -120,19 +103,60 @@ public class TCWeaponCapability extends WeaponCapability {
     @Override
     public UseAnim getUseAnimation(LivingEntityPatch<?> entityPatch) {
         MoveSet set = getCurrentSet(entityPatch);
-        if (set != null && set.getLivingMotionModifiers().containsKey(LivingMotions.BLOCK) && getToolStack(entityPatch).getModifierLevel(Objects.requireNonNull(BLOCKING_ID, "blocking modifier id")) > 0) {
+        ToolStack toolStack = getToolStack(entityPatch);
+        if (set != null && set.getLivingMotionModifiers().containsKey(LivingMotions.BLOCK) && toolStack != null && toolStack.getModifierLevel(Objects.requireNonNull(BLOCKING_ID, "blocking modifier id")) > 0) {
             return UseAnim.BLOCK;
         }
         return UseAnim.NONE;
     }
 
+    @Override
+    public Skill getPassiveSkill(PlayerPatch<?> playerPatch) {
+        MoveSet set = getCurrentSet(playerPatch);
+        if (set != null) {
+            return set.getWeaponPassiveSkill();
+        }
+        return getPassiveSkill();
+    }
+
+    public Skill getPassiveSkill() {
+        this.setModifierProfile();
+        return this.modifierProfile != null ? this.modifierProfile.passiveSkill() : null;
+    }
+
     protected ToolStack getToolStack(LivingEntityPatch<?> entityPatch) {
-        ItemStack itemStack = entityPatch.getOriginal().getMainHandItem();
-        return itemStack.isEmpty() ? null : ToolStack.from(itemStack);
+        if (entityPatch != null) {
+            ItemStack itemStack = entityPatch.getOriginal().isUsingItem() ? entityPatch.getOriginal().getItemInHand(entityPatch.getOriginal().getUsedItemHand()) : entityPatch.getOriginal().getMainHandItem();
+            return itemStack.isEmpty() ? null : ToolStack.from(itemStack);
+        }
+        return getToolStack();
     }
 
     protected ToolStack getToolStack() {
         return this.boundItem != null ? (this.boundItem.isEmpty() ? null : ToolStack.from(this.boundItem)) : null;
+    }
+
+    protected void setModifierProfile(LivingEntityPatch<?> entityPatch) {
+        ToolStack toolStack = getToolStack(entityPatch);
+        if (toolStack != null) {
+            for (ModifierProfile modifierProfile : this.modifierProfiles) {
+                ModifierId modifierId = modifierProfile.modifierId();
+                if (modifierId == null) {
+                    continue;
+                }
+
+                int level = toolStack.getModifierLevel(modifierId);
+                if (level > 0) {
+                    this.modifierProfile = modifierProfile;
+                    return;
+                }
+            }
+        }
+        this.modifierProfile = null;
+    }
+
+    protected void setModifierProfile() {
+        this.setModifierProfile(null);
     }
 
     public static Builder builder() {
