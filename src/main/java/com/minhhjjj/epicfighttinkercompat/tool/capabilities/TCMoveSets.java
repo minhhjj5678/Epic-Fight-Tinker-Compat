@@ -11,6 +11,7 @@ import reascer.wom.gameasset.animations.weapons.AnimsRuine;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.LivingMotion;
 import yesman.epicfight.api.animation.LivingMotions;
+import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.ex_cap.core.data.MoveSet;
 import yesman.epicfight.api.ex_cap.core.data.MoveSet.MoveSetBuilder;
 import yesman.epicfight.gameasset.Animations;
@@ -26,7 +27,7 @@ public class TCMoveSets {
 		return MoveSet.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.SWORD_AUTO1, Animations.SWORD_AUTO2, Animations.SWORD_AUTO3, Animations.SWORD_DASH, Animations.SWORD_AIR_SLASH})
 		.addInnateSkill((itemStack, playerPatch) -> EpicFightSkills.SWEEPING_EDGE)
-		.addGuardAnimations(BlockType.GUARD, Animations.SWORD_GUARD, Animations.SWORD_GUARD_HIT)
+		.addGuardAnimations(BlockType.GUARD, Animations.SWORD_GUARD_HIT)
 		.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
 		.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW)
 		.addLivingMotionModifier(LivingMotions.BLOCK, Animations.SWORD_GUARD)
@@ -38,7 +39,7 @@ public class TCMoveSets {
 		return MoveSet.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.SWORD_DUAL_AUTO1, Animations.SWORD_DUAL_AUTO2, Animations.SWORD_DUAL_AUTO3, Animations.SWORD_DUAL_DASH, Animations.SWORD_DUAL_AIR_SLASH})
 		.addInnateSkill((itemStack, playerPatch) -> EpicFightSkills.DANCING_EDGE)
-		.addGuardAnimations(BlockType.GUARD, Animations.SWORD_DUAL_GUARD, Animations.SWORD_DUAL_GUARD_HIT)
+		.addGuardAnimations(BlockType.GUARD, Animations.SWORD_DUAL_GUARD_HIT)
 		.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
 		.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW)
 		.addLivingMotionModifier(LivingMotions.BLOCK, Animations.SWORD_DUAL_GUARD)
@@ -81,6 +82,7 @@ public class TCMoveSets {
 	public static MoveSetBuilder dagger1HSet() {
 		return MoveSet.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.DAGGER_AUTO1, Animations.DAGGER_AUTO2, Animations.DAGGER_AUTO3, Animations.DAGGER_DASH, Animations.DAGGER_AIR_SLASH})
+		.addInnateSkill((item, playerPatch) -> EpicFightSkills.EVISCERATE)
 		.addLivingMotionsRecursive(Animations.BIPED_IDLE, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.JUMP, LivingMotions.KNEEL, LivingMotions.SNEAK, LivingMotions.SWIM, LivingMotions.FLY, LivingMotions.CREATIVE_FLY, LivingMotions.CREATIVE_IDLE})
 		.addLivingMotionsRecursive(Animations.BIPED_WALK, new LivingMotion[]{LivingMotions.WALK, LivingMotions.CHASE})
 		.addLivingMotionModifier(LivingMotions.RUN, Animations.BIPED_RUN)
@@ -93,6 +95,7 @@ public class TCMoveSets {
 	public static MoveSetBuilder dagger2HSet() {
 		return MoveSet.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.DAGGER_DUAL_AUTO1, Animations.DAGGER_DUAL_AUTO2, Animations.DAGGER_DUAL_AUTO3, Animations.DAGGER_DUAL_AUTO4, Animations.DAGGER_DASH, Animations.DAGGER_AIR_SLASH})
+		.addInnateSkill((item, playerPatch) -> EpicFightSkills.BLADE_RUSH)
 		.addLivingMotionsRecursive(Animations.BIPED_HOLD_DUAL_WEAPON, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.JUMP, LivingMotions.KNEEL, LivingMotions.SNEAK, LivingMotions.SWIM, LivingMotions.FLY, LivingMotions.CREATIVE_FLY, LivingMotions.CREATIVE_IDLE, LivingMotions.WALK, LivingMotions.CHASE})
 		.addLivingMotionModifier(LivingMotions.RUN, Animations.BIPED_RUN_DUAL)
 		.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
@@ -131,12 +134,14 @@ public class TCMoveSets {
 	public static MoveSetBuilder spear2HSet() {
 		return MoveSet.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.SPEAR_TWOHAND_AUTO1, Animations.SPEAR_TWOHAND_AUTO2, Animations.SPEAR_DASH, Animations.SPEAR_TWOHAND_AIR_SLASH})
-		.addGuardAnimations(BlockType.GUARD, Animations.SPEAR_GUARD, Animations.SPEAR_GUARD_HIT)
+		.addGuardAnimations(BlockType.GUARD, Animations.SPEAR_GUARD_HIT)
+		.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
 		.addMountAttacks(new AnimationManager.AnimationAccessor[]{Animations.SPEAR_MOUNT_ATTACK})
 		.addInnateSkill((item, patch) -> EpicFightSkills.GRASPING_SPIRE)
 		.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
 		.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW)
-		.addLivingMotionModifier(LivingMotions.SWIM, Animations.BIPED_HOLD_SPEAR);
+		.addLivingMotionModifier(LivingMotions.SWIM, Animations.BIPED_HOLD_SPEAR)
+		.addLivingMotionModifier(LivingMotions.BLOCK, Animations.SPEAR_GUARD);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -145,7 +150,8 @@ public class TCMoveSets {
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{AnimsAgony.AGONY_AUTO_1, AnimsAgony.AGONY_AUTO_2, AnimsAgony.AGONY_AUTO_3, AnimsAgony.AGONY_AUTO_4, AnimsAgony.AGONY_CLAWSTRIKE, AnimsAgony.AGONY_RIPPING_FANGS})
 		.addMountAttacks(new AnimationManager.AnimationAccessor[]{Animations.SPEAR_MOUNT_ATTACK})
 		.addInnateSkill((itemStack, playerPatch) -> WOMSkills.AGONY_PLUNGE)
-		.addGuardAnimations(BlockType.GUARD, new AnimationManager.AnimationAccessor[]{AnimsAgony.AGONY_GUARD, AnimsAgony.AGONY_GUARD_HIT_1, AnimsAgony.AGONY_GUARD_HIT_2})
+		.addGuardAnimations(BlockType.GUARD, new AnimationManager.AnimationAccessor[]{AnimsAgony.AGONY_GUARD_HIT_1, AnimsAgony.AGONY_GUARD_HIT_2})
+		.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
 		.addLivingMotionModifier(LivingMotions.IDLE, AnimsAgony.AGONY_IDLE)
 		.addLivingMotionModifier(LivingMotions.WALK, AnimsAgony.AGONY_WALK)
 		.addLivingMotionModifier(LivingMotions.RUN, AnimsAgony.AGONY_RUN)
@@ -161,6 +167,7 @@ public class TCMoveSets {
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{AnimsAgony.AGONY_AIR_ATTACK_1, AnimsAgony.AGONY_AIR_ATTACK_2, AnimsAgony.AGONY_AIR_ATTACK_3, AnimsAgony.AGONY_AIR_ATTACK_4, AnimsAgony.AGONY_RIPPING_FANGS})
 		.addInnateSkill((itemStack, playerPatch) -> WOMSkills.AGONY_PLUNGE)
 		.addGuardAnimations(BlockType.GUARD, new AnimationManager.AnimationAccessor[]{AnimsAgony.AGONY_GUARD_HIT_1, AnimsAgony.AGONY_GUARD_HIT_2})
+		.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
 		.addLivingMotionModifier(LivingMotions.IDLE, AnimsAgony.AGONY_IDLE)
 		.addLivingMotionModifier(LivingMotions.WALK, AnimsAgony.AGONY_WALK)
 		.addLivingMotionModifier(LivingMotions.RUN, AnimsAgony.AGONY_RUN)
@@ -193,6 +200,7 @@ public class TCMoveSets {
 		.setPassiveSkill(WOMSkills.RUINE_PASSIVE)
 		.addInnateSkill((itemstack, playerpatch) -> WOMSkills.ENDER_ARCANE)
 		.addGuardAnimations(BlockType.GUARD, new AnimationManager.AnimationAccessor[]{AnimsRuine.RUINE_GUARD, AnimsRuine.RUINE_BLOCK_1, AnimsRuine.RUINE_BLOCK_2})
+		.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
 		.addLivingMotionModifier(LivingMotions.IDLE, AnimsRuine.RUINE_IDLE)
 		.addLivingMotionModifier(LivingMotions.RUN, AnimsRuine.RUINE_RUN)
 		.addLivingMotionModifier(LivingMotions.WALK, AnimsRuine.RUINE_WALK)
@@ -210,6 +218,7 @@ public class TCMoveSets {
 		.setPassiveSkill(WOMSkills.RUINE_PASSIVE)
 		.addInnateSkill((itemstack, playerpatch) -> WOMSkills.ENDER_ARCANE)
 		.addGuardAnimations(BlockType.GUARD, new AnimationManager.AnimationAccessor[]{AnimsRuine.RUINE_BLOCK_1, AnimsRuine.RUINE_BLOCK_2})
+		.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
 		.addLivingMotionModifier(LivingMotions.IDLE, AnimsRuine.RUINE_BOOSTED_IDLE)
 		.addLivingMotionModifier(LivingMotions.RUN, AnimsRuine.RUINE_RUN)
 		.addLivingMotionModifier(LivingMotions.WALK, AnimsRuine.RUINE_BOOSTED_WALK)
@@ -224,7 +233,7 @@ public class TCMoveSets {
 		return MoveSet.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.GREATSWORD_AUTO1, Animations.GREATSWORD_AUTO2, Animations.GREATSWORD_DASH, Animations.GREATSWORD_AIR_SLASH})
 		.addInnateSkill((itemstack, playerpatch) -> EpicFightSkills.STEEL_WHIRLWIND)
-		.addGuardAnimations(BlockType.GUARD_BREAK, Animations.GREATSWORD_GUARD_BREAK)
+		.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
 		.addGuardAnimations(BlockType.GUARD, Animations.GREATSWORD_GUARD, Animations.GREATSWORD_GUARD_HIT)
 		.setPassiveSkill(AutoGuardPassiveSkill.AUTO_GUARD_PASSIVE)
 		.addLivingMotionsRecursive(Animations.BIPED_HOLD_GREATSWORD, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.JUMP, LivingMotions.KNEEL, LivingMotions.SNEAK, LivingMotions.SWIM, LivingMotions.FLY, LivingMotions.CREATIVE_FLY, LivingMotions.CREATIVE_IDLE})
@@ -240,7 +249,7 @@ public class TCMoveSets {
 	return MoveSet.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.GREATSWORD_AUTO1, Animations.GREATSWORD_AUTO2, Animations.GREATSWORD_DASH, Animations.GREATSWORD_AIR_SLASH})
 		.addGuardAnimations(BlockType.GUARD, Animations.GREATSWORD_GUARD, Animations.GREATSWORD_GUARD_HIT)
-		.addGuardAnimations(BlockType.GUARD_BREAK, Animations.GREATSWORD_GUARD_BREAK)
+		.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
 		.addInnateSkill((itemstack, playerpatch) -> EpicFightSkills.STEEL_WHIRLWIND)
 		.addLivingMotionsRecursive(Animations.BIPED_HOLD_GREATSWORD, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.JUMP, LivingMotions.KNEEL, LivingMotions.SNEAK, LivingMotions.SWIM, LivingMotions.FLY, LivingMotions.CREATIVE_FLY, LivingMotions.CREATIVE_IDLE})
 		.addLivingMotionsRecursive(Animations.BIPED_WALK_GREATSWORD, new LivingMotion[]{LivingMotions.WALK, LivingMotions.CHASE})
@@ -257,7 +266,6 @@ public class TCMoveSets {
 		.addMountAttacks(new AnimationManager.AnimationAccessor[]{Animations.SWORD_MOUNT_ATTACK})
 		.setPassiveSkill(WOMSkills.TORMENT_PASSIVE)
 		.addInnateSkill((itemstack, playerpatch) -> WOMSkills.TRUE_BERSERK)
-		.addGuardAnimations(BlockType.GUARD, new AnimationManager.AnimationAccessor[]{WOMAnimations.TORMENT_DASH})
 		.addLivingMotionModifier(LivingMotions.IDLE, WOMAnimations.TORMENT_IDLE)
 		.addLivingMotionModifier(LivingMotions.RUN, WOMAnimations.TORMENT_RUN)
 		.addLivingMotionModifier(LivingMotions.WALK, WOMAnimations.TORMENT_WALK)
@@ -275,12 +283,10 @@ public class TCMoveSets {
 		.addMountAttacks(new AnimationManager.AnimationAccessor[]{Animations.SWORD_MOUNT_ATTACK})
 		.setPassiveSkill(WOMSkills.TORMENT_PASSIVE)
 		.addInnateSkill((itemstack, playerpatch) -> WOMSkills.TRUE_BERSERK)
-		.addGuardAnimations(BlockType.GUARD, new AnimationManager.AnimationAccessor[]{WOMAnimations.TORMENT_BERSERK_DASH})
 		.addLivingMotionModifier(LivingMotions.IDLE, WOMAnimations.TORMENT_BERSERK_IDLE)
 		.addLivingMotionModifier(LivingMotions.RUN, WOMAnimations.TORMENT_BERSERK_RUN)
 		.addLivingMotionModifier(LivingMotions.WALK, WOMAnimations.TORMENT_BERSERK_WALK)
 		.addLivingMotionModifier(LivingMotions.CHASE, WOMAnimations.TORMENT_BERSERK_RUN)
-		.addLivingMotionModifier(LivingMotions.BLOCK, WOMAnimations.TORMENT_BERSERK_DASH)
 		.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
 		.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW)
 		.addLivingMotionModifier(LivingMotions.SWIM, Animations.BIPED_HOLD_SPEAR);
@@ -306,5 +312,43 @@ public class TCMoveSets {
 		.addLivingMotionModifier(LivingMotions.IDLE, Animations.BIPED_IDLE)
 		.addLivingMotionModifier(LivingMotions.WALK, Animations.BIPED_WALK)
 		.setMotionPredicate((entityPatch, interactionHand) -> ((LivingEntity)entityPatch.getOriginal()).isUsingItem() && ((LivingEntity)entityPatch.getOriginal()).getUseItem().getUseAnimation() == UseAnim.SPEAR ? LivingMotions.AIM : null);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static MoveSetBuilder katanaBaseSet() {
+		return MoveSet.builder()
+				.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.UCHIGATANA_AUTO1, Animations.UCHIGATANA_AUTO2, Animations.UCHIGATANA_AUTO3, Animations.UCHIGATANA_DASH, Animations.UCHIGATANA_AIR_SLASH})
+				.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_BOW_AIM)
+				.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_BOW_SHOT)
+				.addLivingMotionsRecursive(Animations.BIPED_HOLD_UCHIGATANA, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.KNEEL, LivingMotions.SWIM, LivingMotions.FALL})
+				.addLivingMotionsRecursive(Animations.BIPED_WALK_UCHIGATANA, new LivingMotion[]{LivingMotions.WALK, LivingMotions.CHASE, LivingMotions.SNEAK})
+				.addLivingMotionModifier(LivingMotions.RUN, Animations.BIPED_RUN_UCHIGATANA)
+				.addLivingMotionModifier(LivingMotions.BLOCK, Animations.UCHIGATANA_GUARD)
+				.addInnateSkill((itemStack, playerPatch) -> EpicFightSkills.BATTOJUTSU)
+				.setPassiveSkill(EpicFightSkills.BATTOJUTSU_PASSIVE);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static MoveSetBuilder katanaSheathedSet() {
+		return MoveSet.builder()
+				.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.UCHIGATANA_SHEATHING_AUTO, Animations.UCHIGATANA_SHEATHING_DASH})
+				.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_BOW_AIM)
+				.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_BOW_SHOT)
+				.addLivingMotionsRecursive(Animations.BIPED_HOLD_UCHIGATANA_SHEATHING, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.KNEEL, LivingMotions.SWIM, LivingMotions.FALL})
+				.addLivingMotionsRecursive(Animations.BIPED_WALK_UCHIGATANA_SHEATHING, new LivingMotion[]{LivingMotions.WALK, LivingMotions.CHASE, LivingMotions.SNEAK})
+				.addLivingMotionModifier(LivingMotions.RUN, Animations.BIPED_RUN_UCHIGATANA_SHEATHING)
+				.addLivingMotionModifier(LivingMotions.BLOCK, Animations.UCHIGATANA_GUARD)
+				.addInnateSkill((itemStack, playerPatch) -> EpicFightSkills.BATTOJUTSU)
+				.setPassiveSkill(EpicFightSkills.BATTOJUTSU_PASSIVE);
+	}
+
+	public static MoveSetBuilder tachiSet() {
+		return MoveSet.builder()
+				.addComboAttacks(Animations.TACHI_AUTO1, Animations.TACHI_AUTO2, Animations.TACHI_AUTO3, Animations.TACHI_DASH, Animations.LONGSWORD_AIR_SLASH)
+				.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_BOW_AIM)
+				.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_BOW_SHOT)
+				.addLivingMotionsRecursive(Animations.BIPED_HOLD_TACHI, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.KNEEL, LivingMotions.WALK, LivingMotions.CHASE, LivingMotions.RUN, LivingMotions.SNEAK, LivingMotions.SWIM, LivingMotions.FLOAT, LivingMotions.FALL})
+				.addLivingMotionModifier(LivingMotions.BLOCK, Animations.LONGSWORD_GUARD)
+				.addInnateSkill((itemStack, playerPatch) -> EpicFightSkills.RUSHING_TEMPO);
 	}
 }
