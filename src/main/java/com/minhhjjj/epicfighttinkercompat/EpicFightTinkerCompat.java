@@ -1,12 +1,17 @@
 package com.minhhjjj.epicfighttinkercompat;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.fml.ModList;
@@ -19,6 +24,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraftforge.resource.PathPackResources;
 import slimeknights.tconstruct.library.materials.MaterialRegistry;
 
 import com.minhhjjj.epicfighttinkercompat.stats.EpicFightBindingStats;
@@ -48,7 +54,7 @@ public class EpicFightTinkerCompat
         EpicFightModifiers.MODIFIERS.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
-
+        modEventBus.addListener(this::onAddPackFinders);
         MinecraftForge.EVENT_BUS.register(this);
         ItemRegistry.ITEMS.register(modEventBus);
 
@@ -100,6 +106,26 @@ public class EpicFightTinkerCompat
         @Override
         protected void apply(Void unused, ResourceManager resourceManager, ProfilerFiller profiler) {
             LOGGER.info("Reloaded Epic Fight material stat cache");
+        }
+    }
+
+    public void onAddPackFinders(AddPackFindersEvent event) {
+        if (event.getPackType() == PackType.SERVER_DATA) {
+            var resourcePath = ModList.get().getModFileById(MODID).getFile().findResource("datapacks", "epicfight_override");
+
+            var pack = Pack.readMetaAndCreate(
+                    MODID + "_epicfight_override",
+                    Component.literal("Epic Fight Override Datapack"),
+                    true,
+                    (path) -> new PathPackResources(path, true, resourcePath),
+                    PackType.SERVER_DATA,
+                    Pack.Position.TOP,
+                    PackSource.BUILT_IN
+            );
+
+            if (pack != null) {
+                event.addRepositorySource((packConsumer) -> packConsumer.accept(pack));
+            }
         }
     }
 

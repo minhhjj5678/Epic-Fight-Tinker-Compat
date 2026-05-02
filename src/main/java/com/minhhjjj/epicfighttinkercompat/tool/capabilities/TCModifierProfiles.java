@@ -41,7 +41,7 @@ public class TCModifierProfiles {
             .build();
 
     private static ModifierProfile createAgonyProfile() {
-        return ModifierProfile.builder(EpicFightModifiers.AGONY_SPEAR.getId())
+        return ModifierProfile.builder(EpicFightModifiers.AGONY_SPEAR)
                 .styleProvider((LivingEntityPatch<?> patch) -> {
                     if (patch.getOriginal().onGround())
                         return Styles.TWO_HAND;
@@ -58,7 +58,7 @@ public class TCModifierProfiles {
     }
 
     private static ModifierProfile createRuineProfile() {
-        return ModifierProfile.builder(EpicFightModifiers.RUINE_BLADE.getId())
+        return ModifierProfile.builder(EpicFightModifiers.RUINE_BLADE)
                 .styleProvider((LivingEntityPatch<?> patch) -> {
                     if (patch instanceof PlayerPatch<?> playerPatch) {
                         SkillDataManager dataManager = playerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
@@ -73,11 +73,12 @@ public class TCModifierProfiles {
                 .weaponCategory(WOMWeaponCategories.RUINE)
                 .collider(WOMWeaponColliders.RUINE)
                 .priority(100)
+                .passiveSkill(WOMSkills.RUINE_PASSIVE)
                 .build();
     }
 
     private static ModifierProfile createTormentProfile() {
-        return ModifierProfile.builder(EpicFightModifiers.TORMENT_BLADE.getId())
+        return ModifierProfile.builder(EpicFightModifiers.TORMENT_BLADE)
                 .styleProvider((LivingEntityPatch<?> patch) -> {
                     if (patch instanceof PlayerPatch<?> playerPatch) {
                         SkillContainer innateSkill = playerPatch.getSkill(SkillSlots.WEAPON_INNATE);
@@ -90,6 +91,7 @@ public class TCModifierProfiles {
                 .weaponCategory(WOMWeaponCategories.TORMENT)
                 .collider(WOMWeaponColliders.TORMENT)
                 .priority(100)
+                .passiveSkill(WOMSkills.TORMENT_PASSIVE)
                 .build();
     }
 }

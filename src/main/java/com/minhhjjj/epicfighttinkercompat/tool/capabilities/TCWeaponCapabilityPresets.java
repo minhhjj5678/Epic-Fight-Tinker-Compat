@@ -4,13 +4,20 @@ import java.util.List;
 import java.util.function.Function;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import reascer.wom.gameasset.WOMAnimations;
+import reascer.wom.gameasset.WOMSkills;
+import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.ex_cap.core.provider.ProviderConditional;
 import yesman.epicfight.api.ex_cap.core.provider.ProviderConditionalType;
 import yesman.epicfight.gameasset.ColliderPreset;
+import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
+import yesman.epicfight.skill.SkillDataKeys;
+import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.item.WeaponCapability;
@@ -46,7 +53,7 @@ public class TCWeaponCapabilityPresets {
 	public static final Function<Item, CapabilityItem.Builder> TC_SWORD = (item) -> {
 		WeaponCapability.Builder builder = TCWeaponCapability.builder()
 			.defaultMoveSet(TCMoveSets.sword1HSet())
-			.addMoveSet(Styles.COMMON, TCMoveSets.sword2HSet())
+			.addMoveSet(Styles.TWO_HAND, TCMoveSets.sword2HSet())
 			.addMoveSet(Styles.MOUNT, TCMoveSets.swordMountSet())
 			.category(WeaponCategories.SWORD)
 			.collider(ColliderPreset.SWORD)
@@ -57,17 +64,11 @@ public class TCWeaponCapabilityPresets {
 			.reach(1.0F)
 			.addConditionals(List.of(
 				ProviderConditional.builder()
-					.setType(ProviderConditionalType.CUSTOM)
-					.setWieldStyle(Styles.COMMON)
+					.setType(ProviderConditionalType.WEAPON_CATEGORY)
+					.setCategory(WeaponCategories.SWORD)
+					.setHand(InteractionHand.OFF_HAND)
+					.setWieldStyle(Styles.TWO_HAND)
 					.isVisibleOffHand(true)
-					.setCustomFunction((patch) -> {
-						ItemStack itemStack = patch.getOriginal().getOffhandItem();
-						if (!itemStack.isEmpty()) {
-							CapabilityItem itemCap = EpicFightCapabilities.getItemStackCapability(itemStack);
-							return itemCap != null && itemCap != CapabilityItem.EMPTY && itemCap.getWeaponCategory() == WeaponCategories.SWORD;
-						}
-						return false;
-					})
 					.build(),
 				ProviderConditional.builder()
 					.setType(ProviderConditionalType.CUSTOM)
@@ -134,17 +135,11 @@ public class TCWeaponCapabilityPresets {
 			.reach(1.0F)
 			.addConditionals(List.of(
 				ProviderConditional.builder()
-					.setType(ProviderConditionalType.CUSTOM)
-					.setWieldStyle(Styles.COMMON)
+					.setType(ProviderConditionalType.WEAPON_CATEGORY)
+					.setWieldStyle(Styles.TWO_HAND)
 					.isVisibleOffHand(true)
-					.setCustomFunction((patch) -> {
-						ItemStack itemStack = patch.getOriginal().getOffhandItem();
-						if (!itemStack.isEmpty()) {
-							CapabilityItem itemCap = EpicFightCapabilities.getItemStackCapability(itemStack);
-							return itemCap != null && itemCap != CapabilityItem.EMPTY && itemCap.getWeaponCategory() == WeaponCategories.DAGGER;
-						}
-						return false;
-					})
+					.setCategory(WeaponCategories.DAGGER)
+					.setHand(InteractionHand.OFF_HAND)
 					.build(),
 				ProviderConditional.builder()
 					.setType(ProviderConditionalType.DEFAULT)
@@ -225,6 +220,7 @@ public class TCWeaponCapabilityPresets {
 		.swingSound(EpicFightSounds.WHOOSH_BIG.get())
 		.hitSound(EpicFightSounds.BLADE_HIT.get())
 		.hitParticle(EpicFightParticles.HIT_BLADE.get())
+		.zoomInType(CapabilityItem.ZoomInType.USE_TICK)
 		.reach(1.0F);
 		return builder;
 	};
@@ -236,6 +232,7 @@ public class TCWeaponCapabilityPresets {
 			.collider(ColliderPreset.FIST)
 			.canBePlacedOffhand(true)
 			.reach(0.8F)
+			.zoomInType(CapabilityItem.ZoomInType.USE_TICK)
 			.addConditionals(List.of(
 				ProviderConditional.builder()
 					.setType(ProviderConditionalType.DEFAULT)
@@ -255,5 +252,57 @@ public class TCWeaponCapabilityPresets {
 			.canBePlacedOffhand(true)
 			.reach(1.0F);
 		return builder;
+	};
+
+	public static final Function<Item, CapabilityItem.Builder> KATANA = (item) -> {
+		return TCWeaponCapability.builder()
+			.defaultMoveSet(TCMoveSets.tachiSet())
+			.category(WeaponCategories.TACHI)
+			.collider(ColliderPreset.TACHI)
+			.canBePlacedOffhand(false)
+			.swingSound(EpicFightSounds.WHOOSH.get())
+			.hitSound(EpicFightSounds.BLADE_HIT.get())
+			.hitParticle(EpicFightParticles.HIT_BLADE.get())
+			.zoomInType(CapabilityItem.ZoomInType.USE_TICK)
+				.addConditionals(List.of(
+					ProviderConditional.builder()
+						.setType(ProviderConditionalType.DEFAULT)
+						.setWieldStyle(Styles.TWO_HAND)
+						.build()
+				))
+			.addMoveSet(Styles.TWO_HAND, TCMoveSets.tachiSet())
+			.reach(1.0F);
+	};
+
+	public static final Function<Item, CapabilityItem.Builder> FUMA_SHURIKEN = (item) -> {
+		return TCWeaponCapability.builder()
+			.defaultMoveSet(TCMoveSets.axe1HSet())
+			.category(WeaponCategories.AXE)
+			.collider(ColliderPreset.TOOLS)
+			.canBePlacedOffhand(true)
+			.reach(0.8F)
+			.zoomInType(CapabilityItem.ZoomInType.USE_TICK)
+			.addConditionals(List.of(
+				ProviderConditional.builder()
+					.setType(ProviderConditionalType.DEFAULT)
+					.setWieldStyle(Styles.ONE_HAND)
+					.build()
+			))
+			.addMoveSet(Styles.ONE_HAND, TCMoveSets.axe1HSet());
+	};
+
+	public static final Function<Item, CapabilityItem.Builder> SHURIKEN = (item) -> {
+		return TCWeaponCapability.builder()
+			.category(WeaponCategories.FIST)
+			.collider(ColliderPreset.FIST)
+			.canBePlacedOffhand(true)
+			.reach(0.4F)
+			.zoomInType(CapabilityItem.ZoomInType.ALWAYS)
+			.addConditionals(List.of(
+				ProviderConditional.builder()
+					.setType(ProviderConditionalType.DEFAULT)
+					.setWieldStyle(Styles.ONE_HAND)
+					.build()
+			));
 	};
 }

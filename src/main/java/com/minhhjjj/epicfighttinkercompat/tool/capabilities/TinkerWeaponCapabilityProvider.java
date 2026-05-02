@@ -42,7 +42,7 @@ public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
         presets.put("sword", TCWeaponCapabilityPresets.TC_SWORD);
         presets.put("battlesign", TCWeaponCapabilityPresets.TC_SWORD);
         presets.put("sledge_hammer", TCWeaponCapabilityPresets.TC_SLEDGE_HAMMER);
-        presets.put("axe", TCWeaponCapabilityPresets.TC_AXE);
+        presets.put("hand_axe", TCWeaponCapabilityPresets.TC_AXE);
         presets.put("broad_axe", TCWeaponCapabilityPresets.TC_AXE);
         presets.put("scythe", TCWeaponCapabilityPresets.SCYTHE);
         presets.put("dagger", TCWeaponCapabilityPresets.TC_DAGGER);
@@ -51,7 +51,6 @@ public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
         presets.put("ender_staff", TCWeaponCapabilityPresets.STAFF);
         presets.put("ichor_staff", TCWeaponCapabilityPresets.STAFF);
         presets.put("melting_pan", TCWeaponCapabilityPresets.STAFF);
-        presets.put("throwing_axe", TCWeaponCapabilityPresets.STAFF);
         presets.put("longbow", TCWeaponCapabilityPresets.LONGBOW);
         presets.put("crossbow", TinkerCrossbowCapability.TCROSSBOW);
         presets.put("pickaxe", TCWeaponCapabilityPresets.TC_PICKAXE);
@@ -65,6 +64,10 @@ public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
         presets.put("plate_shield", TCWeaponCapabilityPresets.TC_SHIELD);
         presets.put("travelers_shield", TCWeaponCapabilityPresets.TC_SHIELD);
         presets.put("swasher", TCWeaponCapabilityPresets.TC_SWORD);
+        presets.put("katana", TCWeaponCapabilityPresets.KATANA);
+        presets.put("fuma_shuriken", TCWeaponCapabilityPresets.FUMA_SHURIKEN);
+        presets.put("shuriken", TCWeaponCapabilityPresets.SHURIKEN);
+        presets.put("throwing_axe", TCWeaponCapabilityPresets.SHURIKEN);
         WEAPON_CAPABILITY_PRESETS = Map.copyOf(presets);
     }
 
@@ -97,7 +100,7 @@ public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
             if (preset != null) {
                 builder = preset.apply(tool.getItem());
                 if (builder instanceof TCWeaponCapability.Builder tcBuilder) {
-                    tcBuilder.boundItem(stack.copy());
+                    tcBuilder.boundItem(stack);
                 }
             }
         }
