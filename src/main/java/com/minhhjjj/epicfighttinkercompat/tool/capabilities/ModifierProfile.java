@@ -7,6 +7,7 @@ import java.util.function.Function;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.api.ex_cap.core.data.MoveSet;
+import yesman.epicfight.skill.Skill;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.item.Style;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
@@ -17,7 +18,8 @@ public record ModifierProfile(
         Map<Style, MoveSet> moveSets,
         Collider collider,
         WeaponCategory weaponCategory,
-        int priority
+        int priority,
+        Skill passiveSkill
 ) {
 
     public static Builder builder(ModifierId modifierId) {
@@ -31,6 +33,7 @@ public record ModifierProfile(
         private Collider collider;
         private WeaponCategory weaponCategory;
         private int priority;
+        private Skill passiveSkill;
 
         public Builder(ModifierId modifierId) {
             this.modifierId = modifierId;
@@ -62,8 +65,13 @@ public record ModifierProfile(
             return this;
         }
 
-        public ModifierProfile build() {
-            return new ModifierProfile(modifierId, styleProvider, moveSets, collider, weaponCategory, priority);
+        public Builder passiveSkill(Skill passiveSkill) {
+            this.passiveSkill = passiveSkill;
+            return this;
+        }
+
+        public final ModifierProfile build() {
+            return new ModifierProfile(modifierId, styleProvider, moveSets, collider, weaponCategory, priority, passiveSkill);
         }
     }
 }
