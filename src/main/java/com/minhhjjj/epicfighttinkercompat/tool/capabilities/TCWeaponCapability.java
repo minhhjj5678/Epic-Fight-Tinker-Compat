@@ -5,7 +5,6 @@ import java.util.*;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
-import reascer.wom.gameasset.WOMSkills;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
@@ -17,7 +16,6 @@ import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.api.ex_cap.core.data.MoveSet;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.guard.GuardSkill;
-import yesman.epicfight.skill.passive.PassiveSkill;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
@@ -26,7 +24,6 @@ import yesman.epicfight.world.capabilities.item.WeaponCapability;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
 
 public class TCWeaponCapability extends WeaponCapability {
-    protected final ItemStack boundItem;
     protected MoveSet defaultMoveSet;
     protected List<ModifierProfile> modifierProfiles;
     protected ModifierProfile modifierProfile;
@@ -38,7 +35,6 @@ public class TCWeaponCapability extends WeaponCapability {
         Builder tcBuilder = (Builder)builder;
         this.defaultMoveSet = tcBuilder.defaultMoveSet;
         this.modifierProfiles = tcBuilder.modifierProfiles;
-        this.boundItem = tcBuilder.boundItem;
     }
 
     @Override
@@ -124,16 +120,13 @@ public class TCWeaponCapability extends WeaponCapability {
         return this.modifierProfile != null ? this.modifierProfile.passiveSkill() : null;
     }
 
+    @SuppressWarnings("null")
     protected ToolStack getToolStack(LivingEntityPatch<?> entityPatch) {
         if (entityPatch != null) {
             ItemStack itemStack = entityPatch.getOriginal().isUsingItem() ? entityPatch.getOriginal().getItemInHand(entityPatch.getOriginal().getUsedItemHand()) : entityPatch.getOriginal().getMainHandItem();
             return itemStack.isEmpty() ? null : ToolStack.from(itemStack);
         }
-        return getToolStack();
-    }
-
-    protected ToolStack getToolStack() {
-        return this.boundItem != null ? (this.boundItem.isEmpty() ? null : ToolStack.from(this.boundItem)) : null;
+        return null;
     }
 
     protected void setModifierProfile(LivingEntityPatch<?> entityPatch) {
@@ -164,7 +157,6 @@ public class TCWeaponCapability extends WeaponCapability {
     }
 
     public static class Builder extends WeaponCapability.Builder {
-        protected ItemStack boundItem;
         protected MoveSet defaultMoveSet;
         protected List<ModifierProfile> modifierProfiles;
 
@@ -183,11 +175,6 @@ public class TCWeaponCapability extends WeaponCapability {
             if (modifierProfile != null && !this.modifierProfiles.contains(modifierProfile)) {
                 this.modifierProfiles.add(modifierProfile);
             }
-            return this;
-        }
-
-        public Builder boundItem(ItemStack itemStack) {
-            this.boundItem = itemStack;
             return this;
         }
     }

@@ -99,9 +99,6 @@ public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
             Function<Item, CapabilityItem.Builder> preset = WEAPON_CAPABILITY_PRESETS.get(weaponType);
             if (preset != null) {
                 builder = preset.apply(tool.getItem());
-                if (builder instanceof TCWeaponCapability.Builder tcBuilder) {
-                    tcBuilder.boundItem(stack);
-                }
             }
         }
 
