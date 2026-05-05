@@ -26,7 +26,6 @@ import yesman.epicfight.world.capabilities.item.WeaponCategory;
 public class TCWeaponCapability extends WeaponCapability {
     protected MoveSet defaultMoveSet;
     protected List<ModifierProfile> modifierProfiles;
-    protected ModifierProfile modifierProfile;
     private static final ModifierId THROWING_ID = new ModifierId(TConstruct.MOD_ID, "throwing");
     private static final ModifierId BLOCKING_ID = new ModifierId(TConstruct.MOD_ID, "blocking");
 
@@ -35,14 +34,15 @@ public class TCWeaponCapability extends WeaponCapability {
         Builder tcBuilder = (Builder)builder;
         this.defaultMoveSet = tcBuilder.defaultMoveSet;
         this.modifierProfiles = tcBuilder.modifierProfiles;
+        sortModifierProfiles();
     }
 
     @Override
     public MoveSet getCurrentSet(LivingEntityPatch<?> patch) {
-        this.setModifierProfile(patch);
-        if (this.modifierProfile != null) {
-            Style resolvedStyle = this.modifierProfile.styleProvider().apply(patch);
-            MoveSet moveSet = this.modifierProfile.moveSets().get(resolvedStyle);
+        ModifierProfile modifierProfile = this.getModifierProfile(patch);
+        if (modifierProfile != null) {
+            Style resolvedStyle = modifierProfile.styleProvider().apply(patch);
+            MoveSet moveSet = modifierProfile.moveSets().get(resolvedStyle);
             if (moveSet != null) {
                 return moveSet;
             }
@@ -58,18 +58,18 @@ public class TCWeaponCapability extends WeaponCapability {
 
     @Override
     public WeaponCategory getWeaponCategory() {
-        this.setModifierProfile();
-        if (this.modifierProfile != null && this.modifierProfile.weaponCategory() != null) {
-            return this.modifierProfile.weaponCategory();
+        ModifierProfile modifierProfile = this.getModifierProfile();
+        if (modifierProfile != null && modifierProfile.weaponCategory() != null) {
+            return modifierProfile.weaponCategory();
         }
         return super.getWeaponCategory();
     }
 
     @Override
     public Collider getWeaponCollider() {
-        this.setModifierProfile();
-        if (this.modifierProfile != null && this.modifierProfile.collider() != null) {
-            return this.modifierProfile.collider();
+        ModifierProfile modifierProfile = this.getModifierProfile();
+        if (modifierProfile != null && modifierProfile.collider() != null) {
+            return modifierProfile.collider();
         }
         return super.getWeaponCollider();
     }
@@ -116,8 +116,8 @@ public class TCWeaponCapability extends WeaponCapability {
     }
 
     public Skill getPassiveSkill() {
-        this.setModifierProfile();
-        return this.modifierProfile != null ? this.modifierProfile.passiveSkill() : null;
+        ModifierProfile modifierProfile = this.getModifierProfile();
+        return modifierProfile != null ? modifierProfile.passiveSkill() : null;
     }
 
     @SuppressWarnings("null")
@@ -129,27 +129,58 @@ public class TCWeaponCapability extends WeaponCapability {
         return null;
     }
 
-    protected void setModifierProfile(LivingEntityPatch<?> entityPatch) {
+    protected ModifierProfile getModifierProfile(LivingEntityPatch<?> entityPatch) {
         ToolStack toolStack = getToolStack(entityPatch);
         if (toolStack != null) {
             for (ModifierProfile modifierProfile : this.modifierProfiles) {
                 ModifierId modifierId = modifierProfile.modifierId();
-                if (modifierId == null) {
+                if (modifierId == null || modifierProfile.moveSets().isEmpty()) {
                     continue;
                 }
 
                 int level = toolStack.getModifierLevel(modifierId);
                 if (level > 0) {
-                    this.modifierProfile = modifierProfile;
-                    return;
+                    return modifierProfile;
                 }
             }
         }
-        this.modifierProfile = null;
+        return null;
     }
 
-    protected void setModifierProfile() {
-        this.setModifierProfile(null);
+    protected ModifierProfile getModifierProfile() {
+        return this.getModifierProfile(null);
+    }
+
+    protected void sortModifierProfiles() {
+        this.warnDuplicatePriorities();
+        this.modifierProfiles.sort((first, second) -> {
+            if (first.modifierId() == null && second.modifierId() == null) {
+                return 0;
+            }
+            if (first.modifierId() == null) {
+                return 1;
+            }
+            if (second.modifierId() == null) {
+                return -1;
+            }
+            return Integer.compare(second.priority(), first.priority());
+        });
+    }
+
+    protected void warnDuplicatePriorities() {
+        Map<Integer, List<ModifierProfile>> groupedByPriority = new HashMap<>();
+        for (ModifierProfile modifierProfile : this.modifierProfiles) {
+            groupedByPriority.computeIfAbsent(modifierProfile.priority(), key -> new ArrayList<>()).add(modifierProfile);
+        }
+
+        for (Map.Entry<Integer, List<ModifierProfile>> entry : groupedByPriority.entrySet()) {
+            List<ModifierProfile> profiles = entry.getValue();
+            if (profiles.size() < 2) {
+                continue;
+            }
+            String profileList = profiles.stream().map(profile -> String.valueOf(profile.modifierId())).collect(java.util.stream.Collectors.joining(", "));
+            com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat.LOGGER.warn("Duplicate TC modifier priority {} detected for profiles: {}", entry.getKey(), profileList);
+        }
     }
 
     public static Builder builder() {
