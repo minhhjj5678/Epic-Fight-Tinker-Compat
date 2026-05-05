@@ -11,7 +11,6 @@ import reascer.wom.gameasset.animations.weapons.AnimsRuine;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.LivingMotion;
 import yesman.epicfight.api.animation.LivingMotions;
-import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.ex_cap.core.data.MoveSet;
 import yesman.epicfight.api.ex_cap.core.data.MoveSet.MoveSetBuilder;
 import yesman.epicfight.gameasset.Animations;

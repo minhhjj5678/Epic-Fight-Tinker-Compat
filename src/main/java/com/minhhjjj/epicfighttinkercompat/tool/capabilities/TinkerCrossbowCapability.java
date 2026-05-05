@@ -12,7 +12,6 @@ import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.item.CrossbowCapability;
 import yesman.epicfight.world.capabilities.item.RangedWeaponCapability;
-import yesman.epicfight.world.capabilities.item.CapabilityItem.ZoomInType;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableCrossbowItem;
 
@@ -51,13 +50,14 @@ public class TinkerCrossbowCapability extends CrossbowCapability {
         return isCharged ? LivingMotions.AIM : null;
     }
 
+    @SuppressWarnings("null")
     private boolean isTinkerCrossbowCharged(ItemStack stack) {
         if (stack.isEmpty()) return false;
         if (stack.hasTag() && stack.getTag().getBoolean("Charged")) {
             return true;
         }
 
-        if (stack.getItem() instanceof ModifiableCrossbowItem crossbowItem) {
+        if (stack.getItem() instanceof ModifiableCrossbowItem) {
             ToolStack tool = ToolStack.from(stack);
             return tool.getPersistentData().contains(ModifiableCrossbowItem.KEY_CROSSBOW_AMMO, Tag.TAG_COMPOUND);
         }
