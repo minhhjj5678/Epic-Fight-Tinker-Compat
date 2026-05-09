@@ -26,7 +26,7 @@ public class MixinItemSkinsReloadListener {
         addTinkerWeapon(map, "scythe", 0.0, 0.0, -0.2, 0.0, -0.24, -1.8, 20);
         addTinkerWeapon(map, "sledge_hammer", 0.0, 0.0, -0.7, 0.0, -0.36, -2.0, 20);
         addTinkerWeapon(map, "javelin", 0.0, 0.2, -0.9, 0.0, 0.25, -2.0, 20);
-        addTinkerWeapon(map, "axe", 0.0, -0.15, -0.35, 0.0, -0.15, -0.7);
+        addTinkerWeapon(map, "hand_axe", 0.0, -0.15, -0.35, 0.0, -0.15, -0.7);
         addTinkerWeapon(map, "broad_axe", 0.0, -0.23, -0.53, 0.0, -0.23, -1.35, 20);
     }
 
