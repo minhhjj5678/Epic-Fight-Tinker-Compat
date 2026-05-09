@@ -73,7 +73,6 @@ public class TCModifierProfiles {
                 .weaponCategory(WOMWeaponCategories.RUINE)
                 .collider(WOMWeaponColliders.RUINE)
                 .priority(100)
-                .passiveSkill(WOMSkills.RUINE_PASSIVE)
                 .build();
     }
 
@@ -91,7 +90,6 @@ public class TCModifierProfiles {
                 .weaponCategory(WOMWeaponCategories.TORMENT)
                 .collider(WOMWeaponColliders.TORMENT)
                 .priority(100)
-                .passiveSkill(WOMSkills.TORMENT_PASSIVE)
                 .build();
     }
 }

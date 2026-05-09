@@ -6,7 +6,6 @@ import java.util.function.Function;
 
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import yesman.epicfight.api.collider.Collider;
-import yesman.epicfight.api.ex_cap.core.data.MoveSet;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.item.Style;
@@ -15,12 +14,14 @@ import yesman.epicfight.world.capabilities.item.WeaponCategory;
 public record ModifierProfile(
         ModifierId modifierId,
         Function<LivingEntityPatch<?>, Style> styleProvider,
-        Map<Style, MoveSet> moveSets,
+        Map<Style, WeaponSet> weaponSets,
         Collider collider,
         WeaponCategory weaponCategory,
-        int priority,
-        Skill passiveSkill
+        int priority
 ) {
+
+    public record CombatSet(
+    ) {}
 
     public static Builder builder(ModifierId modifierId) {
         return new Builder(modifierId);
@@ -29,7 +30,7 @@ public record ModifierProfile(
     public static class Builder {
         private final ModifierId modifierId;
         private Function<LivingEntityPatch<?>, Style> styleProvider;
-        private final Map<Style, MoveSet> moveSets;
+        private final Map<Style, WeaponSet> weaponSets;
         private Collider collider;
         private WeaponCategory weaponCategory;
         private int priority;
@@ -37,7 +38,7 @@ public record ModifierProfile(
 
         public Builder(ModifierId modifierId) {
             this.modifierId = modifierId;
-            this.moveSets = new HashMap<>();
+            this.weaponSets = new HashMap<>();
         }
 
         public Builder styleProvider(Function<LivingEntityPatch<?>, Style> styleProvider) {
@@ -45,8 +46,8 @@ public record ModifierProfile(
             return this;
         }
 
-        public Builder addMoveSet(Style style, MoveSet moveSet) {
-            this.moveSets.put(style, moveSet);
+        public Builder addMoveSet(Style style, WeaponSet weaponSet) {
+            this.weaponSets.put(style, weaponSet);
             return this;
         }
 
@@ -65,13 +66,8 @@ public record ModifierProfile(
             return this;
         }
 
-        public Builder passiveSkill(Skill passiveSkill) {
-            this.passiveSkill = passiveSkill;
-            return this;
-        }
-
         public final ModifierProfile build() {
-            return new ModifierProfile(modifierId, styleProvider, moveSets, collider, weaponCategory, priority, passiveSkill);
+            return new ModifierProfile(modifierId, styleProvider, weaponSets, collider, weaponCategory, priority);
         }
     }
 }
