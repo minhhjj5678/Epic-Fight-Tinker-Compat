@@ -1,4 +1,4 @@
-package com.minhhjjj.epicfighttinkercompat.tool.capabilities;
+package com.minhhjjj.epicfighttinkercompat.gameasset.profiles;
 
 import com.minhhjjj.epicfighttinkercompat.skill.AutoGuardPassiveSkill;
 
@@ -19,13 +19,13 @@ public class TCMoveSets {
 	private TCMoveSets() {
 	}
 
-	public static WeaponSet.WeaponSetBuilder fist() {
-		return WeaponSet.builder().addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.FIST_AUTO1, Animations.FIST_AUTO2, Animations.FIST_AUTO3, Animations.FIST_DASH, Animations.FIST_AIR_SLASH});
+	public static CombatProfile.CombatProfileBuilder fist() {
+		return CombatProfile.builder().addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.FIST_AUTO1, Animations.FIST_AUTO2, Animations.FIST_AUTO3, Animations.FIST_DASH, Animations.FIST_AIR_SLASH});
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder sword1HSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder sword1HSet() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.SWORD_AUTO1, Animations.SWORD_AUTO2, Animations.SWORD_AUTO3, Animations.SWORD_DASH, Animations.SWORD_AIR_SLASH})
 		.addInnateSkill((itemStack, playerPatch) -> EpicFightSkills.SWEEPING_EDGE)
 		.addGuardAnimations(BlockType.GUARD, Animations.SWORD_GUARD_HIT)
@@ -36,8 +36,8 @@ public class TCMoveSets {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder sword2HSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder sword2HSet() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.SWORD_DUAL_AUTO1, Animations.SWORD_DUAL_AUTO2, Animations.SWORD_DUAL_AUTO3, Animations.SWORD_DUAL_DASH, Animations.SWORD_DUAL_AIR_SLASH})
 		.addInnateSkill((itemStack, playerPatch) -> EpicFightSkills.DANCING_EDGE)
 		.addGuardAnimations(BlockType.GUARD, Animations.SWORD_DUAL_GUARD_HIT)
@@ -49,16 +49,16 @@ public class TCMoveSets {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder swordMountSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder swordMountSet() {
+		return CombatProfile.builder()
 		.addMountAttacks(new AnimationManager.AnimationAccessor[]{Animations.SWORD_MOUNT_ATTACK})
 		.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
 		.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder pickaxeSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder pickaxeSet() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.AXE_AUTO1, Animations.AXE_AUTO2, Animations.AXE_DASH, Animations.AXE_AIRSLASH})
 		.addLivingMotionsRecursive(Animations.BIPED_IDLE, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.JUMP, LivingMotions.KNEEL, LivingMotions.SNEAK, LivingMotions.SWIM, LivingMotions.FLY, LivingMotions.CREATIVE_FLY, LivingMotions.CREATIVE_IDLE})
 		.addLivingMotionsRecursive(Animations.BIPED_WALK, new LivingMotion[]{LivingMotions.WALK, LivingMotions.CHASE})
@@ -69,8 +69,8 @@ public class TCMoveSets {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder axe1HSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder axe1HSet() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.AXE_AUTO1, Animations.AXE_AUTO2, Animations.AXE_DASH, Animations.AXE_AIRSLASH})
 		.addLivingMotionsRecursive(Animations.BIPED_WALK, new LivingMotion[]{LivingMotions.WALK, LivingMotions.CHASE})
 		.addLivingMotionsRecursive(Animations.BIPED_IDLE, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.JUMP, LivingMotions.KNEEL, LivingMotions.SNEAK, LivingMotions.SWIM, LivingMotions.FLY, LivingMotions.CREATIVE_FLY, LivingMotions.CREATIVE_IDLE})
@@ -81,8 +81,8 @@ public class TCMoveSets {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder dagger1HSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder dagger1HSet() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.DAGGER_AUTO1, Animations.DAGGER_AUTO2, Animations.DAGGER_AUTO3, Animations.DAGGER_DASH, Animations.DAGGER_AIR_SLASH})
 		.addInnateSkill((item, playerPatch) -> EpicFightSkills.EVISCERATE)
 		.addLivingMotionsRecursive(Animations.BIPED_IDLE, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.JUMP, LivingMotions.KNEEL, LivingMotions.SNEAK, LivingMotions.SWIM, LivingMotions.FLY, LivingMotions.CREATIVE_FLY, LivingMotions.CREATIVE_IDLE})
@@ -94,8 +94,8 @@ public class TCMoveSets {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder dagger2HSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder dagger2HSet() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.DAGGER_DUAL_AUTO1, Animations.DAGGER_DUAL_AUTO2, Animations.DAGGER_DUAL_AUTO3, Animations.DAGGER_DUAL_AUTO4, Animations.DAGGER_DASH, Animations.DAGGER_AIR_SLASH})
 		.addInnateSkill((item, playerPatch) -> EpicFightSkills.BLADE_RUSH)
 		.addLivingMotionsRecursive(Animations.BIPED_HOLD_DUAL_WEAPON, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.JUMP, LivingMotions.KNEEL, LivingMotions.SNEAK, LivingMotions.SWIM, LivingMotions.FLY, LivingMotions.CREATIVE_FLY, LivingMotions.CREATIVE_IDLE, LivingMotions.WALK, LivingMotions.CHASE})
@@ -106,15 +106,15 @@ public class TCMoveSets {
 		.canBeVisibleOffhand();
 	}
 
-	public static WeaponSet.WeaponSetBuilder shieldSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder shieldSet() {
+		return CombatProfile.builder()
 		.addLivingMotionModifier(LivingMotions.BLOCK, Animations.BIPED_BLOCK)
 		.addLivingMotionModifier(LivingMotions.BLOCK_SHIELD, Animations.BIPED_BLOCK);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder javelin1H() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder javelin1H() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.TRIDENT_AUTO1, Animations.TRIDENT_AUTO2, Animations.TRIDENT_AUTO3, Animations.SPEAR_DASH, Animations.SPEAR_ONEHAND_AIR_SLASH})
 		.addMountAttacks(new AnimationManager.AnimationAccessor[]{Animations.SPEAR_MOUNT_ATTACK})
 		.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
@@ -122,8 +122,8 @@ public class TCMoveSets {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder spear1HSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder spear1HSet() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.SPEAR_ONEHAND_AUTO, Animations.SPEAR_DASH, Animations.SPEAR_ONEHAND_AIR_SLASH})
 		.addMountAttacks(new AnimationManager.AnimationAccessor[]{Animations.SPEAR_MOUNT_ATTACK})
 		.addInnateSkill((item, patch) -> EpicFightSkills.HEARTPIERCER)
@@ -133,8 +133,8 @@ public class TCMoveSets {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder spear2HSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder spear2HSet() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.SPEAR_TWOHAND_AUTO1, Animations.SPEAR_TWOHAND_AUTO2, Animations.SPEAR_DASH, Animations.SPEAR_TWOHAND_AIR_SLASH})
 		.addGuardAnimations(BlockType.GUARD, Animations.SPEAR_GUARD_HIT)
 		.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
@@ -147,8 +147,8 @@ public class TCMoveSets {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder agonyGroundSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder agonyGroundSet() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{AnimsAgony.AGONY_AUTO_1, AnimsAgony.AGONY_AUTO_2, AnimsAgony.AGONY_AUTO_3, AnimsAgony.AGONY_AUTO_4, AnimsAgony.AGONY_CLAWSTRIKE, AnimsAgony.AGONY_RIPPING_FANGS})
 		.addMountAttacks(new AnimationManager.AnimationAccessor[]{Animations.SPEAR_MOUNT_ATTACK})
 		.addInnateSkill((itemStack, playerPatch) -> WOMSkills.AGONY_PLUNGE)
@@ -164,8 +164,8 @@ public class TCMoveSets {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder agonyAirSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder agonyAirSet() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{AnimsAgony.AGONY_AIR_ATTACK_1, AnimsAgony.AGONY_AIR_ATTACK_2, AnimsAgony.AGONY_AIR_ATTACK_3, AnimsAgony.AGONY_AIR_ATTACK_4, AnimsAgony.AGONY_RIPPING_FANGS})
 		.addInnateSkill((itemStack, playerPatch) -> WOMSkills.AGONY_PLUNGE)
 		.addGuardAnimations(BlockType.GUARD, new AnimationManager.AnimationAccessor[]{AnimsAgony.AGONY_GUARD_HIT_1, AnimsAgony.AGONY_GUARD_HIT_2})
@@ -180,8 +180,8 @@ public class TCMoveSets {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder cleaver2HSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder cleaver2HSet() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.GREATSWORD_AUTO1, Animations.GREATSWORD_AUTO2, Animations.GREATSWORD_DASH, Animations.GREATSWORD_AIR_SLASH})
 		.addGuardAnimations(BlockType.GUARD, Animations.GREATSWORD_GUARD, Animations.GREATSWORD_GUARD_HIT)
 		.addGuardAnimations(BlockType.GUARD_BREAK, Animations.GREATSWORD_GUARD_BREAK)
@@ -195,8 +195,8 @@ public class TCMoveSets {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder ruine2HSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder ruine2HSet() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{AnimsRuine.RUINE_AUTO_1, AnimsRuine.RUINE_AUTO_2, AnimsRuine.RUINE_AUTO_3, AnimsRuine.RUINE_AUTO_4, AnimsRuine.RUINE_CHATIMENT, AnimsRuine.RUINE_COMET})
 		.addMountAttacks(new AnimationManager.AnimationAccessor[]{Animations.SWORD_MOUNT_ATTACK})
 		.setPassiveSkill(WOMSkills.RUINE_PASSIVE)
@@ -213,8 +213,8 @@ public class TCMoveSets {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder ruineOchsSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder ruineOchsSet() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{AnimsRuine.RUINE_AUTO_1, AnimsRuine.RUINE_AUTO_2, AnimsRuine.RUINE_AUTO_3, AnimsRuine.RUINE_AUTO_4, AnimsRuine.RUINE_CHATIMENT, AnimsRuine.RUINE_COMET})
 		.addMountAttacks(new AnimationManager.AnimationAccessor[]{Animations.SWORD_MOUNT_ATTACK})
 		.setPassiveSkill(WOMSkills.RUINE_PASSIVE)
@@ -231,8 +231,8 @@ public class TCMoveSets {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder sledgehammerSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder sledgehammerSet() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.GREATSWORD_AUTO1, Animations.GREATSWORD_AUTO2, Animations.GREATSWORD_DASH, Animations.GREATSWORD_AIR_SLASH})
 		.addInnateSkill((itemstack, playerpatch) -> EpicFightSkills.STEEL_WHIRLWIND)
 		.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
@@ -247,8 +247,8 @@ public class TCMoveSets {
 	}
 
     @SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder scythe2HSet() {
-	return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder scythe2HSet() {
+	return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.GREATSWORD_AUTO1, Animations.GREATSWORD_AUTO2, Animations.GREATSWORD_DASH, Animations.GREATSWORD_AIR_SLASH})
 		.addGuardAnimations(BlockType.GUARD, Animations.GREATSWORD_GUARD, Animations.GREATSWORD_GUARD_HIT)
 		.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
@@ -262,8 +262,8 @@ public class TCMoveSets {
     }
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder torment2HSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder torment2HSet() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{WOMAnimations.TORMENT_AUTO_1, WOMAnimations.TORMENT_AUTO_2, WOMAnimations.TORMENT_AUTO_3, WOMAnimations.TORMENT_AUTO_4, WOMAnimations.TORMENT_DASH, WOMAnimations.TORMENT_AIRSLAM})
 		.addMountAttacks(new AnimationManager.AnimationAccessor[]{Animations.SWORD_MOUNT_ATTACK})
 		.setPassiveSkill(WOMSkills.TORMENT_PASSIVE)
@@ -279,8 +279,8 @@ public class TCMoveSets {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder tormentOchsSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder tormentOchsSet() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{WOMAnimations.TORMENT_BERSERK_AUTO_1, WOMAnimations.TORMENT_BERSERK_AUTO_2, WOMAnimations.TORMENT_BERSERK_DASH, WOMAnimations.TORMENT_BERSERK_AIRSLAM})
 		.addMountAttacks(new AnimationManager.AnimationAccessor[]{Animations.SWORD_MOUNT_ATTACK})
 		.setPassiveSkill(WOMSkills.TORMENT_PASSIVE)
@@ -295,8 +295,8 @@ public class TCMoveSets {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder longbowSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder longbowSet() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.FIST_AUTO1, Animations.FIST_AUTO2, Animations.FIST_AUTO3, Animations.FIST_DASH, Animations.FIST_AIR_SLASH})
 		.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_BOW_AIM)
 		.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_BOW_SHOT)
@@ -306,8 +306,8 @@ public class TCMoveSets {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder staffSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder staffSet() {
+		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.TRIDENT_AUTO1, Animations.TRIDENT_AUTO2, Animations.TRIDENT_AUTO3, Animations.SPEAR_DASH, Animations.SPEAR_ONEHAND_AIR_SLASH})
 		.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_BOW_AIM)
 		.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_BOW_SHOT)
@@ -317,8 +317,8 @@ public class TCMoveSets {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder katanaBaseSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder katanaBaseSet() {
+		return CombatProfile.builder()
 				.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.UCHIGATANA_AUTO1, Animations.UCHIGATANA_AUTO2, Animations.UCHIGATANA_AUTO3, Animations.UCHIGATANA_DASH, Animations.UCHIGATANA_AIR_SLASH})
 				.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_BOW_AIM)
 				.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_BOW_SHOT)
@@ -331,8 +331,8 @@ public class TCMoveSets {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static WeaponSet.WeaponSetBuilder katanaSheathedSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder katanaSheathedSet() {
+		return CombatProfile.builder()
 				.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.UCHIGATANA_SHEATHING_AUTO, Animations.UCHIGATANA_SHEATHING_DASH})
 				.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_BOW_AIM)
 				.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_BOW_SHOT)
@@ -344,8 +344,8 @@ public class TCMoveSets {
 				.setPassiveSkill(EpicFightSkills.BATTOJUTSU_PASSIVE);
 	}
 
-	public static WeaponSet.WeaponSetBuilder tachiSet() {
-		return WeaponSet.builder()
+	public static CombatProfile.CombatProfileBuilder tachiSet() {
+		return CombatProfile.builder()
 				.addComboAttacks(Animations.TACHI_AUTO1, Animations.TACHI_AUTO2, Animations.TACHI_AUTO3, Animations.TACHI_DASH, Animations.LONGSWORD_AIR_SLASH)
 				.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_BOW_AIM)
 				.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_BOW_SHOT)

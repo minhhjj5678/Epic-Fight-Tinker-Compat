@@ -1,4 +1,4 @@
-package com.minhhjjj.epicfighttinkercompat.tool.capabilities;
+package com.minhhjjj.epicfighttinkercompat.gameasset.profiles;
 
 
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;

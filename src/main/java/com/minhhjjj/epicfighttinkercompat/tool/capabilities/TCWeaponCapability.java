@@ -4,6 +4,9 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.CombatProfile;
+import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfile;
+import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.TCMoveSets;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -32,8 +35,8 @@ import yesman.epicfight.world.entity.eventlistener.ComboCounterHandleEvent;
 
 
 public class TCWeaponCapability extends CapabilityItem {
-    protected WeaponSet defaultWeaponSet;
-    protected Map<Style, WeaponSet> weaponSets;
+    protected CombatProfile defaultWeaponSet;
+    protected Map<Style, CombatProfile> weaponSets;
     protected List<ModifierProfile> modifierProfiles;
     protected Function<LivingEntityPatch<?>, Style> styleProvider;
 
@@ -69,11 +72,11 @@ public class TCWeaponCapability extends CapabilityItem {
         sortModifierProfiles();
     }
 
-    public WeaponSet getCurrentSet(LivingEntityPatch<?> patch) {
+    public CombatProfile getCurrentSet(LivingEntityPatch<?> patch) {
         ModifierProfile modifierProfile = this.getModifierProfile(patch);
         if (modifierProfile != null) {
             Style resolvedStyle = modifierProfile.styleProvider().apply(patch);
-            WeaponSet moveSet = modifierProfile.weaponSets().get(resolvedStyle);
+            CombatProfile moveSet = modifierProfile.weaponSets().get(resolvedStyle);
             if (moveSet != null) {
                 return moveSet;
             }
@@ -81,7 +84,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
         Style style = this.getStyle(patch);
         if (style != Styles.COMMON) {
-            WeaponSet styleMoveSet = this.weaponSets.get(style);
+            CombatProfile styleMoveSet = this.weaponSets.get(style);
             if (styleMoveSet != null) {
                 return styleMoveSet;
             }
@@ -159,7 +162,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> getLivingMotionModifier(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
-        WeaponSet set = getCurrentSet(entityPatch);
+        CombatProfile set = getCurrentSet(entityPatch);
         Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> result = new HashMap<>();
 
         if (set == null) {
@@ -189,7 +192,7 @@ public class TCWeaponCapability extends CapabilityItem {
     @Override
     public LivingMotion getLivingMotion(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
         InteractionHand checkedHand = Objects.requireNonNull(hand, "hand");
-        WeaponSet set = getCurrentSet(entityPatch);
+        CombatProfile set = getCurrentSet(entityPatch);
 
         if (set != null && set.motionPredicate() != null && entityPatch instanceof PlayerPatch<?> playerPatch) {
             LivingMotion motion = set.motionPredicate().apply(playerPatch, checkedHand);
@@ -217,7 +220,7 @@ public class TCWeaponCapability extends CapabilityItem {
             return null;
         }
 
-        WeaponSet set = getCurrentSet(playerpatch);
+        CombatProfile set = getCurrentSet(playerpatch);
         if (set == null) {
             return null;
         }
@@ -232,7 +235,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public UseAnim getUseAnimation(LivingEntityPatch<?> entityPatch) {
-        WeaponSet set = getCurrentSet(entityPatch);
+        CombatProfile set = getCurrentSet(entityPatch);
         ToolStack toolStack = getToolStack(entityPatch);
         if (set != null && set.livingMotions().containsKey(LivingMotions.BLOCK) && toolStack != null && toolStack.getModifierLevel(Objects.requireNonNull(BLOCKING_ID, "blocking modifier id")) > 0 && !entityPatch.getOriginal().isCrouching()) {
             return UseAnim.BLOCK;
@@ -257,7 +260,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @SuppressWarnings("unused")
     public Skill getPassiveSkill(PlayerPatch<?> playerPatch) {
-        WeaponSet set = getCurrentSet(playerPatch);
+        CombatProfile set = getCurrentSet(playerPatch);
         if (set != null) {
             return set.passiveSkill();
         }
@@ -353,9 +356,9 @@ public class TCWeaponCapability extends CapabilityItem {
         CapabilityItem.ZoomInType zoomInType;
         float reach;
 
-        protected WeaponSet defaultWeaponSet;
+        protected CombatProfile defaultWeaponSet;
         protected List<ModifierProfile> modifierProfiles;
-        protected Map<Style, WeaponSet> weaponSets;
+        protected Map<Style, CombatProfile> weaponSets;
 
         Builder() {
             super();
@@ -429,12 +432,12 @@ public class TCWeaponCapability extends CapabilityItem {
             return this;
         }
 
-        public Builder defaultMoveSet(WeaponSet.WeaponSetBuilder weaponSet) {
+        public Builder defaultMoveSet(CombatProfile.CombatProfileBuilder weaponSet) {
             this.defaultWeaponSet = weaponSet.build();
             return this;
         }
 
-        public Builder addWeaponSet(Styles style, WeaponSet.WeaponSetBuilder set) {
+        public Builder addWeaponSet(Styles style, CombatProfile.CombatProfileBuilder set) {
             this.weaponSets.computeIfAbsent(style, (k) -> set.build());
             return this;
         }

@@ -1,4 +1,4 @@
-package com.minhhjjj.epicfighttinkercompat.tool.capabilities;
+package com.minhhjjj.epicfighttinkercompat.gameasset.profiles;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,7 @@ import yesman.epicfight.world.capabilities.item.WeaponCategory;
 public record ModifierProfile(
         ModifierId modifierId,
         Function<LivingEntityPatch<?>, Style> styleProvider,
-        Map<Style, WeaponSet> weaponSets,
+        Map<Style, CombatProfile> weaponSets,
         Collider collider,
         WeaponCategory weaponCategory,
         int priority
@@ -30,7 +30,7 @@ public record ModifierProfile(
     public static class Builder {
         private final ModifierId modifierId;
         private Function<LivingEntityPatch<?>, Style> styleProvider;
-        private final Map<Style, WeaponSet> weaponSets;
+        private final Map<Style, CombatProfile> weaponSets;
         private Collider collider;
         private WeaponCategory weaponCategory;
         private int priority;
@@ -46,7 +46,7 @@ public record ModifierProfile(
             return this;
         }
 
-        public Builder addMoveSet(Style style, WeaponSet weaponSet) {
+        public Builder addMoveSet(Style style, CombatProfile weaponSet) {
             this.weaponSets.put(style, weaponSet);
             return this;
         }

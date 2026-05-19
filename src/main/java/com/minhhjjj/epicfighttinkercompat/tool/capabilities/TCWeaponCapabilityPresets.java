@@ -14,6 +14,8 @@ import yesman.epicfight.world.capabilities.item.CapabilityItem.WeaponCategories;
 import yesman.epicfight.api.collider.MultiOBBCollider;
 import yesman.epicfight.api.collider.Collider;
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
+import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.TCModifierProfiles;
+import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.TCMoveSets;
 
 public class TCWeaponCapabilityPresets {
 	public static final Collider SLEDGE_HAMMER = ColliderPreset.registerCollider(ResourceLocation.fromNamespaceAndPath(EpicFightTinkerCompat.MODID, "sledge_hammer"), new MultiOBBCollider(3, 0.6D, 0.6D, 0.5D, 0D, 0D, -1.5D));
