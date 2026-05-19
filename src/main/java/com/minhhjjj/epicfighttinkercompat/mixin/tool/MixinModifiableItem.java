@@ -13,7 +13,7 @@ import slimeknights.tconstruct.library.tools.item.ModifiableItem;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
-@Mixin(value = ModifiableItem.class, remap = false)
+@Mixin(value = ModifiableItem.class)
 public class MixinModifiableItem {
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void epicfighttinkercompat$cancelUseInEpicFightMode(Level worldIn, Player playerIn, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
