@@ -2,6 +2,7 @@ package com.minhhjjj.epicfighttinkercompat.tool.capabilities;
 
 import java.util.function.Function;
 
+import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.CombatProfiles;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
@@ -14,14 +15,13 @@ import yesman.epicfight.world.capabilities.item.CapabilityItem.WeaponCategories;
 import yesman.epicfight.api.collider.MultiOBBCollider;
 import yesman.epicfight.api.collider.Collider;
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
-import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.TCModifierProfiles;
-import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.TCMoveSets;
+import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfiles;
 
 public class TCWeaponCapabilityPresets {
 	public static final Collider SLEDGE_HAMMER = ColliderPreset.registerCollider(ResourceLocation.fromNamespaceAndPath(EpicFightTinkerCompat.MODID, "sledge_hammer"), new MultiOBBCollider(3, 0.6D, 0.6D, 0.5D, 0D, 0D, -1.5D));
 
 	public static final Function<Item, CapabilityItem.Builder> TC_SLEDGE_HAMMER = (item) -> TCWeaponCapability.builder()
-		.defaultMoveSet(TCMoveSets.sledgehammerSet())
+		.defaultMoveSet(CombatProfiles.sledgehammerSet())
 		.category(WeaponCategories.GREATSWORD)
 		.collider(SLEDGE_HAMMER)
 		.styleProvider((patch) -> Styles.TWO_HAND)
@@ -32,8 +32,8 @@ public class TCWeaponCapabilityPresets {
 		.hitParticle(EpicFightParticles.HIT_BLUNT.get());
 
 	public static final Function<Item, CapabilityItem.Builder> TC_SWORD = (item) -> TCWeaponCapability.builder()
-		.defaultMoveSet(TCMoveSets.sword1HSet())
-		.addWeaponSet(Styles.TWO_HAND, TCMoveSets.sword2HSet())
+		.defaultMoveSet(CombatProfiles.sword1HSet())
+		.addWeaponSet(Styles.TWO_HAND, CombatProfiles.sword2HSet())
 		.category(WeaponCategories.SWORD)
 		.collider(ColliderPreset.SWORD)
 		.swingSound(EpicFightSounds.WHOOSH_SMALL.get())
@@ -49,7 +49,7 @@ public class TCWeaponCapabilityPresets {
 		});
 
 	public static final Function<Item, CapabilityItem.Builder> TC_AXE = (item) -> TCWeaponCapability.builder()
-		.defaultMoveSet(TCMoveSets.axe1HSet())
+		.defaultMoveSet(CombatProfiles.axe1HSet())
 		.category(WeaponCategories.AXE)
 		.collider(ColliderPreset.TOOLS)
 		.swingSound(EpicFightSounds.WHOOSH_SMALL.get())
@@ -60,7 +60,7 @@ public class TCWeaponCapabilityPresets {
 		.styleProvider((patch) -> Styles.ONE_HAND);
 
 	public static final Function<Item, CapabilityItem.Builder> TC_PICKAXE = (item) -> TCWeaponCapability.builder()
-		.defaultMoveSet(TCMoveSets.pickaxeSet())
+		.defaultMoveSet(CombatProfiles.pickaxeSet())
 		.category(WeaponCategories.PICKAXE)
 		.collider(ColliderPreset.TOOLS)
 		.swingSound(EpicFightSounds.WHOOSH_SMALL.get())
@@ -71,9 +71,9 @@ public class TCWeaponCapabilityPresets {
 		.styleProvider((patch) -> Styles.ONE_HAND);
 
 	public static final Function<Item, CapabilityItem.Builder> TC_DAGGER = (item) -> TCWeaponCapability.builder()
-		.defaultMoveSet(TCMoveSets.dagger1HSet())
-		.addWeaponSet(Styles.ONE_HAND, TCMoveSets.dagger1HSet())
-		.addWeaponSet(Styles.TWO_HAND, TCMoveSets.dagger2HSet())
+		.defaultMoveSet(CombatProfiles.dagger1HSet())
+		.addWeaponSet(Styles.ONE_HAND, CombatProfiles.dagger1HSet())
+		.addWeaponSet(Styles.TWO_HAND, CombatProfiles.dagger2HSet())
 		.category(WeaponCategories.DAGGER)
 		.collider(ColliderPreset.DAGGER)
 		.swingSound(EpicFightSounds.WHOOSH_SMALL.get())
@@ -84,7 +84,7 @@ public class TCWeaponCapabilityPresets {
 		.styleProvider((patch) -> patch.getHoldingItemCapability(InteractionHand.OFF_HAND).getWeaponCategory() == WeaponCategories.DAGGER ? Styles.TWO_HAND : Styles.ONE_HAND);
 
 	public static final Function<Item, CapabilityItem.Builder> TC_SHIELD = (item) -> TCWeaponCapability.builder()
-		.defaultMoveSet(TCMoveSets.shieldSet())
+		.defaultMoveSet(CombatProfiles.shieldSet())
 		.category(WeaponCategories.SHIELD)
 		.collider(ColliderPreset.FIST)
 		.swingSound(EpicFightSounds.WHOOSH_SMALL.get())
@@ -93,8 +93,8 @@ public class TCWeaponCapabilityPresets {
 		.styleProvider((patch) -> Styles.ONE_HAND);
 
 	public static final Function<Item, CapabilityItem.Builder> SCYTHE = (item) -> TCWeaponCapability.builder()
-		.defaultMoveSet(TCMoveSets.scythe2HSet())
-		.addModifier(TCModifierProfiles.TORMENT)
+		.defaultMoveSet(CombatProfiles.scythe2HSet())
+		.addModifier(ModifierProfiles.TORMENT)
 		.category(WeaponCategories.GREATSWORD)
 		.collider(ColliderPreset.GREATSWORD)
 		.canBePlacedOffhand(false)
@@ -105,8 +105,8 @@ public class TCWeaponCapabilityPresets {
 		.styleProvider((patch) -> Styles.TWO_HAND);
 
 	public static final Function<Item, CapabilityItem.Builder> CLEAVER = (item) -> TCWeaponCapability.builder()
-		.defaultMoveSet(TCMoveSets.cleaver2HSet())
-		.addModifier(TCModifierProfiles.RUINE)
+		.defaultMoveSet(CombatProfiles.cleaver2HSet())
+		.addModifier(ModifierProfiles.RUINE)
 		.canBePlacedOffhand(false)
 		.category(WeaponCategories.GREATSWORD)
 		.collider(ColliderPreset.GREATSWORD)
@@ -117,9 +117,9 @@ public class TCWeaponCapabilityPresets {
 		.styleProvider((patch) -> Styles.TWO_HAND);
 
 	public static final Function<Item, CapabilityItem.Builder> JAVELIN = (item) -> TCWeaponCapability.builder()
-		.addModifier(TCModifierProfiles.SPEARY)
-		.addModifier(TCModifierProfiles.AGONY)
-		.defaultMoveSet(TCMoveSets.javelin1H())
+		.addModifier(ModifierProfiles.SPEARY)
+		.addModifier(ModifierProfiles.AGONY)
+		.defaultMoveSet(CombatProfiles.javelin1H())
 		.category(WeaponCategories.SPEAR)
 		.collider(ColliderPreset.SPEAR)
 		.canBePlacedOffhand(false)
@@ -131,7 +131,7 @@ public class TCWeaponCapabilityPresets {
 
 	public static final Function<Item, CapabilityItem.Builder> LONGBOW = (item) -> {
 		TCWeaponCapability.Builder builder = TCWeaponCapability.builder();
-		builder.defaultMoveSet(TCMoveSets.longbowSet())
+		builder.defaultMoveSet(CombatProfiles.longbowSet())
 			.category(WeaponCategories.BOW)
 			.collider(ColliderPreset.FIST)
 			.canBePlacedOffhand(true)
@@ -143,7 +143,7 @@ public class TCWeaponCapabilityPresets {
 
 	public static final Function<Item, CapabilityItem.Builder> STAFF = (item) -> {
 		TCWeaponCapability.Builder builder = TCWeaponCapability.builder();
-		builder.defaultMoveSet(TCMoveSets.staffSet())
+		builder.defaultMoveSet(CombatProfiles.staffSet())
 			.category(WeaponCategories.TRIDENT)
 			.collider(ColliderPreset.FIST)
 			.hitSound(EpicFightSounds.BLUNT_HIT.get())
@@ -154,8 +154,8 @@ public class TCWeaponCapabilityPresets {
 	};
 
 	public static final Function<Item, CapabilityItem.Builder> KATANA = (item) -> TCWeaponCapability.builder()
-			.defaultMoveSet(TCMoveSets.tachiSet())
-			.addWeaponSet(Styles.TWO_HAND, TCMoveSets.tachiSet())
+			.defaultMoveSet(CombatProfiles.tachiSet())
+			.addWeaponSet(Styles.TWO_HAND, CombatProfiles.tachiSet())
 			.category(WeaponCategories.TACHI)
 			.collider(ColliderPreset.TACHI)
 			.canBePlacedOffhand(false)
@@ -167,8 +167,8 @@ public class TCWeaponCapabilityPresets {
 			.reach(1.0F);
 
 	public static final Function<Item, CapabilityItem.Builder> FUMA_SHURIKEN = (item) -> TCWeaponCapability.builder()
-			.defaultMoveSet(TCMoveSets.axe1HSet())
-			.addWeaponSet(Styles.ONE_HAND, TCMoveSets.axe1HSet())
+			.defaultMoveSet(CombatProfiles.axe1HSet())
+			.addWeaponSet(Styles.ONE_HAND, CombatProfiles.axe1HSet())
 			.category(WeaponCategories.AXE)
 			.collider(ColliderPreset.TOOLS)
 			.canBePlacedOffhand(true)
