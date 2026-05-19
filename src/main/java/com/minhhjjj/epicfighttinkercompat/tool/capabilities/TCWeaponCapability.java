@@ -4,9 +4,10 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.CombatProfile;
+import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.CombatProfiles;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfile;
-import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.TCMoveSets;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -201,14 +202,14 @@ public class TCWeaponCapability extends CapabilityItem {
             }
         }
 
-        if (entityPatch instanceof PlayerPatch<?> playerPatch && playerPatch.getOriginal().isCrouching() && playerPatch.getOriginal().isUsingItem() && playerPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.SPEAR) {
-            if (playerPatch.getOriginal().isUsingItem()) {
-                ItemStack useItem = playerPatch.getOriginal().getUseItem();
-                if (ToolStack.from(useItem).getModifierLevel(Objects.requireNonNull(THROWING_ID, "throwing modifier id")) > 0) {
-                    return LivingMotions.AIM;
-                }
-            }
-        }
+//        if (entityPatch instanceof PlayerPatch<?> playerPatch && playerPatch.getOriginal().isCrouching() && playerPatch.getOriginal().isUsingItem() && playerPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.SPEAR) {
+//            if (playerPatch.getOriginal().isUsingItem()) {
+//                ItemStack useItem = playerPatch.getOriginal().getUseItem();
+//                if (ToolStack.from(useItem).getModifierLevel(Objects.requireNonNull(THROWING_ID, "throwing modifier id")) > 0) {
+//                    return LivingMotions.AIM;
+//                }
+//            }
+//        }
 
         return super.getLivingMotion(entityPatch, checkedHand);
     }
@@ -264,6 +265,17 @@ public class TCWeaponCapability extends CapabilityItem {
         if (set != null) {
             return set.passiveSkill();
         }
+        return null;
+    }
+
+    @SuppressWarnings("removal")
+    public Skill getPassiveSkill() {
+        CombatProfile set = this.defaultWeaponSet;
+        if (set != null) {
+            EpicFightTinkerCompat.LOGGER.info("Combat profile {} with passive skill: {}", set, set.passiveSkill() != null ? set.passiveSkill() : "no passive skill");
+            return set.passiveSkill();
+        }
+        EpicFightTinkerCompat.LOGGER.info("Passive skill: {}", "no combat profile");
         return null;
     }
 
@@ -378,7 +390,7 @@ public class TCWeaponCapability extends CapabilityItem {
             // TC defaults
             this.modifierProfiles = new ArrayList<>();
             this.weaponSets = new HashMap<>();
-            this.weaponSets.put(Styles.COMMON, TCMoveSets.fist().build());
+            this.weaponSets.put(Styles.COMMON, CombatProfiles.fist().build());
         }
 
         public Builder styleProvider(Function<LivingEntityPatch<?>, Style> styleProvider) {
