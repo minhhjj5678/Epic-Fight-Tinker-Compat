@@ -1,5 +1,6 @@
 package com.minhhjjj.epicfighttinkercompat.gameasset.profiles;
 
+import com.minhhjjj.epicfighttinkercompat.gameasset.EFTSkills;
 import com.minhhjjj.epicfighttinkercompat.skill.AutoGuardPassiveSkill;
 
 import net.minecraft.world.entity.LivingEntity;
@@ -15,8 +16,8 @@ import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.skill.guard.GuardSkill.BlockType;
 
-public class TCMoveSets {
-	private TCMoveSets() {
+public class CombatProfiles {
+	private CombatProfiles() {
 	}
 
 	public static CombatProfile.CombatProfileBuilder fist() {
@@ -118,7 +119,9 @@ public class TCMoveSets {
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.TRIDENT_AUTO1, Animations.TRIDENT_AUTO2, Animations.TRIDENT_AUTO3, Animations.SPEAR_DASH, Animations.SPEAR_ONEHAND_AIR_SLASH})
 		.addMountAttacks(new AnimationManager.AnimationAccessor[]{Animations.SPEAR_MOUNT_ATTACK})
 		.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
-		.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW);
+		.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW)
+		.setPassiveSkill(EFTSkills.SWAP_SKILL)
+		.setMotionPredicate((entityPatch, interactionHand) -> ((LivingEntity)entityPatch.getOriginal()).isUsingItem() && ((LivingEntity)entityPatch.getOriginal()).getUseItem().getUseAnimation() == UseAnim.SPEAR ? LivingMotions.AIM : null);
 	}
 
 	@SuppressWarnings("unchecked")

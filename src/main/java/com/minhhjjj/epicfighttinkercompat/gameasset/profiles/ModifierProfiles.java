@@ -20,7 +20,7 @@ import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.Styles;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.WeaponCategories;
 
-public class TCModifierProfiles {
+public class ModifierProfiles {
     private static final ModifierId SPEARY_ID = new ModifierId(EpicFightTinkerCompat.MODID, "speary");
 
     public static final ModifierProfile TORMENT = ModList.get().isLoaded("wom") ? createTormentProfile() : null;
@@ -33,8 +33,8 @@ public class TCModifierProfiles {
                 else
                     return Styles.ONE_HAND;
             })
-            .addMoveSet(Styles.ONE_HAND, TCMoveSets.spear1HSet().build())
-            .addMoveSet(Styles.TWO_HAND, TCMoveSets.spear2HSet().build())
+            .addMoveSet(Styles.ONE_HAND, CombatProfiles.spear1HSet().build())
+            .addMoveSet(Styles.TWO_HAND, CombatProfiles.spear2HSet().build())
             .weaponCategory(WeaponCategories.SPEAR)
             .collider(ColliderPreset.SPEAR)
             .priority(50)
@@ -49,8 +49,8 @@ public class TCModifierProfiles {
                         return Styles.ONE_HAND;
                     }
                 })
-                .addMoveSet(Styles.TWO_HAND, TCMoveSets.agonyGroundSet().build())
-                .addMoveSet(Styles.ONE_HAND, TCMoveSets.agonyAirSet().build())
+                .addMoveSet(Styles.TWO_HAND, CombatProfiles.agonyGroundSet().build())
+                .addMoveSet(Styles.ONE_HAND, CombatProfiles.agonyAirSet().build())
                 .weaponCategory(WOMWeaponCategories.AGONY)
                 .collider(WOMWeaponColliders.AGONY)
                 .priority(100)
@@ -68,8 +68,8 @@ public class TCModifierProfiles {
                     }
                     return Styles.TWO_HAND;
                 })
-                .addMoveSet(Styles.TWO_HAND, TCMoveSets.ruine2HSet().build())
-                .addMoveSet(Styles.OCHS, TCMoveSets.ruineOchsSet().build())
+                .addMoveSet(Styles.TWO_HAND, CombatProfiles.ruine2HSet().build())
+                .addMoveSet(Styles.OCHS, CombatProfiles.ruineOchsSet().build())
                 .weaponCategory(WOMWeaponCategories.RUINE)
                 .collider(WOMWeaponColliders.RUINE)
                 .priority(100)
@@ -85,8 +85,8 @@ public class TCModifierProfiles {
                     }
                     return Styles.TWO_HAND;
                 })
-                .addMoveSet(Styles.TWO_HAND, TCMoveSets.torment2HSet().build())
-                .addMoveSet(Styles.OCHS, TCMoveSets.tormentOchsSet().build())
+                .addMoveSet(Styles.TWO_HAND, CombatProfiles.torment2HSet().build())
+                .addMoveSet(Styles.OCHS, CombatProfiles.tormentOchsSet().build())
                 .weaponCategory(WOMWeaponCategories.TORMENT)
                 .collider(WOMWeaponColliders.TORMENT)
                 .priority(100)
