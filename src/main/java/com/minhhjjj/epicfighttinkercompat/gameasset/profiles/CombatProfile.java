@@ -40,7 +40,7 @@ public record CombatProfile(
         BiFunction<ItemStack, PlayerPatch<?>, Skill> innateSkill;
         Skill passiveSkill;
         BiFunction<PlayerPatch<?>, InteractionHand, LivingMotion> motionPredicate;
-        Boolean visibleOffhand;
+        boolean visibleOffhand;
 
         private CombatProfileBuilder() {
             attackMotions = new ArrayList<>();
