@@ -120,8 +120,7 @@ public class CombatProfiles {
 		.addMountAttacks(new AnimationManager.AnimationAccessor[]{Animations.SPEAR_MOUNT_ATTACK})
 		.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
 		.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW)
-		.setPassiveSkill(EFTSkills.SWAP_SKILL)
-		.setMotionPredicate((entityPatch, interactionHand) -> ((LivingEntity)entityPatch.getOriginal()).isUsingItem() && ((LivingEntity)entityPatch.getOriginal()).getUseItem().getUseAnimation() == UseAnim.SPEAR ? LivingMotions.AIM : null);
+		.setMotionPredicate((entityPatch, interactionHand) -> ((LivingEntity)entityPatch.getOriginal()).isUsingItem() ? LivingMotions.AIM : null);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -146,7 +145,8 @@ public class CombatProfiles {
 		.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
 		.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW)
 		.addLivingMotionModifier(LivingMotions.SWIM, Animations.BIPED_HOLD_SPEAR)
-		.addLivingMotionModifier(LivingMotions.BLOCK, Animations.SPEAR_GUARD);
+		.addLivingMotionModifier(LivingMotions.BLOCK, Animations.SPEAR_GUARD)
+		.setMotionPredicate((entityPatch, interactionHand) -> ((LivingEntity)entityPatch.getOriginal()).isUsingItem() ? LivingMotions.AIM : null);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -350,8 +350,8 @@ public class CombatProfiles {
 	public static CombatProfile.CombatProfileBuilder tachiSet() {
 		return CombatProfile.builder()
 				.addComboAttacks(Animations.TACHI_AUTO1, Animations.TACHI_AUTO2, Animations.TACHI_AUTO3, Animations.TACHI_DASH, Animations.LONGSWORD_AIR_SLASH)
-				.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_BOW_AIM)
-				.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_BOW_SHOT)
+				.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
+				.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW)
 				.addLivingMotionsRecursive(Animations.BIPED_HOLD_TACHI, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.KNEEL, LivingMotions.WALK, LivingMotions.CHASE, LivingMotions.RUN, LivingMotions.SNEAK, LivingMotions.SWIM, LivingMotions.FLOAT, LivingMotions.FALL})
 				.addLivingMotionModifier(LivingMotions.BLOCK, Animations.LONGSWORD_GUARD)
 				.addInnateSkill((itemStack, playerPatch) -> EpicFightSkills.RUSHING_TEMPO);
