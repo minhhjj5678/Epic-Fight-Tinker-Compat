@@ -202,14 +202,7 @@ public class TCWeaponCapability extends CapabilityItem {
             }
         }
 
-//        if (entityPatch instanceof PlayerPatch<?> playerPatch && playerPatch.getOriginal().isCrouching() && playerPatch.getOriginal().isUsingItem() && playerPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.SPEAR) {
-//            if (playerPatch.getOriginal().isUsingItem()) {
-//                ItemStack useItem = playerPatch.getOriginal().getUseItem();
-//                if (ToolStack.from(useItem).getModifierLevel(Objects.requireNonNull(THROWING_ID, "throwing modifier id")) > 0) {
-//                    return LivingMotions.AIM;
-//                }
-//            }
-//        }
+        if (entityPatch.getOriginal().isUsingItem() && entityPatch.getOriginal().getUseItem().getUseAnimation() != UseAnim.DRINK && entityPatch.getOriginal().getUseItem().getUseAnimation() != UseAnim.EAT) return LivingMotions.AIM;
 
         return super.getLivingMotion(entityPatch, checkedHand);
     }
@@ -238,7 +231,7 @@ public class TCWeaponCapability extends CapabilityItem {
     public UseAnim getUseAnimation(LivingEntityPatch<?> entityPatch) {
         CombatProfile set = getCurrentSet(entityPatch);
         ToolStack toolStack = getToolStack(entityPatch);
-        if (set != null && set.livingMotions().containsKey(LivingMotions.BLOCK) && toolStack != null && toolStack.getModifierLevel(Objects.requireNonNull(BLOCKING_ID, "blocking modifier id")) > 0 && !entityPatch.getOriginal().isCrouching()) {
+        if (set != null && set.livingMotions().containsKey(LivingMotions.BLOCK) && toolStack != null && toolStack.getModifierLevel(Objects.requireNonNull(BLOCKING_ID, "blocking modifier id")) > 0) {
             return UseAnim.BLOCK;
         }
         return UseAnim.NONE;
@@ -272,10 +265,10 @@ public class TCWeaponCapability extends CapabilityItem {
     public Skill getPassiveSkill() {
         CombatProfile set = this.defaultWeaponSet;
         if (set != null) {
-            EpicFightTinkerCompat.LOGGER.info("Combat profile {} with passive skill: {}", set, set.passiveSkill() != null ? set.passiveSkill() : "no passive skill");
+//            EpicFightTinkerCompat.LOGGER.info("Combat profile {} with passive skill: {}", set, set.passiveSkill() != null ? set.passiveSkill() : "no passive skill");
             return set.passiveSkill();
         }
-        EpicFightTinkerCompat.LOGGER.info("Passive skill: {}", "no combat profile");
+//        EpicFightTinkerCompat.LOGGER.info("Passive skill: {}", "no combat profile");
         return null;
     }
 
