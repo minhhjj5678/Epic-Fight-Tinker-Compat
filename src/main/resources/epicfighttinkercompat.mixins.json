@@ -9,7 +9,7 @@
     "sweepingedge.MixinSweepWeaponAttack",
     "lifesteal.MixinToolAttackContext",
     "doublejump.MixinDoubleJumpHandler",
-    "tool.MixinThrowingModule",
+    "tool.MixinModifiableItem",
     "tool.MixinToolStack",
     "skill.MixinGuardSkill"
   ],
