@@ -1,0 +1,77 @@
+{
+  "modules": [
+    {
+      "type": "tconstruct:modifier_slots",
+      "slots": {
+        "abilities": 1,
+        "upgrades": 2
+      }
+    },
+    {
+      "type": "tconstruct:default_materials",
+      "materials": [
+        {
+          "type": "tconstruct:random",
+          "tier": 1
+        },
+        {
+          "type": "tconstruct:random",
+          "tier": 1
+        },
+        {
+          "type": "tconstruct:random",
+          "tier": 1
+        },
+        {
+          "type": "tconstruct:random",
+          "tier": 1
+        }
+      ]
+    },
+    {
+      "type": "tconstruct:part_stats",
+      "parts": [
+        "tconstruct:broad_axe_head",
+        "constructs_casting:faceted_gem",
+        "constructs_casting:wand_rod",
+        "tconstruct:tough_handle"
+      ],
+      "primary_part": 0
+    },
+    {
+      "type": "tconstruct:traits",
+      "traits": [
+        {
+          "level": 1,
+          "name": "constructs_casting:casting"
+        }
+      ]
+    },
+    {
+      "type": "tconstruct:base_stats",
+      "stats": {
+        "tconstruct:attack_damage": 10.0,
+        "tconstruct:attack_speed": 1.0,
+        "epicfighttinkercompat:max_strikes": 2.0
+      }
+    },
+    {
+      "type": "tconstruct:multiply_stats",
+      "multipliers": {
+        "tconstruct:attack_damage": 1.25,
+        "tconstruct:durability": 1.5,
+        "tconstruct:mining_speed": 0.25
+      }
+    },
+    {
+      "type": "tconstruct:stat_types_name",
+      "stat_types": [
+        "tconstruct:head",
+        "constructs_casting:adornment"
+      ]
+    },
+    {
+      "type": "tconstruct:dual_option_interaction"
+    }
+  ]
+}
