@@ -28,11 +28,19 @@ public class MixinItemSkinsReloadListener {
         addTinkerWeapon(map, "javelin", 0.0, 0.2, -0.9, 0.0, 0.25, -2.0, 20);
         addTinkerWeapon(map, "hand_axe", 0.0, -0.15, -0.35, 0.0, -0.15, -0.7);
         addTinkerWeapon(map, "broad_axe", 0.0, -0.23, -0.53, 0.0, -0.23, -1.35, 20);
+        addTinkerWeapon(map, "tinkers_katanas:katana", 0.0, 0.0, -0.1, 0.0, -0.1, -1.8);
+        addTinkerWeapon(map, "constructs_casting:battlestaff", 0.0, 0.0, -0.1, 0.0, -0.3, -1.8);
+        addTinkerWeapon(map, "constructs_casting:flamberge", 0.0, 0.0, -0.1, 0.0, -0.3, -1.8);
     }
 
 
     private void addTinkerWeapon(Map<ResourceLocation, JsonElement> map, String name, double startX, double startY, double startZ, double endX, double endY, double endZ, int lifetime) {
-        ResourceLocation id = ResourceLocation.fromNamespaceAndPath("tconstruct", name);
+        ResourceLocation id;
+        if (name.contains(":")) {
+            id = ResourceLocation.tryParse(name);
+        } else {
+            id = ResourceLocation.fromNamespaceAndPath("tconstruct", name);
+        }
 
         if (!map.containsKey(id)) {
             JsonObject root = new JsonObject();
