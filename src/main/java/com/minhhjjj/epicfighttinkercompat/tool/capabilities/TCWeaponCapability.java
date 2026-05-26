@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.CombatProfile;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.CombatProfiles;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfile;
@@ -202,9 +201,11 @@ public class TCWeaponCapability extends CapabilityItem {
             }
         }
 
-        if (entityPatch.getOriginal().isUsingItem() && entityPatch.getOriginal().getUseItem().getUseAnimation() != UseAnim.DRINK && entityPatch.getOriginal().getUseItem().getUseAnimation() != UseAnim.EAT) return LivingMotions.AIM;
+        if (!entityPatch.getOriginal().isUsingItem()) return null;
 
-        return super.getLivingMotion(entityPatch, checkedHand);
+        if (entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.DRINK || entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.EAT) return null;
+
+        return LivingMotions.AIM;
     }
 
     @Override
@@ -244,7 +245,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public CapabilityItem.ZoomInType getZoomInType() {
-        return this.zoomInType == null ? super.getZoomInType() : this.zoomInType;
+        return this.zoomInType == ZoomInType.NONE ? ZoomInType.AIMING : this.zoomInType;
     }
 
     @Override
