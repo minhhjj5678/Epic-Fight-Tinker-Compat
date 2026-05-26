@@ -1,24 +1,25 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.minhhjjj.epicfighttinkercompat.mixin", 
-  "compatibilityLevel": "JAVA_17", 
+  "package": "com.minhhjjj.epicfighttinkercompat.mixin",
+  "compatibilityLevel": "JAVA_17",
   "refmap": "epicfighttinkercompat.refmap.json",
   "mixins": [
+    "doublejump.MixinDoubleJumpHandler",
+    "lifesteal.MixinToolAttackContext",
+    "skill.MixinGuardSkill",
     "sweepingedge.MixinEnchantmentHelper",
     "sweepingedge.MixinSweepWeaponAttack",
-    "lifesteal.MixinToolAttackContext",
-    "doublejump.MixinDoubleJumpHandler",
+    "tool.MixinBlockingModifier",
     "tool.MixinModifiableItem",
-    "tool.MixinToolStack",
-    "skill.MixinGuardSkill"
+    "tool.MixinToolStack"
   ],
   "client": [
-    "tool.MixinItemSkinsReloadListener",
+    "doublejump.MixinPhantomAscentSkill",
     "tool.MixinAnimationTrailParticle",
-    "tool.MixinTrailProvider",
+    "tool.MixinItemSkinsReloadListener",
     "tool.MixinRenderItemBase",
-    "doublejump.MixinPhantomAscentSkill"
+    "tool.MixinTrailProvider"
   ],
   "injectors": {
     "defaultRequire": 1
