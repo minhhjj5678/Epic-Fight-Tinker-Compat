@@ -14,6 +14,7 @@ import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
@@ -54,7 +55,7 @@ public class EpicFightTinkerCompat
         EpicFightModifiers.MODIFIERS.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
-        modEventBus.addListener(this::onAddPackFinders);
+//        modEventBus.addListener(this::onAddPackFinders);
         MinecraftForge.EVENT_BUS.register(this);
         ItemRegistry.ITEMS.register(modEventBus);
 
@@ -109,25 +110,31 @@ public class EpicFightTinkerCompat
         }
     }
 
-    public void onAddPackFinders(AddPackFindersEvent event) {
-        if (event.getPackType() == PackType.SERVER_DATA) {
-            var resourcePath = ModList.get().getModFileById(MODID).getFile().findResource("datapacks", "epicfight_override");
+    @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static class PackRegistrar {
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public static void onAddPackFinders(AddPackFindersEvent event) {
+            if (event.getPackType() == PackType.SERVER_DATA) {
+                var resourcePath = ModList.get().getModFileById(MODID).getFile().findResource("datapacks", "epicfight_override");
 
-            var pack = Pack.readMetaAndCreate(
-                    MODID + "_epicfight_override",
-                    Component.literal("Epic Fight Override Datapack"),
-                    true,
-                    (path) -> new PathPackResources(path, true, resourcePath),
-                    PackType.SERVER_DATA,
-                    Pack.Position.TOP,
-                    PackSource.BUILT_IN
-            );
+                var pack = Pack.readMetaAndCreate(
+                        MODID + "_epicfight_override",
+                        Component.literal("Epic Fight Override Datapack"),
+                        true,
+                        (path) -> new PathPackResources(path, true, resourcePath),
+                        PackType.SERVER_DATA,
+                        Pack.Position.TOP,
+                        PackSource.BUILT_IN
+                );
 
-            if (pack != null) {
-                event.addRepositorySource((packConsumer) -> packConsumer.accept(pack));
+                if (pack != null) {
+                    LOGGER.info("[EpicFight TiC Compat] Registering built-in datapack: " + pack.getId());
+                    event.addRepositorySource((packConsumer) -> packConsumer.accept(pack));
+                }
             }
         }
     }
+
 
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents
