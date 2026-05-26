@@ -120,6 +120,9 @@ public class CombatProfiles {
 		.addMountAttacks(new AnimationManager.AnimationAccessor[]{Animations.SPEAR_MOUNT_ATTACK})
 		.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
 		.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW)
+		.addGuardAnimations(BlockType.GUARD, Animations.SPEAR_GUARD)
+		.addLivingMotionModifier(LivingMotions.BLOCK, Animations.SPEAR_GUARD)
+		.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
 		.setMotionPredicate((entityPatch, interactionHand) -> ((LivingEntity)entityPatch.getOriginal()).isUsingItem() ? LivingMotions.AIM : null);
 	}
 
@@ -142,6 +145,7 @@ public class CombatProfiles {
 		.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
 		.addMountAttacks(new AnimationManager.AnimationAccessor[]{Animations.SPEAR_MOUNT_ATTACK})
 		.addInnateSkill((item, patch) -> EpicFightSkills.GRASPING_SPIRE)
+		.addLivingMotionsRecursive(Animations.BIPED_HOLD_SPEAR, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.KNEEL, LivingMotions.WALK, LivingMotions.FALL, LivingMotions.FLOAT, LivingMotions.FALL, LivingMotions.CHASE, LivingMotions.RUN, LivingMotions.SNEAK})
 		.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
 		.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW)
 		.addLivingMotionModifier(LivingMotions.SWIM, Animations.BIPED_HOLD_SPEAR)
@@ -355,5 +359,67 @@ public class CombatProfiles {
 				.addLivingMotionsRecursive(Animations.BIPED_HOLD_TACHI, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.KNEEL, LivingMotions.WALK, LivingMotions.CHASE, LivingMotions.RUN, LivingMotions.SNEAK, LivingMotions.SWIM, LivingMotions.FLOAT, LivingMotions.FALL})
 				.addLivingMotionModifier(LivingMotions.BLOCK, Animations.LONGSWORD_GUARD)
 				.addInnateSkill((itemStack, playerPatch) -> EpicFightSkills.RUSHING_TEMPO);
+	}
+
+	public static CombatProfile.CombatProfileBuilder battlestaff() {
+		return CombatProfile.builder()
+				.addComboAttacks(Animations.SPEAR_TWOHAND_AUTO1, Animations.SPEAR_TWOHAND_AUTO2, Animations.SPEAR_DASH, Animations.SPEAR_TWOHAND_AIR_SLASH)
+				.addInnateSkill((item, patch) -> EpicFightSkills.GRASPING_SPIRE)
+				.addGuardAnimations(BlockType.GUARD, Animations.SPEAR_GUARD_HIT)
+				.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
+				.addMountAttacks(new AnimationManager.AnimationAccessor[]{Animations.SPEAR_MOUNT_ATTACK})
+				.addLivingMotionsRecursive(Animations.BIPED_HOLD_SPEAR, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.KNEEL, LivingMotions.WALK, LivingMotions.FALL, LivingMotions.FLOAT, LivingMotions.FALL, LivingMotions.CHASE, LivingMotions.RUN, LivingMotions.SNEAK})
+				.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
+				.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW)
+				.addLivingMotionModifier(LivingMotions.SWIM, Animations.BIPED_HOLD_SPEAR)
+				.addLivingMotionModifier(LivingMotions.BLOCK, Animations.SPEAR_GUARD)
+				.setMotionPredicate((entityPatch, interactionHand) -> ((LivingEntity)entityPatch.getOriginal()).isUsingItem() ? LivingMotions.AIM : null);
+	}
+
+	public static CombatProfile.CombatProfileBuilder flamberge2HSet() {
+		return CombatProfile.builder()
+				.addComboAttacks(Animations.LONGSWORD_AUTO1, Animations.LONGSWORD_AUTO2, Animations.LONGSWORD_AUTO3, Animations.LONGSWORD_DASH, Animations.LONGSWORD_AIR_SLASH)
+				.addInnateSkill((item, patch) -> EpicFightSkills.LIECHTENAUER)
+				.addGuardAnimations(BlockType.GUARD, Animations.LONGSWORD_GUARD_HIT)
+				.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
+				.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
+				.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW)
+				.addLivingMotionModifier(LivingMotions.BLOCK, Animations.LONGSWORD_GUARD)
+				.addLivingMotionsRecursive(Animations.BIPED_HOLD_LONGSWORD, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.KNEEL, LivingMotions.WALK, LivingMotions.FALL, LivingMotions.FLOAT, LivingMotions.FALL, LivingMotions.CHASE, LivingMotions.RUN, LivingMotions.SNEAK, LivingMotions.SWIM});
+	}
+
+	public static CombatProfile.CombatProfileBuilder flamberge1HSet() {
+		return CombatProfile.builder()
+				.addComboAttacks(Animations.LONGSWORD_AUTO1, Animations.LONGSWORD_AUTO2, Animations.LONGSWORD_AUTO3, Animations.LONGSWORD_DASH, Animations.LONGSWORD_AIR_SLASH)
+				.addInnateSkill((item, patch) -> EpicFightSkills.SHARP_STAB)
+				.addGuardAnimations(BlockType.GUARD, Animations.LONGSWORD_GUARD_HIT)
+				.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
+				.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
+				.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW)
+				.addLivingMotionModifier(LivingMotions.BLOCK, Animations.LONGSWORD_GUARD)
+				.addLivingMotionsRecursive(Animations.BIPED_HOLD_LONGSWORD, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.KNEEL, LivingMotions.WALK, LivingMotions.FALL, LivingMotions.FLOAT, LivingMotions.FALL, LivingMotions.CHASE, LivingMotions.RUN, LivingMotions.SNEAK, LivingMotions.SWIM});
+	}
+
+	public static CombatProfile.CombatProfileBuilder flambergeOchsSet() {
+		return CombatProfile.builder()
+				.addComboAttacks(Animations.LONGSWORD_LIECHTENAUER_AUTO1, Animations.LONGSWORD_LIECHTENAUER_AUTO2, Animations.LONGSWORD_LIECHTENAUER_AUTO3, Animations.LONGSWORD_DASH, Animations.LONGSWORD_AIR_SLASH)
+				.addInnateSkill((item, patch) -> EpicFightSkills.LIECHTENAUER)
+				.addGuardAnimations(BlockType.GUARD, Animations.LONGSWORD_GUARD_HIT)
+				.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
+				.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
+				.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW)
+				.addLivingMotionModifier(LivingMotions.BLOCK, Animations.LONGSWORD_GUARD)
+				.addLivingMotionsRecursive(Animations.BIPED_HOLD_LIECHTENAUER, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.KNEEL, LivingMotions.WALK, LivingMotions.FALL, LivingMotions.FLOAT, LivingMotions.FALL, LivingMotions.CHASE, LivingMotions.RUN, LivingMotions.SNEAK, LivingMotions.SWIM});
+	}
+
+	public static CombatProfile.CombatProfileBuilder wand() {
+		return CombatProfile.builder()
+				.addComboAttacks(Animations.SWORD_AUTO1, Animations.SWORD_AUTO2, Animations.SWORD_AUTO3, Animations.SWORD_DASH, Animations.SWORD_AIR_SLASH)
+				.addGuardAnimations(BlockType.GUARD, Animations.SWORD_GUARD_HIT)
+				.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
+				.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
+				.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW)
+				.addLivingMotionModifier(LivingMotions.BLOCK, Animations.SWORD_GUARD)
+				.addLivingMotionsRecursive(Animations.BIPED_HOLD_LONGSWORD, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.KNEEL, LivingMotions.WALK, LivingMotions.FALL, LivingMotions.FLOAT, LivingMotions.FALL, LivingMotions.CHASE, LivingMotions.RUN, LivingMotions.SNEAK, LivingMotions.SWIM});
 	}
 }

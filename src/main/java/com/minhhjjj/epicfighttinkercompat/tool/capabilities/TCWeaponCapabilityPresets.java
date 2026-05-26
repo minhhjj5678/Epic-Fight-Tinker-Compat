@@ -9,6 +9,8 @@ import net.minecraft.world.item.Item;
 import yesman.epicfight.gameasset.ColliderPreset;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
+import yesman.epicfight.skill.SkillSlots;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.Styles;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.WeaponCategories;
@@ -182,5 +184,43 @@ public class TCWeaponCapabilityPresets {
 			.canBePlacedOffhand(true)
 			.reach(0.4F)
 			.zoomInType(CapabilityItem.ZoomInType.ALWAYS)
+			.styleProvider((patch) -> Styles.ONE_HAND);
+
+	public static final Function<Item, CapabilityItem.Builder> BATTLE_STAFF = (item) -> TCWeaponCapability.builder()
+			.defaultMoveSet(CombatProfiles.battlestaff())
+			.addWeaponSet(Styles.TWO_HAND,  CombatProfiles.battlestaff())
+			.category(WeaponCategories.SPEAR)
+			.collider(ColliderPreset.SPEAR)
+			.canBePlacedOffhand(true)
+			.reach(1.5F)
+			.zoomInType(CapabilityItem.ZoomInType.USE_TICK)
+			.styleProvider((patch) -> Styles.TWO_HAND);
+
+	public static final Function<Item, CapabilityItem.Builder> FLAMBERGE = (item) -> TCWeaponCapability.builder()
+			.defaultMoveSet(CombatProfiles.flamberge2HSet())
+			.addWeaponSet(Styles.ONE_HAND,  CombatProfiles.flamberge1HSet())
+			.addWeaponSet(Styles.TWO_HAND,  CombatProfiles.flamberge2HSet())
+			.addWeaponSet(Styles.OCHS,  CombatProfiles.flambergeOchsSet())
+			.category(WeaponCategories.LONGSWORD)
+			.collider(ColliderPreset.LONGSWORD)
+			.reach(1.0F)
+			.zoomInType(CapabilityItem.ZoomInType.USE_TICK)
+			.styleProvider((patch) -> {
+				if (patch.getHoldingItemCapability(InteractionHand.OFF_HAND).getWeaponCategory() == WeaponCategories.SHIELD) {
+					return Styles.ONE_HAND;
+				}
+				if (patch instanceof PlayerPatch<?> playerPatch && playerPatch.getSkill(SkillSlots.WEAPON_INNATE).isActivated()) {
+					return Styles.OCHS;
+				}
+				return Styles.TWO_HAND;
+			});
+
+	public static final Function<Item, CapabilityItem.Builder> WAND = (item) -> TCWeaponCapability.builder()
+			.defaultMoveSet(CombatProfiles.wand())
+			.addWeaponSet(Styles.ONE_HAND,  CombatProfiles.wand())
+			.category(WeaponCategories.SWORD)
+			.collider(ColliderPreset.SWORD)
+			.reach(1.0F)
+			.zoomInType(CapabilityItem.ZoomInType.USE_TICK)
 			.styleProvider((patch) -> Styles.ONE_HAND);
 }
