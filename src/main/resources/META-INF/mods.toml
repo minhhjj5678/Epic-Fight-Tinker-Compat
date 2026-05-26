@@ -2,53 +2,94 @@ modLoader="javafml" #mandatory
 loaderVersion="${loader_version_range}" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
 license="${mod_license}"
 [[mods]] #mandatory
-modId="${mod_id}" #mandatory
+modId="epicfighttinkercompat" #mandatory
 version="${mod_version}" #mandatory
 displayName="${mod_name}" #mandatory
 authors="${mod_authors}" #optional
 
 description='''${mod_description}'''
-[[dependencies.${mod_id}]] #optional
+[[dependencies."epicfighttinkercompat"]] #optional
     modId="forge" #mandatory
     mandatory=true #mandatory
     versionRange="${forge_version_range}" #mandatory
     ordering="NONE"
     side="BOTH"
-[[dependencies.${mod_id}]]
+[[dependencies."epicfighttinkercompat"]]
     modId="minecraft"
     mandatory=true
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
 
-[[dependencies.${mod_id}]]
+[[dependencies."epicfighttinkercompat"]]
     modId="epicfight"
     mandatory=true
     versionRange="[20.14,)"
-    ordering="NONE"
+    ordering="AFTER"
     side="BOTH"
 
-[[dependencies.${mod_id}]]
+[[dependencies."epicfighttinkercompat"]]
     modId="tconstruct"
     mandatory=true
     versionRange="[3.11,)"
     ordering="AFTER"
     side="BOTH"
 
-[[dependencies.${mod_id}]]
+[[dependencies."epicfighttinkercompat"]]
     modId="tinkers_katanas"
     mandatory=false
     versionRange="*"
     ordering="AFTER"
     side="BOTH"
 
-[[dependencies.${mod_id}]]
+[[dependencies."epicfighttinkercompat"]]
     modId="jsonthings"
     mandatory=false
     versionRange="*"
     ordering="AFTER"
     side="BOTH"
 
+[[dependencies."epicfighttinkercompat"]]
+    modId="constructs_casting"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
 
-#[features.${mod_id}]
+[[dependencies."epicfighttinkercompat"]]
+    modId="irons_lib"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies."epicfighttinkercompat"]]
+    modId="irons_spellbooks"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies."epicfighttinkercompat"]]
+    modId="curios"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies."epicfighttinkercompat"]]
+    modId="geckolib"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies."epicfighttinkercompat"]]
+    modId="playeranimator"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+
+#[features."epicfighttinkercompat"]
 #openGLVersion="[3.2,)"
