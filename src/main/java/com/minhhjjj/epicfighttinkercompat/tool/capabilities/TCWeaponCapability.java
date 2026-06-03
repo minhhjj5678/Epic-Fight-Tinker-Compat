@@ -74,7 +74,7 @@ public class TCWeaponCapability extends CapabilityItem {
     }
 
     public CombatProfile getCurrentSet(LivingEntityPatch<?> patch) {
-        ModifierProfile modifierProfile = this.getModifierProfile(patch);
+        ModifierProfile modifierProfile = this.getModifierProfile(patch, InteractionHand.MAIN_HAND);
         if (modifierProfile != null) {
             Style resolvedStyle = modifierProfile.styleProvider().apply(patch);
             CombatProfile moveSet = modifierProfile.weaponSets().get(resolvedStyle);
@@ -95,7 +95,7 @@ public class TCWeaponCapability extends CapabilityItem {
     }
 
     public Style getStyle(LivingEntityPatch<?> patch) {
-        ModifierProfile modifierProfile = this.getModifierProfile(patch);
+        ModifierProfile modifierProfile = this.getModifierProfile(patch, InteractionHand.MAIN_HAND);
         if (modifierProfile != null && modifierProfile.styleProvider() != null) {
             Style modifierStyle = modifierProfile.styleProvider().apply(patch);
             if (modifierStyle != null) {
@@ -143,9 +143,8 @@ public class TCWeaponCapability extends CapabilityItem {
         return innateSkillFunction == null ? null : innateSkillFunction.apply(itemstack, playerpatch);
     }
 
-    @Override
-    public WeaponCategory getWeaponCategory() {
-        ModifierProfile modifierProfile = this.getModifierProfile();
+    public WeaponCategory getWeaponCategory(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
+        ModifierProfile modifierProfile = this.getModifierProfile(entityPatch, hand);
         if (modifierProfile != null && modifierProfile.weaponCategory() != null) {
             return modifierProfile.weaponCategory();
         }
@@ -177,7 +176,7 @@ public class TCWeaponCapability extends CapabilityItem {
             }
         }
 
-        ToolStack toolStack = getToolStack(entityPatch);
+        ToolStack toolStack = getToolStack(entityPatch, hand);
         if (entityPatch.getOriginal().isCrouching() && result.containsKey(LivingMotions.BLOCK) && toolStack != null && toolStack.getModifierLevel(Objects.requireNonNull(THROWING_ID, "throwing id")) > 0) {
             result.remove(LivingMotions.BLOCK);
         }
@@ -211,7 +210,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public AnimationManager.AnimationAccessor<? extends StaticAnimation> getGuardMotion(GuardSkill skill, GuardSkill.BlockType blockType, PlayerPatch<?> playerpatch) {
-        ToolStack toolStack = getToolStack(playerpatch);
+        ToolStack toolStack = getToolStack(playerpatch, null);
         if (toolStack == null || toolStack.getModifierLevel(Objects.requireNonNull(BLOCKING_ID, "blocking modifier id")) <= 0) {
             return null;
         }
@@ -232,7 +231,7 @@ public class TCWeaponCapability extends CapabilityItem {
     @Override
     public UseAnim getUseAnimation(LivingEntityPatch<?> entityPatch) {
         CombatProfile set = getCurrentSet(entityPatch);
-        ToolStack toolStack = getToolStack(entityPatch);
+        ToolStack toolStack = getToolStack(entityPatch, null);
         if (set != null && set.livingMotions().containsKey(LivingMotions.BLOCK) && toolStack != null && toolStack.getModifierLevel(Objects.requireNonNull(BLOCKING_ID, "blocking modifier id")) > 0) {
             return UseAnim.BLOCK;
         }
@@ -275,16 +274,16 @@ public class TCWeaponCapability extends CapabilityItem {
     }
 
     @SuppressWarnings("null")
-    protected ToolStack getToolStack(LivingEntityPatch<?> entityPatch) {
+    public ToolStack getToolStack(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
         if (entityPatch != null) {
-            ItemStack itemStack = entityPatch.getOriginal().isUsingItem() ? entityPatch.getOriginal().getItemInHand(entityPatch.getOriginal().getUsedItemHand()) : entityPatch.getOriginal().getMainHandItem();
+            ItemStack itemStack = entityPatch.getOriginal().getItemInHand(hand != null ? hand : InteractionHand.MAIN_HAND);
             return itemStack.isEmpty() ? null : ToolStack.from(itemStack);
         }
         return null;
     }
 
-    protected ModifierProfile getModifierProfile(LivingEntityPatch<?> entityPatch) {
-        ToolStack toolStack = getToolStack(entityPatch);
+    protected ModifierProfile getModifierProfile(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
+        ToolStack toolStack = getToolStack(entityPatch, hand);
         if (toolStack != null) {
             for (ModifierProfile modifierProfile : this.modifierProfiles) {
                 ModifierId modifierId = modifierProfile.modifierId();
@@ -302,7 +301,7 @@ public class TCWeaponCapability extends CapabilityItem {
     }
 
     protected ModifierProfile getModifierProfile() {
-        return this.getModifierProfile(null);
+        return null;
     }
 
     protected void sortModifierProfiles() {
