@@ -1,0 +1,33 @@
+{
+  "type": "tconstruct:modifier",
+  "allow_crystal": true,
+  "inputs": [
+    {
+      "ingredient": [
+        {
+          "item": "epicfight:wooden_greatsword"
+        },
+        {
+          "item": "epicfight:stone_greatsword"
+        },
+        {
+          "item": "epicfight:iron_greatsword"
+        },
+        {
+          "item": "epicfight:golden_greatsword"
+        },
+        {
+          "item": "epicfight:diamond_greatsword"
+        },
+        {
+          "item": "epicfight:netherite_greatsword"
+        }
+      ]
+    }
+  ],
+  "level": 1,
+  "result": "epicfighttinkercompat:greatsword",
+  "tools": {
+    "tag": "tconstruct:modifiable/melee"
+  }
+}

@@ -1,8 +1,8 @@
 {
-  "modifier_id": "epicfighttinkercompat:speary",
+  "modifier_id": "epicfighttinkercompat:tachi",
   "text": [
     {
-      "text": "Changes tool behavior to use spear-style handling in Epic Fight."
+      "text": "Changes tool behavior to use tachi-style handling in Epic Fight."
     }
   ],
   "more_text_space": true,

@@ -5,28 +5,28 @@
     {
       "ingredient": [
         {
-          "item": "epicfight:wooden_spear"
+          "item": "minecraft:wooden_axe"
         },
         {
-          "item": "epicfight:stone_spear"
+          "item": "minecraft:stone_axe"
         },
         {
-          "item": "epicfight:iron_spear"
+          "item": "minecraft:iron_axe"
         },
         {
-          "item": "epicfight:golden_spear"
+          "item": "minecraft:golden_axe"
         },
         {
-          "item": "epicfight:diamond_spear"
+          "item": "minecraft:diamond_axe"
         },
         {
-          "item": "epicfight:netherite_spear"
+          "item": "minecraft:netherite_axe"
         }
       ]
     }
   ],
   "level": 1,
-  "result": "epicfighttinkercompat:speary",
+  "result": "epicfighttinkercompat:axe",
   "tools": {
     "tag": "tconstruct:modifiable/melee"
   }

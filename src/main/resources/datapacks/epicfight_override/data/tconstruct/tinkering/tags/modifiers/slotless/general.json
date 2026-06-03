@@ -4,6 +4,13 @@
     "epicfighttinkercompat:speary",
     "epicfighttinkercompat:torment_blade",
     "epicfighttinkercompat:ruine_blade",
-    "epicfighttinkercompat:agony_spear"
+    "epicfighttinkercompat:agony_spear",
+    "epicfighttinkercompat:shortsword",
+    "epicfighttinkercompat:longsword",
+    "epicfighttinkercompat:greatsword",
+    "epicfighttinkercompat:tachi",
+    "epicfighttinkercompat:uchigatana",
+    "epicfighttinkercompat:axe",
+    "epicfighttinkercompat:dagger"
   ]
 }

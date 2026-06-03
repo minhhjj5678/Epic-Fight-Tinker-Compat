@@ -5,28 +5,28 @@
     {
       "ingredient": [
         {
-          "item": "epicfight:wooden_spear"
+          "item": "epicfight:wooden_tachi"
         },
         {
-          "item": "epicfight:stone_spear"
+          "item": "epicfight:stone_tachi"
         },
         {
-          "item": "epicfight:iron_spear"
+          "item": "epicfight:iron_tachi"
         },
         {
-          "item": "epicfight:golden_spear"
+          "item": "epicfight:golden_tachi"
         },
         {
-          "item": "epicfight:diamond_spear"
+          "item": "epicfight:diamond_tachi"
         },
         {
-          "item": "epicfight:netherite_spear"
+          "item": "epicfight:netherite_tachi"
         }
       ]
     }
   ],
   "level": 1,
-  "result": "epicfighttinkercompat:speary",
+  "result": "epicfighttinkercompat:tachi",
   "tools": {
     "tag": "tconstruct:modifiable/melee"
   }

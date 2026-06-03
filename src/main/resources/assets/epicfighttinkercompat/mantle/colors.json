@@ -2,9 +2,16 @@
   "modifier.epicfighttinkercompat": {
     "so_sticky": "#55FF55",
     "weightless": "#55AAFF",
-    "speary": "#FFAA00",
+    "speary": "#BF1DAA",
     "torment_blade": "#2B2B2F",
     "agony_spear": "#1F1F23",
-    "ruine_blade": "#7A3FD6"
+    "ruine_blade": "#7A3FD6",
+    "shortsword": "#BF1DAA",
+    "longsword": "#BF1DAA",
+    "greatsword": "#BF1DAA",
+    "tachi": "#BF1DAA",
+    "uchigatana": "#BF1DAA",
+    "axe": "#BF1DAA",
+    "dagger": "#BF1DAA"
   }
 }

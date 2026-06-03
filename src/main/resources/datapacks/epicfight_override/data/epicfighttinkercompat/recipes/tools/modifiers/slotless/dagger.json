@@ -5,28 +5,28 @@
     {
       "ingredient": [
         {
-          "item": "epicfight:wooden_spear"
+          "item": "epicfight:wooden_dagger"
         },
         {
-          "item": "epicfight:stone_spear"
+          "item": "epicfight:stone_dagger"
         },
         {
-          "item": "epicfight:iron_spear"
+          "item": "epicfight:iron_dagger"
         },
         {
-          "item": "epicfight:golden_spear"
+          "item": "epicfight:golden_dagger"
         },
         {
-          "item": "epicfight:diamond_spear"
+          "item": "epicfight:diamond_dagger"
         },
         {
-          "item": "epicfight:netherite_spear"
+          "item": "epicfight:netherite_dagger"
         }
       ]
     }
   ],
   "level": 1,
-  "result": "epicfighttinkercompat:speary",
+  "result": "epicfighttinkercompat:dagger",
   "tools": {
     "tag": "tconstruct:modifiable/melee"
   }

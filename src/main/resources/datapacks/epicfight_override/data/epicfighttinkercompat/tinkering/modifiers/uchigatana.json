@@ -1,0 +1,158 @@
+{
+  "modules": [
+    {
+      "type": "tconstruct:requirements",
+      "display_modifiers": [
+        {
+          "level": 1,
+          "name": "epicfighttinkercompat:agony_spear"
+        }
+      ],
+      "requirement": {
+        "type": "tconstruct:has_modifier",
+        "check": "all",
+        "level": 0,
+        "modifier": {
+          "type": "tconstruct:single",
+          "modifier": "epicfighttinkercompat:agony_spear"
+        }
+      },
+      "translation_key": "modifier.epicfighttinkercompat.speary.requirements"
+    },
+    {
+      "type": "tconstruct:requirements",
+      "display_modifiers": [
+        {
+          "level": 1,
+          "name": "epicfighttinkercompat:speary"
+        }
+      ],
+      "requirement": {
+        "type": "tconstruct:has_modifier",
+        "check": "all",
+        "level": 0,
+        "modifier": {
+          "type": "tconstruct:single",
+          "modifier": "epicfighttinkercompat:speary"
+        }
+      },
+      "translation_key": "modifier.epicfighttinkercompat.speary.requirements"
+    },
+    {
+      "type": "tconstruct:requirements",
+      "display_modifiers": [
+        {
+          "level": 1,
+          "name": "epicfighttinkercompat:shortsword"
+        }
+      ],
+      "requirement": {
+        "type": "tconstruct:has_modifier",
+        "check": "all",
+        "level": 0,
+        "modifier": {
+          "type": "tconstruct:single",
+          "modifier": "epicfighttinkercompat:shortsword"
+        }
+      },
+      "translation_key": "modifier.epicfighttinkercompat.speary.requirements"
+    },
+    {
+      "type": "tconstruct:requirements",
+      "display_modifiers": [
+        {
+          "level": 1,
+          "name": "epicfighttinkercompat:longsword"
+        }
+      ],
+      "requirement": {
+        "type": "tconstruct:has_modifier",
+        "check": "all",
+        "level": 0,
+        "modifier": {
+          "type": "tconstruct:single",
+          "modifier": "epicfighttinkercompat:longsword"
+        }
+      },
+      "translation_key": "modifier.epicfighttinkercompat.speary.requirements"
+    },
+    {
+      "type": "tconstruct:requirements",
+      "display_modifiers": [
+        {
+          "level": 1,
+          "name": "epicfighttinkercompat:greatsword"
+        }
+      ],
+      "requirement": {
+        "type": "tconstruct:has_modifier",
+        "check": "all",
+        "level": 0,
+        "modifier": {
+          "type": "tconstruct:single",
+          "modifier": "epicfighttinkercompat:greatsword"
+        }
+      },
+      "translation_key": "modifier.epicfighttinkercompat.speary.requirements"
+    },
+    {
+      "type": "tconstruct:requirements",
+      "display_modifiers": [
+        {
+          "level": 1,
+          "name": "epicfighttinkercompat:tachi"
+        }
+      ],
+      "requirement": {
+        "type": "tconstruct:has_modifier",
+        "check": "all",
+        "level": 0,
+        "modifier": {
+          "type": "tconstruct:single",
+          "modifier": "epicfighttinkercompat:tachi"
+        }
+      },
+      "translation_key": "modifier.epicfighttinkercompat.speary.requirements"
+    },
+    {
+      "type": "tconstruct:requirements",
+      "display_modifiers": [
+        {
+          "level": 1,
+          "name": "epicfighttinkercompat:axe"
+        }
+      ],
+      "requirement": {
+        "type": "tconstruct:has_modifier",
+        "check": "all",
+        "level": 0,
+        "modifier": {
+          "type": "tconstruct:single",
+          "modifier": "epicfighttinkercompat:axe"
+        }
+      },
+      "translation_key": "modifier.epicfighttinkercompat.speary.requirements"
+    },
+    {
+      "type": "tconstruct:requirements",
+      "display_modifiers": [
+        {
+          "level": 1,
+          "name": "epicfighttinkercompat:dagger"
+        }
+      ],
+      "requirement": {
+        "type": "tconstruct:has_modifier",
+        "check": "all",
+        "level": 0,
+        "modifier": {
+          "type": "tconstruct:single",
+          "modifier": "epicfighttinkercompat:dagger"
+        }
+      },
+      "translation_key": "modifier.epicfighttinkercompat.speary.requirements"
+    }
+  ],
+  "level_display": "tconstruct:no_levels",
+  "tooltip_display": "always"
+}

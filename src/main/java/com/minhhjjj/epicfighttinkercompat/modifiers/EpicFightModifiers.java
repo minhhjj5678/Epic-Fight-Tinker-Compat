@@ -12,6 +12,15 @@ public class EpicFightModifiers {
 
     public static final StaticModifier<EpicFightPartStatModifier> EPIC_PART_STATS_CALCULATOR = MODIFIERS.register("epic_part_stats_calculator", EpicFightPartStatModifier::new);
 
+    public static final ModifierId SHORTSWORD = new ModifierId(EpicFightTinkerCompat.MODID, "shortsword");
+    public static final ModifierId LONGSWORD = new ModifierId(EpicFightTinkerCompat.MODID, "longsword");
+    public static final ModifierId GREATSWORD = new ModifierId(EpicFightTinkerCompat.MODID, "greatsword");
+    public static final ModifierId TACHI = new ModifierId(EpicFightTinkerCompat.MODID, "tachi");
+    public static final ModifierId UCHIGATANA = new ModifierId(EpicFightTinkerCompat.MODID, "uchigatana");
+    public static final ModifierId AXE = new ModifierId(EpicFightTinkerCompat.MODID, "axe");
+    public static final ModifierId SPEARY = new ModifierId(EpicFightTinkerCompat.MODID, "speary");
+    public static final ModifierId DAGGER = new ModifierId(EpicFightTinkerCompat.MODID, "dagger");
+
     public static final ModifierId BLOCKING = new ModifierId(TConstruct.MOD_ID, "blocking");
     public static final ModifierId THROWING = new ModifierId(TConstruct.MOD_ID, "throwing");
 

@@ -1,0 +1,33 @@
+{
+  "type": "tconstruct:modifier",
+  "allow_crystal": true,
+  "inputs": [
+    {
+      "ingredient": [
+        {
+          "item": "epicfight:wooden_longsword"
+        },
+        {
+          "item": "epicfight:stone_longsword"
+        },
+        {
+          "item": "epicfight:iron_longsword"
+        },
+        {
+          "item": "epicfight:golden_longsword"
+        },
+        {
+          "item": "epicfight:diamond_longsword"
+        },
+        {
+          "item": "epicfight:netherite_longsword"
+        }
+      ]
+    }
+  ],
+  "level": 1,
+  "result": "epicfighttinkercompat:longsword",
+  "tools": {
+    "tag": "tconstruct:modifiable/melee"
+  }
+}

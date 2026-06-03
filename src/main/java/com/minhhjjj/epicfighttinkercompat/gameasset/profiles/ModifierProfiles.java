@@ -4,6 +4,7 @@ package com.minhhjjj.epicfighttinkercompat.gameasset.profiles;
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import com.minhhjjj.epicfighttinkercompat.modifiers.EpicFightModifiers;
 
+import net.minecraft.world.InteractionHand;
 import net.minecraftforge.fml.ModList;
 import reascer.wom.gameasset.WOMSkills;
 import reascer.wom.gameasset.colliders.WOMWeaponColliders;
@@ -11,22 +12,22 @@ import reascer.wom.skill.WOMSkillDataKeys;
 import reascer.wom.world.capabilities.item.WOMWeaponCategories;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import yesman.epicfight.gameasset.ColliderPreset;
-import yesman.epicfight.skill.SkillContainer;
-import yesman.epicfight.skill.SkillDataKey;
-import yesman.epicfight.skill.SkillDataManager;
-import yesman.epicfight.skill.SkillSlots;
+import yesman.epicfight.skill.*;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.Styles;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.WeaponCategories;
 
-public class ModifierProfiles {
-    private static final ModifierId SPEARY_ID = new ModifierId(EpicFightTinkerCompat.MODID, "speary");
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+public class ModifierProfiles {
     public static final ModifierProfile TORMENT = ModList.get().isLoaded("wom") ? createTormentProfile() : null;
     public static final ModifierProfile RUINE = ModList.get().isLoaded("wom") ? createRuineProfile() : null;
     public static final ModifierProfile AGONY = ModList.get().isLoaded("wom") ? createAgonyProfile() : null;
-    public static final ModifierProfile SPEARY = ModifierProfile.builder(SPEARY_ID)
+
+    public static final ModifierProfile SPEARY = ModifierProfile.builder(EpicFightModifiers.SPEARY)
             .styleProvider((LivingEntityPatch<?> patch) -> {
                 if (patch.getOriginal().getOffhandItem().isEmpty())
                     return Styles.TWO_HAND;
@@ -38,6 +39,77 @@ public class ModifierProfiles {
             .weaponCategory(WeaponCategories.SPEAR)
             .collider(ColliderPreset.SPEAR)
             .priority(50)
+            .build();
+
+    public static final ModifierProfile SWORD = ModifierProfile.builder(EpicFightModifiers.SHORTSWORD)
+            .styleProvider((patch) -> {
+                if (patch.getOriginal().isVehicle()) return Styles.MOUNT;
+                if (patch.getHoldingItemCapability(InteractionHand.OFF_HAND).getWeaponCategory() == WeaponCategories.SWORD) return Styles.TWO_HAND;
+                return Styles.ONE_HAND;
+            })
+            .addMoveSet(Styles.ONE_HAND, CombatProfiles.sword1HSet().build())
+            .addMoveSet(Styles.TWO_HAND, CombatProfiles.sword2HSet().build())
+            .addMoveSet(Styles.MOUNT, CombatProfiles.swordMountSet().build())
+            .weaponCategory(WeaponCategories.SWORD)
+            .priority(70)
+            .build();
+
+    public static final ModifierProfile LONGSWORD = ModifierProfile.builder(EpicFightModifiers.LONGSWORD)
+            .styleProvider((patch) -> {
+                if (patch.getHoldingItemCapability(InteractionHand.OFF_HAND).getWeaponCategory() == WeaponCategories.SHIELD) return Styles.ONE_HAND;
+                if (patch instanceof PlayerPatch<?> playerPatch && playerPatch.getSkill(SkillSlots.WEAPON_INNATE).isActivated()) return Styles.OCHS;
+                return Styles.TWO_HAND;
+            })
+            .addMoveSet(Styles.ONE_HAND, CombatProfiles.flamberge1HSet().build())
+            .addMoveSet(Styles.TWO_HAND, CombatProfiles.flamberge2HSet().build())
+            .addMoveSet(Styles.OCHS, CombatProfiles.flambergeOchsSet().build())
+            .weaponCategory(WeaponCategories.LONGSWORD)
+            .priority(80)
+            .build();
+
+    public static final ModifierProfile GREATSWORD = ModifierProfile.builder(EpicFightModifiers.GREATSWORD)
+            .styleProvider((patch) -> Styles.TWO_HAND)
+            .addMoveSet(Styles.TWO_HAND, CombatProfiles.cleaver2HSet().build())
+            .weaponCategory(WeaponCategories.GREATSWORD)
+            .priority(90)
+            .build();
+
+    public static final ModifierProfile DAGGER = ModifierProfile.builder(EpicFightModifiers.DAGGER)
+            .styleProvider((patch) -> {
+                if (patch.getHoldingItemCapability(InteractionHand.OFF_HAND).getWeaponCategory() == WeaponCategories.DAGGER) return Styles.TWO_HAND;
+                return Styles.ONE_HAND;
+            })
+            .addMoveSet(Styles.ONE_HAND, CombatProfiles.dagger1HSet().build())
+            .addMoveSet(Styles.TWO_HAND, CombatProfiles.dagger2HSet().build())
+            .weaponCategory(WeaponCategories.DAGGER)
+            .priority(60)
+            .build();
+
+    public static final ModifierProfile TACHI = ModifierProfile.builder(EpicFightModifiers.TACHI)
+            .styleProvider((patch) -> Styles.TWO_HAND)
+            .addMoveSet(Styles.TWO_HAND, CombatProfiles.tachiSet().build())
+            .weaponCategory(WeaponCategories.TACHI)
+            .priority(100)
+            .build();
+
+    public static final ModifierProfile UCHIGATANA = ModifierProfile.builder(EpicFightModifiers.UCHIGATANA)
+            .styleProvider((patch) -> {
+                if (patch instanceof PlayerPatch<?> playerPatch && playerPatch.getSkill(SkillSlots.WEAPON_PASSIVE).getDataManager().hasData(SkillDataKeys.SHEATH.get()) && playerPatch.getSkill(SkillSlots.WEAPON_PASSIVE).getDataManager().getDataValue(SkillDataKeys.SHEATH.get())) {
+                    return Styles.SHEATH;
+                }
+                return Styles.TWO_HAND;
+            })
+            .addMoveSet(Styles.TWO_HAND, CombatProfiles.katanaBaseSet().build())
+            .addMoveSet(Styles.SHEATH, CombatProfiles.katanaSheathedSet().build())
+            .weaponCategory(WeaponCategories.UCHIGATANA)
+            .priority(110)
+            .build();
+
+    public static final ModifierProfile AXE = ModifierProfile.builder(EpicFightModifiers.AXE)
+            .styleProvider((patch) -> Styles.ONE_HAND)
+            .addMoveSet(Styles.ONE_HAND, CombatProfiles.axe1HSet().build())
+            .weaponCategory(WeaponCategories.AXE)
+            .priority(55)
             .build();
 
     private static ModifierProfile createAgonyProfile() {
@@ -92,4 +164,8 @@ public class ModifierProfiles {
                 .priority(100)
                 .build();
     }
+
+    public static List<ModifierProfile> defaultModifierProfiles = new ArrayList<>(Arrays.asList(
+            SWORD, LONGSWORD, GREATSWORD, TACHI, UCHIGATANA, AXE, DAGGER, SPEARY
+    ));
 }
