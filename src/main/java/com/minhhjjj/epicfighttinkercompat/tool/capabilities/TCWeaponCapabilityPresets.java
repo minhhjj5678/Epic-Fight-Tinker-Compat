@@ -44,7 +44,7 @@ public class TCWeaponCapabilityPresets {
 		.canBePlacedOffhand(true)
 		.reach(1.0F)
 		.styleProvider((patch) -> {
-			if (patch.getHoldingItemCapability(InteractionHand.OFF_HAND).getWeaponCategory() == WeaponCategories.SWORD) {
+			if (TCWeaponUtils.getDynamicProperty(patch, patch.getHoldingItemCapability(InteractionHand.OFF_HAND), InteractionHand.OFF_HAND, CapabilityItem::getWeaponCategory, TCWeaponCapability::getWeaponCategory) == WeaponCategories.SWORD) {
 				return Styles.TWO_HAND;
 			}
 			return Styles.ONE_HAND;
@@ -83,7 +83,7 @@ public class TCWeaponCapabilityPresets {
 		.hitParticle(EpicFightParticles.HIT_BLADE.get())
 		.canBePlacedOffhand(true)
 		.reach(1.0F)
-		.styleProvider((patch) -> patch.getHoldingItemCapability(InteractionHand.OFF_HAND).getWeaponCategory() == WeaponCategories.DAGGER ? Styles.TWO_HAND : Styles.ONE_HAND);
+		.styleProvider((patch) -> TCWeaponUtils.getDynamicProperty(patch, patch.getHoldingItemCapability(InteractionHand.OFF_HAND), InteractionHand.OFF_HAND, CapabilityItem::getWeaponCategory, TCWeaponCapability::getWeaponCategory) == WeaponCategories.DAGGER ? Styles.TWO_HAND : Styles.ONE_HAND);
 
 	public static final Function<Item, CapabilityItem.Builder> TC_SHIELD = (item) -> TCWeaponCapability.builder()
 		.defaultMoveSet(CombatProfiles.shieldSet())
@@ -206,7 +206,7 @@ public class TCWeaponCapabilityPresets {
 			.reach(1.0F)
 			.zoomInType(CapabilityItem.ZoomInType.USE_TICK)
 			.styleProvider((patch) -> {
-				if (patch.getHoldingItemCapability(InteractionHand.OFF_HAND).getWeaponCategory() == WeaponCategories.SHIELD) {
+				if (TCWeaponUtils.getDynamicProperty(patch, patch.getHoldingItemCapability(InteractionHand.OFF_HAND), InteractionHand.OFF_HAND, CapabilityItem::getWeaponCategory, TCWeaponCapability::getWeaponCategory) == WeaponCategories.SHIELD) {
 					return Styles.ONE_HAND;
 				}
 				if (patch instanceof PlayerPatch<?> playerPatch && playerPatch.getSkill(SkillSlots.WEAPON_INNATE).isActivated()) {

@@ -4,6 +4,8 @@ package com.minhhjjj.epicfighttinkercompat.gameasset.profiles;
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import com.minhhjjj.epicfighttinkercompat.modifiers.EpicFightModifiers;
 
+import com.minhhjjj.epicfighttinkercompat.tool.capabilities.TCWeaponCapability;
+import com.minhhjjj.epicfighttinkercompat.tool.capabilities.TCWeaponUtils;
 import net.minecraft.world.InteractionHand;
 import net.minecraftforge.fml.ModList;
 import reascer.wom.gameasset.WOMSkills;
@@ -15,6 +17,7 @@ import yesman.epicfight.gameasset.ColliderPreset;
 import yesman.epicfight.skill.*;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
+import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.Styles;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.WeaponCategories;
 
@@ -44,7 +47,7 @@ public class ModifierProfiles {
     public static final ModifierProfile SWORD = ModifierProfile.builder(EpicFightModifiers.SHORTSWORD)
             .styleProvider((patch) -> {
                 if (patch.getOriginal().isVehicle()) return Styles.MOUNT;
-                if (patch.getHoldingItemCapability(InteractionHand.OFF_HAND).getWeaponCategory() == WeaponCategories.SWORD) return Styles.TWO_HAND;
+                if (TCWeaponUtils.getDynamicProperty(patch, patch.getHoldingItemCapability(InteractionHand.OFF_HAND), InteractionHand.OFF_HAND, CapabilityItem::getWeaponCategory, TCWeaponCapability::getWeaponCategory) == WeaponCategories.SWORD) return Styles.TWO_HAND;
                 return Styles.ONE_HAND;
             })
             .addMoveSet(Styles.ONE_HAND, CombatProfiles.sword1HSet().build())
@@ -56,8 +59,10 @@ public class ModifierProfiles {
 
     public static final ModifierProfile LONGSWORD = ModifierProfile.builder(EpicFightModifiers.LONGSWORD)
             .styleProvider((patch) -> {
-                if (patch.getHoldingItemCapability(InteractionHand.OFF_HAND).getWeaponCategory() == WeaponCategories.SHIELD) return Styles.ONE_HAND;
-                if (patch instanceof PlayerPatch<?> playerPatch && playerPatch.getSkill(SkillSlots.WEAPON_INNATE).isActivated()) return Styles.OCHS;
+                if (patch instanceof PlayerPatch<?> pPatch) {
+                    if (TCWeaponUtils.getDynamicProperty(pPatch, patch.getHoldingItemCapability(InteractionHand.OFF_HAND), InteractionHand.OFF_HAND, CapabilityItem::getWeaponCategory, TCWeaponCapability::getWeaponCategory) == WeaponCategories.SHIELD) return Styles.ONE_HAND;
+                    if (pPatch.getSkill(SkillSlots.WEAPON_INNATE).isActivated()) return Styles.OCHS;
+                }
                 return Styles.TWO_HAND;
             })
             .addMoveSet(Styles.ONE_HAND, CombatProfiles.flamberge1HSet().build())
@@ -76,7 +81,7 @@ public class ModifierProfiles {
 
     public static final ModifierProfile DAGGER = ModifierProfile.builder(EpicFightModifiers.DAGGER)
             .styleProvider((patch) -> {
-                if (patch.getHoldingItemCapability(InteractionHand.OFF_HAND).getWeaponCategory() == WeaponCategories.DAGGER) return Styles.TWO_HAND;
+                if (TCWeaponUtils.getDynamicProperty(patch, patch.getHoldingItemCapability(InteractionHand.OFF_HAND), InteractionHand.OFF_HAND, CapabilityItem::getWeaponCategory, TCWeaponCapability::getWeaponCategory) == WeaponCategories.DAGGER) return Styles.TWO_HAND;
                 return Styles.ONE_HAND;
             })
             .addMoveSet(Styles.ONE_HAND, CombatProfiles.dagger1HSet().build())
