@@ -73,6 +73,7 @@ public class CombatProfiles {
 	public static CombatProfile.CombatProfileBuilder axe1HSet() {
 		return CombatProfile.builder()
 		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.AXE_AUTO1, Animations.AXE_AUTO2, Animations.AXE_DASH, Animations.AXE_AIRSLASH})
+		.addInnateSkill((item, patch) -> EpicFightSkills.GUILLOTINE_AXE)
 		.addLivingMotionsRecursive(Animations.BIPED_WALK, new LivingMotion[]{LivingMotions.WALK, LivingMotions.CHASE})
 		.addLivingMotionsRecursive(Animations.BIPED_IDLE, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.JUMP, LivingMotions.KNEEL, LivingMotions.SNEAK, LivingMotions.SWIM, LivingMotions.FLY, LivingMotions.CREATIVE_FLY, LivingMotions.CREATIVE_IDLE})
 		.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
