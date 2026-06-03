@@ -7,6 +7,7 @@ import java.util.function.Function;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.CombatProfile;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.CombatProfiles;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfile;
+import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfiles;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -240,7 +241,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public boolean canBePlacedOffhand() {
-        return this.canBePlacedOffhand;
+        return true;
     }
 
     @Override
@@ -385,6 +386,7 @@ public class TCWeaponCapability extends CapabilityItem {
             this.modifierProfiles = new ArrayList<>();
             this.weaponSets = new HashMap<>();
             this.weaponSets.put(Styles.COMMON, CombatProfiles.fist().build());
+            this.modifierProfiles.addAll(ModifierProfiles.defaultModifierProfiles);
         }
 
         public Builder styleProvider(Function<LivingEntityPatch<?>, Style> styleProvider) {
