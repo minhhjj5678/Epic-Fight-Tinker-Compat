@@ -11,6 +11,7 @@
     "sweepingedge.MixinEnchantmentHelper",
     "sweepingedge.MixinSweepWeaponAttack",
     "tool.MixinBlockingModifier",
+    "tool.MixinCapabilityItem",
     "tool.MixinModifiableItem",
     "tool.MixinToolStack"
   ],

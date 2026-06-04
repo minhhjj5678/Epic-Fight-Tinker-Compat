@@ -253,7 +253,6 @@ public class TCWeaponCapability extends CapabilityItem {
         return this.reach;
     }
 
-    @SuppressWarnings("unused")
     public Skill getPassiveSkill(PlayerPatch<?> playerPatch) {
         CombatProfile set = getCurrentSet(playerPatch);
         if (set != null) {
@@ -266,10 +265,8 @@ public class TCWeaponCapability extends CapabilityItem {
     public Skill getPassiveSkill() {
         CombatProfile set = this.defaultWeaponSet;
         if (set != null) {
-//            EpicFightTinkerCompat.LOGGER.info("Combat profile {} with passive skill: {}", set, set.passiveSkill() != null ? set.passiveSkill() : "no passive skill");
             return set.passiveSkill();
         }
-//        EpicFightTinkerCompat.LOGGER.info("Passive skill: {}", "no combat profile");
         return null;
     }
 
