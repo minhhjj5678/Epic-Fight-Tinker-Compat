@@ -130,7 +130,7 @@ public class ModifierProfiles {
                 .addMoveSet(Styles.ONE_HAND, CombatProfiles.agonyAirSet().build())
                 .weaponCategory(WOMWeaponCategories.AGONY)
                 .collider(WOMWeaponColliders.AGONY)
-                .priority(100)
+                .priority(120)
                 .build();
     }
 
@@ -149,7 +149,7 @@ public class ModifierProfiles {
                 .addMoveSet(Styles.OCHS, CombatProfiles.ruineOchsSet().build())
                 .weaponCategory(WOMWeaponCategories.RUINE)
                 .collider(WOMWeaponColliders.RUINE)
-                .priority(100)
+                .priority(130)
                 .build();
     }
 
@@ -166,7 +166,7 @@ public class ModifierProfiles {
                 .addMoveSet(Styles.OCHS, CombatProfiles.tormentOchsSet().build())
                 .weaponCategory(WOMWeaponCategories.TORMENT)
                 .collider(WOMWeaponColliders.TORMENT)
-                .priority(100)
+                .priority(140)
                 .build();
     }
 
