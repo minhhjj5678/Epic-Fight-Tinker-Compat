@@ -341,7 +341,7 @@ public class CombatProfiles {
 	@SuppressWarnings("unchecked")
 	public static CombatProfile.CombatProfileBuilder katanaSheathedSet() {
 		return CombatProfile.builder()
-				.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.UCHIGATANA_SHEATHING_AUTO, Animations.UCHIGATANA_SHEATHING_DASH})
+				.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.UCHIGATANA_SHEATHING_AUTO, Animations.UCHIGATANA_SHEATHING_DASH, Animations.UCHIGATANA_SHEATH_AIR_SLASH})
 				.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_BOW_AIM)
 				.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_BOW_SHOT)
 				.addLivingMotionsRecursive(Animations.BIPED_HOLD_UCHIGATANA_SHEATHING, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.KNEEL, LivingMotions.SWIM, LivingMotions.FALL})
