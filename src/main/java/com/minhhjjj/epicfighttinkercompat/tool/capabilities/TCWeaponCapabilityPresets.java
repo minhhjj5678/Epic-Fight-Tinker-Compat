@@ -223,4 +223,13 @@ public class TCWeaponCapabilityPresets {
 			.reach(1.0F)
 			.zoomInType(CapabilityItem.ZoomInType.USE_TICK)
 			.styleProvider((patch) -> Styles.ONE_HAND);
+
+	public static final Function<Item, CapabilityItem.Builder> UNKNOWN = (item) -> TCWeaponCapability.builder()
+			.defaultMoveSet(CombatProfiles.fist())
+			.addWeaponSet(Styles.ONE_HAND,  CombatProfiles.fist())
+			.category(WeaponCategories.FIST)
+			.collider(ColliderPreset.SWORD)
+			.reach(1.0F)
+			.zoomInType(CapabilityItem.ZoomInType.USE_TICK)
+			.styleProvider((patch) -> Styles.ONE_HAND);
 }

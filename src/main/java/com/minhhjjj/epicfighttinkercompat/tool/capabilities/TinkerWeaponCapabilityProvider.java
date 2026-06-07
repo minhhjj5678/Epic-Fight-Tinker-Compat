@@ -99,7 +99,7 @@ public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
                 .stunArmor(stunArmor);
         }
         else {
-            Function<Item, CapabilityItem.Builder> preset = WEAPON_CAPABILITY_PRESETS.get(weaponType);
+            Function<Item, CapabilityItem.Builder> preset = WEAPON_CAPABILITY_PRESETS.getOrDefault(weaponType, TCWeaponCapabilityPresets.UNKNOWN);
             if (preset != null) {
                 builder = preset.apply(tool.getItem());
             }
