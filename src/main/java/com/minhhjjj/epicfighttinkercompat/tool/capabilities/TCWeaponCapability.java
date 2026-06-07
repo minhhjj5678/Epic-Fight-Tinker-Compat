@@ -9,6 +9,7 @@ import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.CombatProfiles;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfile;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfiles;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -53,6 +54,18 @@ public class TCWeaponCapability extends CapabilityItem {
     private static final ModifierId THROWING_ID = new ModifierId(TConstruct.MOD_ID, "throwing");
     private static final ModifierId BLOCKING_ID = new ModifierId(TConstruct.MOD_ID, "blocking");
 
+    private final WeakHashMap<ItemStack, CachedProfile> profileCache = new WeakHashMap<>();
+
+    private static class CachedProfile {
+        final CompoundTag nbtHash;
+        final ModifierProfile modifierProfile;
+
+        CachedProfile(CompoundTag nbtHash, ModifierProfile modifierProfile) {
+            this.nbtHash = nbtHash;
+            this.modifierProfile = modifierProfile;
+        }
+    }
+
     protected TCWeaponCapability(CapabilityItem.Builder builder) {
         super(builder);
         Builder tcBuilder = (Builder)builder;
@@ -73,25 +86,49 @@ public class TCWeaponCapability extends CapabilityItem {
         sortModifierProfiles();
     }
 
-    public CombatProfile getCurrentSet(LivingEntityPatch<?> patch) {
+    public CombatProfile getCurrentCP(LivingEntityPatch<?> patch) {
+        ItemStack stack = patch.getOriginal().getMainHandItem();
+        if (stack.isEmpty()) {
+            return this.defaultWeaponSet != null ? this.defaultWeaponSet : this.weaponSets.get(Styles.COMMON);
+        }
+
+        CompoundTag stackNBT = stack.getTag();
+        CachedProfile cached = profileCache.get(stack);
+        if (cached != null && Objects.equals(cached.nbtHash, stackNBT)) {
+            if (cached.modifierProfile != null && cached.modifierProfile.styleProvider() != null) {
+                CombatProfile CP = cached.modifierProfile.weaponSets().get(cached.modifierProfile.styleProvider().apply(patch));
+                if (CP != null) {
+                    return CP;
+                }
+            }
+            return this.weaponSets.getOrDefault(this.styleProvider.apply(patch), this.defaultWeaponSet != null ? this.defaultWeaponSet : this.weaponSets.get(Styles.COMMON));
+        }
+
+        CombatProfile combatProfile = null;
+        ModifierProfile cachedMP = null;
         ModifierProfile modifierProfile = this.getModifierProfile(patch, InteractionHand.MAIN_HAND);
         if (modifierProfile != null) {
             Style resolvedStyle = modifierProfile.styleProvider().apply(patch);
             CombatProfile moveSet = modifierProfile.weaponSets().get(resolvedStyle);
             if (moveSet != null) {
-                return moveSet;
+                combatProfile = moveSet;
+            }
+            cachedMP = modifierProfile;
+        }
+
+        if (combatProfile == null) {
+            Style style = this.styleProvider.apply(patch);
+            if (style != Styles.COMMON) {
+                CombatProfile styleMoveSet = this.weaponSets.get(style);
+                if (styleMoveSet != null) {
+                    combatProfile = styleMoveSet;
+                }
             }
         }
 
-        Style style = this.getStyle(patch);
-        if (style != Styles.COMMON) {
-            CombatProfile styleMoveSet = this.weaponSets.get(style);
-            if (styleMoveSet != null) {
-                return styleMoveSet;
-            }
-        }
-
-        return this.defaultWeaponSet != null ? this.defaultWeaponSet : this.weaponSets.get(Styles.COMMON);
+        combatProfile = (combatProfile == null) ? this.defaultWeaponSet != null ? this.defaultWeaponSet : this.weaponSets.get(Styles.COMMON) : combatProfile;
+        profileCache.put(stack, new CachedProfile(stackNBT == null ? null : stackNBT.copy(), cachedMP));
+        return combatProfile;
     }
 
     public Style getStyle(LivingEntityPatch<?> patch) {
@@ -115,7 +152,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public List<AnimationManager.AnimationAccessor<? extends AttackAnimation>> getAutoAttackMotion(PlayerPatch<?> playerpatch) {
-        return this.getCurrentSet(playerpatch).attackMotions();
+        return this.getCurrentCP(playerpatch).attackMotions();
     }
 
     @Override
@@ -139,7 +176,7 @@ public class TCWeaponCapability extends CapabilityItem {
     }
 
     public Skill getInnateSkill(PlayerPatch<?> playerpatch, ItemStack itemstack) {
-        BiFunction<ItemStack, PlayerPatch<?>, Skill> innateSkillFunction = this.getCurrentSet(playerpatch).innateSkill();
+        BiFunction<ItemStack, PlayerPatch<?>, Skill> innateSkillFunction = this.getCurrentCP(playerpatch).innateSkill();
         return innateSkillFunction == null ? null : innateSkillFunction.apply(itemstack, playerpatch);
     }
 
@@ -162,12 +199,12 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> getLivingMotionModifier(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
-        CombatProfile set = getCurrentSet(entityPatch);
-        Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> result = new HashMap<>();
+        CombatProfile set = getCurrentCP(entityPatch);
 
         if (set == null) {
-            return result;
+            return Collections.emptyMap();
         }
+        Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> result = new HashMap<>();
 
         for (Map.Entry<LivingMotion, List<AnimationManager.AnimationAccessor<? extends StaticAnimation>>> entry : set.livingMotions().entrySet()) {
             List<AnimationManager.AnimationAccessor<? extends StaticAnimation>> animations = entry.getValue();
@@ -186,13 +223,13 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public boolean checkOffhandValid(LivingEntityPatch<?> entityPatch) {
-        return super.checkOffhandValid(entityPatch) || this.getCurrentSet(entityPatch).visibleOffhand();
+        return super.checkOffhandValid(entityPatch) || this.getCurrentCP(entityPatch).visibleOffhand();
     }
 
     @Override
     public LivingMotion getLivingMotion(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
         InteractionHand checkedHand = Objects.requireNonNull(hand, "hand");
-        CombatProfile set = getCurrentSet(entityPatch);
+        CombatProfile set = getCurrentCP(entityPatch);
 
         if (set != null && set.motionPredicate() != null && entityPatch instanceof PlayerPatch<?> playerPatch) {
             LivingMotion motion = set.motionPredicate().apply(playerPatch, checkedHand);
@@ -215,7 +252,7 @@ public class TCWeaponCapability extends CapabilityItem {
             return null;
         }
 
-        CombatProfile set = getCurrentSet(playerpatch);
+        CombatProfile set = getCurrentCP(playerpatch);
         if (set == null) {
             return null;
         }
@@ -230,7 +267,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public UseAnim getUseAnimation(LivingEntityPatch<?> entityPatch) {
-        CombatProfile set = getCurrentSet(entityPatch);
+        CombatProfile set = getCurrentCP(entityPatch);
         ToolStack toolStack = getToolStack(entityPatch, null);
         if (set != null && set.livingMotions().containsKey(LivingMotions.BLOCK) && toolStack != null && toolStack.getModifierLevel(Objects.requireNonNull(BLOCKING_ID, "blocking modifier id")) > 0) {
             return UseAnim.BLOCK;
@@ -254,7 +291,7 @@ public class TCWeaponCapability extends CapabilityItem {
     }
 
     public Skill getPassiveSkill(PlayerPatch<?> playerPatch) {
-        CombatProfile set = getCurrentSet(playerPatch);
+        CombatProfile set = getCurrentCP(playerPatch);
         if (set != null) {
             return set.passiveSkill();
         }
