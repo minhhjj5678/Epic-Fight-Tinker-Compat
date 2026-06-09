@@ -1,5 +1,6 @@
 package com.minhhjjj.epicfighttinkercompat.gameasset.profiles;
 
+import com.minhhjjj.epicfighttinkercompat.gameasset.EFTAnimations;
 import com.minhhjjj.epicfighttinkercompat.gameasset.EFTSkills;
 import com.minhhjjj.epicfighttinkercompat.skill.AutoGuardPassiveSkill;
 
@@ -246,9 +247,9 @@ public class CombatProfiles {
 		.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
 		.addGuardAnimations(BlockType.GUARD, Animations.GREATSWORD_GUARD, Animations.GREATSWORD_GUARD_HIT)
 		.setPassiveSkill(AutoGuardPassiveSkill.AUTO_GUARD_PASSIVE)
-		.addLivingMotionsRecursive(Animations.BIPED_HOLD_GREATSWORD, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.JUMP, LivingMotions.KNEEL, LivingMotions.SNEAK, LivingMotions.SWIM, LivingMotions.FLY, LivingMotions.CREATIVE_FLY, LivingMotions.CREATIVE_IDLE})
-		.addLivingMotionsRecursive(Animations.BIPED_WALK_GREATSWORD, new LivingMotion[]{LivingMotions.WALK, LivingMotions.CHASE})
-		.addLivingMotionModifier(LivingMotions.RUN, Animations.BIPED_RUN_GREATSWORD)
+		.addLivingMotionsRecursive(EFTAnimations.BIPED_HOLD_HAMMER, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.JUMP, LivingMotions.KNEEL, LivingMotions.SNEAK, LivingMotions.SWIM, LivingMotions.FLY, LivingMotions.CREATIVE_FLY, LivingMotions.CREATIVE_IDLE})
+		.addLivingMotionsRecursive(EFTAnimations.BIPED_WALK_HAMMER, new LivingMotion[]{LivingMotions.WALK, LivingMotions.CHASE})
+		.addLivingMotionModifier(LivingMotions.RUN, EFTAnimations.BIPED_RUN_HAMMER)
 		.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
 		.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW)
 		.addLivingMotionModifier(LivingMotions.BLOCK, Animations.GREATSWORD_GUARD);		
