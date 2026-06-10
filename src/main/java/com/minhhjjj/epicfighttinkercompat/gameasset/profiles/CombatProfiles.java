@@ -242,7 +242,7 @@ public class CombatProfiles {
 	@SuppressWarnings("unchecked")
 	public static CombatProfile.CombatProfileBuilder sledgehammerSet() {
 		return CombatProfile.builder()
-		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.GREATSWORD_AUTO1, Animations.GREATSWORD_AUTO2, Animations.GREATSWORD_DASH, Animations.GREATSWORD_AIR_SLASH})
+		.addComboAttacks(new AnimationManager.AnimationAccessor[]{EFTAnimations.HAMMER_AUTO1, Animations.GREATSWORD_AUTO2, Animations.GREATSWORD_DASH, Animations.GREATSWORD_AIR_SLASH})
 		.addInnateSkill((itemstack, playerpatch) -> EpicFightSkills.STEEL_WHIRLWIND)
 		.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
 		.addGuardAnimations(BlockType.GUARD, Animations.GREATSWORD_GUARD, Animations.GREATSWORD_GUARD_HIT)
