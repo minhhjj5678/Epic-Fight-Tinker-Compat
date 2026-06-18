@@ -242,14 +242,14 @@ public class CombatProfiles {
 	@SuppressWarnings("unchecked")
 	public static CombatProfile.CombatProfileBuilder sledgehammerSet() {
 		return CombatProfile.builder()
-		.addComboAttacks(new AnimationManager.AnimationAccessor[]{EFTAnimations.HAMMER_AUTO1, Animations.GREATSWORD_AUTO2, Animations.GREATSWORD_DASH, Animations.GREATSWORD_AIR_SLASH})
+		.addComboAttacks(new AnimationManager.AnimationAccessor[]{Animations.GREATSWORD_AUTO1, Animations.GREATSWORD_AUTO2, Animations.GREATSWORD_DASH, Animations.GREATSWORD_AIR_SLASH})
 		.addInnateSkill((itemstack, playerpatch) -> EpicFightSkills.STEEL_WHIRLWIND)
 		.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
 		.addGuardAnimations(BlockType.GUARD, Animations.GREATSWORD_GUARD, Animations.GREATSWORD_GUARD_HIT)
 		.setPassiveSkill(AutoGuardPassiveSkill.AUTO_GUARD_PASSIVE)
-		.addLivingMotionsRecursive(EFTAnimations.BIPED_HOLD_HAMMER, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.JUMP, LivingMotions.KNEEL, LivingMotions.SNEAK, LivingMotions.SWIM, LivingMotions.FLY, LivingMotions.CREATIVE_FLY, LivingMotions.CREATIVE_IDLE})
-		.addLivingMotionsRecursive(EFTAnimations.BIPED_WALK_HAMMER, new LivingMotion[]{LivingMotions.WALK, LivingMotions.CHASE})
-		.addLivingMotionModifier(LivingMotions.RUN, EFTAnimations.BIPED_RUN_HAMMER)
+		.addLivingMotionsRecursive(Animations.BIPED_HOLD_GREATSWORD, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.JUMP, LivingMotions.KNEEL, LivingMotions.SNEAK, LivingMotions.SWIM, LivingMotions.FLY, LivingMotions.CREATIVE_FLY, LivingMotions.CREATIVE_IDLE})
+		.addLivingMotionsRecursive(Animations.BIPED_WALK_GREATSWORD, new LivingMotion[]{LivingMotions.WALK, LivingMotions.CHASE})
+		.addLivingMotionModifier(LivingMotions.RUN, Animations.BIPED_RUN_GREATSWORD)
 		.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM)
 		.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW)
 		.addLivingMotionModifier(LivingMotions.BLOCK, Animations.GREATSWORD_GUARD);		
