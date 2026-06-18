@@ -20,7 +20,7 @@ public class MixinBlockingModifier {
     @Inject(method = "onToolUse", at = @At("HEAD"), cancellable = true)
     private void epicfighttinkercompat$onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source, CallbackInfoReturnable<InteractionResult> cir) {
         PlayerPatch<?> patch = EpicFightCapabilities.getPlayerPatch(player);
-        if (patch != null && patch.isEpicFightMode()) {
+        if (patch != null && patch.isEpicFightMode() && !tool.getDefinition().getId().getPath().contains("shield")) {
             cir.setReturnValue(InteractionResult.PASS);
         }
     }

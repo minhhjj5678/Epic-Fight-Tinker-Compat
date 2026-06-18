@@ -111,7 +111,7 @@ public class CombatProfiles {
 
 	public static CombatProfile.CombatProfileBuilder shieldSet() {
 		return CombatProfile.builder()
-		.addLivingMotionModifier(LivingMotions.BLOCK, Animations.BIPED_BLOCK)
+		.addComboAttacks(Animations.FIST_AUTO1, Animations.FIST_AUTO2, Animations.FIST_AUTO3, Animations.FIST_DASH, Animations.FIST_AIR_SLASH)
 		.addLivingMotionModifier(LivingMotions.BLOCK_SHIELD, Animations.BIPED_BLOCK);
 	}
 

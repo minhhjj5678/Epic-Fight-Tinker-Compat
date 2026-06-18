@@ -27,12 +27,12 @@ public class MixinGuardSkill {
             return;
         }
         ItemStack stack = playerpatch.getOriginal().getMainHandItem();
-        ToolStack toolStack = ToolStack.from(stack);
 
         if (stack.isEmpty() || !(stack.getItem() instanceof ModifiableItem)) {
             return;
         }
 
+        ToolStack toolStack = ToolStack.from(stack);
         if (toolStack.getModifierLevel(EPICFIGHTTINKERCOMPAT$BLOCKING_ID) < 1) {
             cir.setReturnValue(false);
         }

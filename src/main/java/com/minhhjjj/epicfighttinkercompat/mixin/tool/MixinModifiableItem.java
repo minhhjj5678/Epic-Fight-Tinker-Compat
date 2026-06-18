@@ -1,5 +1,6 @@
 package com.minhhjjj.epicfighttinkercompat.mixin.tool;
 
+import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -26,7 +27,8 @@ public class MixinModifiableItem {
         if (playerPatch != null && playerPatch.isEpicFightMode()) {
             ToolStack toolStack = ToolStack.from(playerIn.getItemInHand(hand));
             if (playerPatch.getSkill(SkillSlots.GUARD).getSkill() instanceof GuardSkill && toolStack.getModifierLevel(BLOCKING) > 0 && !playerIn.isCrouching()) {
-                cir.setReturnValue(InteractionResultHolder.consume(playerIn.getItemInHand(hand)));
+                if (!toolStack.getDefinition().getId().getPath().contains("shield"))
+                    cir.setReturnValue(InteractionResultHolder.consume(playerIn.getItemInHand(hand)));
             }
         }
     }

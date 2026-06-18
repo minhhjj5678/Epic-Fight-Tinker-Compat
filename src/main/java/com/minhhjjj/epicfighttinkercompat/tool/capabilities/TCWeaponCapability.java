@@ -240,7 +240,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
         if (!entityPatch.getOriginal().isUsingItem()) return null;
 
-        if (entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.DRINK || entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.EAT) return null;
+        if (entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.DRINK || entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.EAT || entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.BLOCK) return null;
 
         return LivingMotions.AIM;
     }
@@ -277,7 +277,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public boolean canBePlacedOffhand() {
-        return true;
+        return this.canBePlacedOffhand;
     }
 
     @Override
@@ -371,7 +371,7 @@ public class TCWeaponCapability extends CapabilityItem {
     }
 
     public boolean canHoldInOffhandAlone() {
-        return false;
+        return this.canBePlacedOffhand;
     }
 
     @SuppressWarnings("removal")
