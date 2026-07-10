@@ -1,3 +1,4 @@
+![image](https://media.forgecdn.net/attachments/description/1491531/description_f7644294-29b9-4dda-8250-0268ff8b5eed.png)
 # Epic Fight Tinker Compat
 
 Source code for **Epic Fight Tinker Compat**, a Minecraft Forge mod that integrates **Tinkers' Construct** with **Epic Fight**.
