@@ -1,5 +1,6 @@
 package com.minhhjjj.epicfighttinkercompat.gameasset.profiles;
 
+import com.minhhjjj.epicfighttinkercompat.compat.p1nerobow.EFBowAnimations;
 import com.minhhjjj.epicfighttinkercompat.gameasset.EFTAnimations;
 import com.minhhjjj.epicfighttinkercompat.gameasset.EFTSkills;
 import com.minhhjjj.epicfighttinkercompat.skill.AutoGuardPassiveSkill;
@@ -312,6 +313,16 @@ public class CombatProfiles {
 		.addLivingMotionModifier(LivingMotions.IDLE, Animations.BIPED_IDLE)
 		.addLivingMotionModifier(LivingMotions.WALK, Animations.BIPED_WALK)
 		.setMotionPredicate((entityPatch, interactionHand) -> ((LivingEntity)entityPatch.getOriginal()).isUsingItem() && ((LivingEntity)entityPatch.getOriginal()).getUseItem().getUseAnimation() == UseAnim.BOW ? LivingMotions.AIM : null);
+	}
+
+	public static CombatProfile.CombatProfileBuilder p1neroBow() {
+		return CombatProfile.builder()
+				.addComboAttacks(EFBowAnimations.getComboAttack())
+				.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_BOW_AIM)
+				.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_BOW_SHOT)
+				.addLivingMotionModifier(LivingMotions.IDLE, Animations.BIPED_IDLE)
+				.addLivingMotionModifier(LivingMotions.WALK, Animations.BIPED_WALK)
+				.setMotionPredicate((entityPatch, interactionHand) -> ((LivingEntity)entityPatch.getOriginal()).isUsingItem() && ((LivingEntity)entityPatch.getOriginal()).getUseItem().getUseAnimation() == UseAnim.BOW ? LivingMotions.AIM : null);
 	}
 
 	@SuppressWarnings("unchecked")

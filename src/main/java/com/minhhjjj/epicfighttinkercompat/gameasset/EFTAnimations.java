@@ -1,6 +1,7 @@
 package com.minhhjjj.epicfighttinkercompat.gameasset;
 
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
+import com.minhhjjj.epicfighttinkercompat.compat.p1nerobow.EFBowAnimations;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import yesman.epicfight.api.animation.AnimationManager;
@@ -35,5 +36,6 @@ public class EFTAnimations {
         BIPED_WALK_HAMMER = builder.nextAccessor("biped/living/walk_hammer", (accessor) -> new MovementAnimation(true, accessor, Armatures.BIPED));
         BIPED_RUN_HAMMER = builder.nextAccessor("biped/living/run_hammer", (accessor) -> new MovementAnimation(true, accessor, Armatures.BIPED));
         HAMMER_AUTO1 = builder.nextAccessor("biped/combat/hammer_auto1", (accessor) -> new BasicAttackAnimation(0.25f, 0.15f, 0.52f, 0.95f, null, Armatures.BIPED.get().toolR, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.0f));
+        EFBowAnimations.buildBowAnimations(builder);
     }
 }
