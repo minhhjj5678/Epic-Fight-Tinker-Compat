@@ -8,12 +8,14 @@
 package com.minhhjjj.epicfighttinkercompat.compat.p1nerobow;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -21,10 +23,22 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.ModList;
 import slimeknights.tconstruct.common.TinkerTags;
+import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHooks;
+import slimeknights.tconstruct.library.modifiers.hook.build.ConditionalStatModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.ranged.BowAmmoModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileLaunchModifierHook;
+import slimeknights.tconstruct.library.tools.capability.EntityModifierCapability;
+import slimeknights.tconstruct.library.tools.capability.PersistentDataCapability;
+import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
+import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableBowItem;
+import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
+import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
+import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
+import slimeknights.tconstruct.tools.entity.ThrownTool;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.Joint;
 import yesman.epicfight.api.animation.property.AnimationEvent;
@@ -46,7 +60,7 @@ import java.util.function.Predicate;
 public class EFBowAnimations {
     private static final Collider BOW_DASH = new MultiOBBCollider(2, 1, 1.5, 1, 0, 0, 0);
     private static final Collider BOW_ELBOW = new MultiOBBCollider(2, 1, 1, 1, 0, 1, 0);
-    private static final Collider BOW_SCAN = new MultiOBBCollider(2, 8, 4D, 16, 0.0D, 1, -16);
+    private static final Collider BOW_SCAN = new MultiOBBCollider(2, 8, 48D, 48, 0.0D, 1, -48);
 
     public static AnimationManager.AnimationAccessor<MovementAnimation> BOW_RUN;
     public static AnimationManager.AnimationAccessor<TCScanAttackAnimation> BOW_AUTO1;
@@ -167,6 +181,22 @@ public class EFBowAnimations {
         }), AnimationEvent.Side.BOTH);
     }
 
+    public static Vec3 getShootDirection(Vec3 tar, Vec3 arrow, float velocity) {
+        double dX = tar.x - arrow.x;
+        double dY = tar.y - arrow.y;
+        double dZ = tar.z - arrow.z;
+        double distant = Math.sqrt(dX * dX + dZ * dZ);
+        double g = 0.05D + (distant * 0.0001D);
+
+        double delta = Math.pow(velocity, 4) - g * (g * distant * distant + 2 * dY * velocity * velocity);
+        if (delta >= 0) {
+            double angle = (velocity * velocity - Math.sqrt(delta)) / (g * distant);
+            return new Vec3(dX, angle * distant, dZ);
+        }
+
+        return Vec3.ZERO;
+    }
+
     private static void shootOnce(LivingEntityPatch<?> livingEntityPatch) {
         shootOnce(livingEntityPatch, 3.0F);
     }
@@ -178,8 +208,8 @@ public class EFBowAnimations {
         Item item = itemStack.getItem();
         Level level = living.level();
         int leftTime = 0;
-        if (livingEntityPatch.getOriginal() instanceof ServerPlayer player && item instanceof ModifiableBowItem bowItem) {
-            boolean flag = player.getAbilities().instabuild || itemStack.getEnchantmentLevel(Enchantments.INFINITY_ARROWS) > 0;
+        if (livingEntityPatch.getOriginal() instanceof ServerPlayer player && item instanceof ModifiableBowItem bowItem && !toolStack.isBroken()) {
+            boolean flag = player.getAbilities().instabuild || itemStack.getEnchantmentLevel(Enchantments.INFINITY_ARROWS) > 0 && !toolStack.getVolatileData().getBoolean(BowAmmoModifierHook.SKIP_INVENTORY_AMMO);
 
             Predicate<ItemStack> ammoPredicate;
             switch (toolStack.getPersistentData().getInt(ModifiableBowItem.KEY_BALLISTA)) {
@@ -188,69 +218,120 @@ public class EFBowAnimations {
                 case 3 -> ammoPredicate = bowItem.getSupportedHeldProjectiles();
                 default -> ammoPredicate = ModifiableBowItem.isBallista(toolStack) ? bowItem.getSupportedBallistaAmmo() : bowItem.getSupportedHeldProjectiles();
             }
-            ItemStack ammo = BowAmmoModifierHook.getAmmo(toolStack, itemStack, player, ammoPredicate);
+            ItemStack foundAmmo = BowAmmoModifierHook.getAmmo(toolStack, itemStack, player, ammoPredicate);
 
             int i = item.getUseDuration(itemStack) - leftTime;
-            i = net.minecraftforge.event.ForgeEventFactory.onArrowLoose(itemStack, level, player, i, !ammo.isEmpty() || flag);
+            i = net.minecraftforge.event.ForgeEventFactory.onArrowLoose(itemStack, level, player, i, !foundAmmo.isEmpty() || flag);
             if (i < 0) return;
 
-            if (!ammo.isEmpty() || flag) {
-                if (ammo.isEmpty()) {
-                    ammo = new ItemStack(Items.ARROW);
+            if (!foundAmmo.isEmpty() || flag) {
+                if (foundAmmo.isEmpty()) {
+                    foundAmmo = new ItemStack(Items.ARROW);
                 }
 
                 float f = 1.0F;
-                boolean flag1 = player.getAbilities().instabuild || (ammo.getItem() instanceof ArrowItem && ((ArrowItem) ammo.getItem()).isInfinite(ammo, itemStack, player));
+                boolean flag1 = player.getAbilities().instabuild || (foundAmmo.getItem() instanceof ArrowItem && ((ArrowItem) foundAmmo.getItem()).isInfinite(foundAmmo, itemStack, player));
                 if (!level.isClientSide) {
-                    ArrowItem arrowitem = (ArrowItem)(ammo.getItem() instanceof ArrowItem ? ammo.getItem() : Items.ARROW);
-                    AbstractArrow abstractarrow = arrowitem.createArrow(level, ammo, player);
-//                    abstractarrow = bowItem.customArrow(abstractarrow);
-                    abstractarrow.setPos(getJointWorldPos(livingEntityPatch, Armatures.BIPED.get().handL));
-                    LivingEntity target = TCScanAttackAnimation.getTarget(livingEntityPatch);
-                    if(target == null) {
-                        abstractarrow.shootFromRotation(player, living.getXRot(), livingEntityPatch.getYRot(), 0.0F, f * 3.0F, 1.0F);
+                    int originalSlot = -1;
+                    int desiredProjectiles = 1;
+                    if (foundAmmo.is(TinkerTags.Items.BALLISTA_AMMO)) {
+                        if (foundAmmo == living.getOffhandItem()) {
+                            originalSlot = 40;
+                        } else {
+                            Inventory inventory = player.getInventory();
+
+                            for(i = 0; i < 36; ++i) {
+                                if (inventory.getItem(i) == foundAmmo) {
+                                    originalSlot = i;
+                                    break;
+                                }
+                            }
+                        }
                     } else {
-                        Vec3 targetPos = target.getEyePosition();
-                        Vec3 vec3 = targetPos.subtract(abstractarrow.position()).normalize().scale(speed * f);
-                        abstractarrow.setDeltaMovement(vec3);
-                        double d0 = vec3.horizontalDistance();
-                        abstractarrow.setYRot((float)(Mth.atan2(vec3.x, vec3.z) * (double)(180F / (float)Math.PI)));
-                        abstractarrow.setXRot((float)(Mth.atan2(vec3.y, d0) * (double)(180F / (float)Math.PI)));
-                        abstractarrow.yRotO = abstractarrow.getYRot();
-                        abstractarrow.xRotO = abstractarrow.getXRot();
-                    }
-                    if (f == 1.0F) {
-                        abstractarrow.setCritArrow(true);
+                        desiredProjectiles = BowAmmoModifierHook.getDesiredProjectiles(toolStack);
                     }
 
-                    int j = itemStack.getEnchantmentLevel(Enchantments.POWER_ARROWS);
-                    if (j > 0) {
-                        abstractarrow.setBaseDamage(abstractarrow.getBaseDamage() + (double)j * 0.5D + 0.5D);
-                    }
-
-                    int k = itemStack.getEnchantmentLevel(Enchantments.PUNCH_ARROWS);
-                    if (k > 0) {
-                        abstractarrow.setKnockback(k);
-                    }
-
-                    if (itemStack.getEnchantmentLevel(Enchantments.FLAMING_ARROWS) > 0) {
-                        abstractarrow.setSecondsOnFire(100);
-                    }
-
-                    itemStack.hurtAndBreak(1, player, (p_289501_) -> p_289501_.broadcastBreakEvent(player.getUsedItemHand()));
-                    if (flag1 || player.getAbilities().instabuild && (ammo.is(Items.SPECTRAL_ARROW) || ammo.is(Items.TIPPED_ARROW))) {
-                        abstractarrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
-                    }
-
-                    level.addFreshEntity(abstractarrow);
-                }
-
-                level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F);
-                if (!flag1 && !player.getAbilities().instabuild) {
-                    ammo.shrink(1);
+                    ItemStack ammo = BowAmmoModifierHook.consumeAmmo(toolStack, itemStack, player, player, ammoPredicate, desiredProjectiles);
                     if (ammo.isEmpty()) {
-                        player.getInventory().removeItem(ammo);
+                        ammo = new ItemStack(Items.ARROW);
                     }
+
+                    ArrowItem arrowitem = (ArrowItem)(ammo.getItem() instanceof ArrowItem ? ammo.getItem() : Items.ARROW);
+                    float power = ConditionalStatModifierHook.getModifiedStat(toolStack, player, ToolStats.VELOCITY);
+                    float velocity = ConditionalStatModifierHook.getModifiedStat(toolStack, player, ToolStats.VELOCITY);
+                    boolean thrownTool = ammo.is(TinkerTags.Items.BALLISTA_AMMO);
+                    float waterInertia = 0.6F;
+                    float startAngle = ModifiableBowItem.getAngleStart(ammo.getCount());
+                    int primaryIndex = ammo.getCount() / 2;
+                    SoundEvent sound = SoundEvents.ARROW_SHOOT;
+                    if (thrownTool) {
+                        sound = SoundEvents.TRIDENT_THROW;
+                        IToolStackView thrown = ToolStack.from(ammo);
+                        float thrownVelocity = ConditionalStatModifierHook.getModifiedStat(thrown, living, ToolStats.VELOCITY);
+                        power *= thrownVelocity * ConditionalStatModifierHook.getModifiedStat(thrown, living, ToolStats.DRAW_SPEED) / 1.5F;
+                        if (ammo.is(TinkerTags.Items.MELEE_WEAPON)) {
+                            power *= (Float)thrown.getStats().get(ToolStats.ATTACK_SPEED);
+                        }
+
+                        velocity *= thrownVelocity;
+                        waterInertia = ConditionalStatModifierHook.getModifiedStat(thrown, living, ToolStats.WATER_INERTIA);
+                    }
+
+                    for (int arrowIndex = 0;  arrowIndex < ammo.getCount(); ++arrowIndex) {
+                        AbstractArrow abstractarrow;
+                        if (thrownTool) {
+                            ThrownTool thrown = new ThrownTool(level, player, ammo, f, velocity, waterInertia);
+                            thrown.setOriginalSlot(originalSlot);
+                            abstractarrow = thrown;
+                        } else {
+                            abstractarrow = arrowitem.createArrow(level, foundAmmo, player);
+                        }
+
+                        abstractarrow.setPos(getJointWorldPos(livingEntityPatch, Armatures.BIPED.get().handL));
+                        LivingEntity target = TCScanAttackAnimation.getTarget(livingEntityPatch);
+                        float angle = startAngle + (float)(10 * arrowIndex);
+
+                        if(target == null) {
+                            abstractarrow.shootFromRotation(player, living.getXRot() + angle, livingEntityPatch.getYRot(), 0.0F, power * 3.0F, ModifierUtil.getInaccuracy(toolStack, player));
+                        } else {
+                            Vec3 targetPos = target.getEyePosition();
+//                        Vec3 vec3 = (targetPos.subtract(abstractarrow.position()).add(0.0D, angle / 5, 0.0D)).normalize().scale(speed * power);
+                            Vec3 vec3 = getShootDirection(targetPos, abstractarrow.position(), speed * power).add(0.0D, angle / 5, 0.0D).normalize().scale(speed * power);
+                            if (!vec3.equals(Vec3.ZERO)) {
+                                abstractarrow.setDeltaMovement(vec3);
+                                double d0 = vec3.horizontalDistance();
+                                abstractarrow.setYRot((float)(Mth.atan2(vec3.x, vec3.z) * (double)(180F / (float)Math.PI)));
+                                abstractarrow.setXRot((float)(Mth.atan2(vec3.y, d0) * (double)(180F / (float)Math.PI)));
+                                abstractarrow.yRotO = abstractarrow.getYRot();
+                                abstractarrow.xRotO = abstractarrow.getXRot();
+                            } else {
+                                abstractarrow.shootFromRotation(player, living.getXRot() + angle, livingEntityPatch.getYRot(), 0.0F, power * 3.0F, ModifierUtil.getInaccuracy(toolStack, player));
+                            }
+                        }
+
+                        float baseArrowDamage = (float)(abstractarrow.getBaseDamage() - (double)2.0F + (double)(Float)toolStack.getStats().get(ToolStats.PROJECTILE_DAMAGE));
+                        abstractarrow.setBaseDamage((double)ConditionalStatModifierHook.getModifiedStat(toolStack, living, ToolStats.PROJECTILE_DAMAGE, baseArrowDamage));
+                        ModifierNBT modifiers = toolStack.getModifiers();
+                        EntityModifierCapability.getCapability(abstractarrow).addModifiers(modifiers);
+                        ModDataNBT arrowData = PersistentDataCapability.getOrWarn(abstractarrow);
+
+                        for(ModifierEntry entry : modifiers.getModifiers()) {
+                            ((ProjectileLaunchModifierHook)entry.getHook(ModifierHooks.PROJECTILE_LAUNCH)).onProjectileLaunch(toolStack, entry, living, ammo, abstractarrow, abstractarrow, arrowData, arrowIndex == primaryIndex);
+                        }
+
+                        if (thrownTool) {
+                            ((ThrownTool)abstractarrow).onRelease(living, arrowData);
+                        }
+
+                        if (flag1 || player.getAbilities().instabuild && (foundAmmo.is(Items.SPECTRAL_ARROW) || foundAmmo.is(Items.TIPPED_ARROW))) {
+                            abstractarrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
+                        }
+                        level.addFreshEntity(abstractarrow);
+                        level.playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundSource.PLAYERS, 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F);
+                    }
+
+                    int damage = ammo.getCount() * (thrownTool ? 1 : 3);
+                    ToolDamageUtil.damage(toolStack, damage, player, itemStack);
                 }
 
                 player.awardStat(Stats.ITEM_USED.get(bowItem));
