@@ -317,7 +317,8 @@ public class CombatProfiles {
 
 	public static CombatProfile.CombatProfileBuilder p1neroBow() {
 		return CombatProfile.builder()
-				.addComboAttacks(EFBowAnimations.getComboAttack())
+				.addComboAttacks(EFBowAnimations.BOW_AUTO1, EFBowAnimations.BOW_AUTO2, EFBowAnimations.BOW_AUTO3, EFBowAnimations.BOW_DASH_ATTACK, EFBowAnimations.BOW_JUMP_ATTACK)
+				.addInnateSkill((item, p) -> EFTSkills.ARROW_TEMPEST_SKILL)
 				.addLivingMotionModifier(LivingMotions.AIM, Animations.BIPED_BOW_AIM)
 				.addLivingMotionModifier(LivingMotions.SHOT, Animations.BIPED_BOW_SHOT)
 				.addLivingMotionModifier(LivingMotions.IDLE, Animations.BIPED_IDLE)

@@ -53,7 +53,7 @@ public class TinkerCrossbowCapability extends CrossbowCapability {
     @SuppressWarnings("null")
     private boolean isTinkerCrossbowCharged(ItemStack stack) {
         if (stack.isEmpty()) return false;
-        if (stack.hasTag() && stack.getTag().getBoolean("Charged")) {
+        if (stack.getOrCreateTag().getBoolean("Charged")) {
             return true;
         }
 

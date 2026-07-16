@@ -7,12 +7,14 @@
  */
 package com.minhhjjj.epicfighttinkercompat.compat.p1nerobow;
 
+import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -61,6 +63,7 @@ public class EFBowAnimations {
     private static final Collider BOW_DASH = new MultiOBBCollider(2, 1, 1.5, 1, 0, 0, 0);
     private static final Collider BOW_ELBOW = new MultiOBBCollider(2, 1, 1, 1, 0, 1, 0);
     private static final Collider BOW_SCAN = new MultiOBBCollider(2, 8, 48D, 48, 0.0D, 1, -48);
+    private static final RandomSource RANDOM = RandomSource.create();
 
     public static AnimationManager.AnimationAccessor<MovementAnimation> BOW_RUN;
     public static AnimationManager.AnimationAccessor<TCScanAttackAnimation> BOW_AUTO1;
@@ -71,17 +74,17 @@ public class EFBowAnimations {
     public static AnimationManager.AnimationAccessor<AttackAnimation> ELBOW_2;
     public static AnimationManager.AnimationAccessor<AttackAnimation> ELBOW_3;
 
+    public static AnimationManager.AnimationAccessor<? extends AttackAnimation>[] BOW_ATTACK;
+
+    public static AnimationManager.AnimationAccessor<? extends AttackAnimation>[] FIST_ATTACK = new AnimationManager.AnimationAccessor[]{
+            Animations.FIST_AUTO1, Animations.FIST_AUTO2, Animations.FIST_AUTO3,
+            Animations.FIST_DASH, Animations.FIST_AIR_SLASH
+    };
+
     private static final String MOD_ID = "p1nero_bow";
 
-    @SuppressWarnings("unchecked")
     public static AnimationManager.AnimationAccessor<? extends AttackAnimation>[] getComboAttack() {
-        return ModList.get().isLoaded(MOD_ID) ? new AnimationManager.AnimationAccessor[]{
-                BOW_AUTO1, BOW_AUTO2, BOW_AUTO3, BOW_DASH_ATTACK, BOW_JUMP_ATTACK
-        }
-                : new AnimationManager.AnimationAccessor[]{
-                Animations.FIST_AUTO1, Animations.FIST_AUTO2, Animations.FIST_AUTO3,
-                Animations.FIST_DASH, Animations.FIST_AIR_SLASH
-        };
+        return ModList.get().isLoaded(MOD_ID) ? BOW_ATTACK : FIST_ATTACK;
     }
 
     public static void buildBowAnimations(AnimationManager.AnimationBuilder builder) {
@@ -167,6 +170,7 @@ public class EFBowAnimations {
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(2.0F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(8.0F)));
 
+        BOW_ATTACK = new AnimationManager.AnimationAccessor[]{BOW_AUTO1, BOW_AUTO2, BOW_AUTO3, BOW_DASH_ATTACK, BOW_JUMP_ATTACK};
     }
 
     public static AnimationEvent.InTimeEvent<?> setFullBowUseTime(float time) {
@@ -186,7 +190,7 @@ public class EFBowAnimations {
         double dY = tar.y - arrow.y;
         double dZ = tar.z - arrow.z;
         double distant = Math.sqrt(dX * dX + dZ * dZ);
-        double g = 0.05D + (distant * 0.0001D);
+        double g = 0.05D + (distant * 0.0003755D / velocity);
 
         double delta = Math.pow(velocity, 4) - g * (g * distant * distant + 2 * dY * velocity * velocity);
         if (delta >= 0) {
@@ -263,6 +267,7 @@ public class EFBowAnimations {
                     float waterInertia = 0.6F;
                     float startAngle = ModifiableBowItem.getAngleStart(ammo.getCount());
                     int primaryIndex = ammo.getCount() / 2;
+                    float inaccuracy = ModifierUtil.getInaccuracy(toolStack, player);
                     SoundEvent sound = SoundEvents.ARROW_SHOOT;
                     if (thrownTool) {
                         sound = SoundEvents.TRIDENT_THROW;
@@ -287,17 +292,19 @@ public class EFBowAnimations {
                             abstractarrow = arrowitem.createArrow(level, foundAmmo, player);
                         }
 
+                        abstractarrow.setCritArrow(true);
                         abstractarrow.setPos(getJointWorldPos(livingEntityPatch, Armatures.BIPED.get().handL));
                         LivingEntity target = TCScanAttackAnimation.getTarget(livingEntityPatch);
                         float angle = startAngle + (float)(10 * arrowIndex);
 
                         if(target == null) {
-                            abstractarrow.shootFromRotation(player, living.getXRot() + angle, livingEntityPatch.getYRot(), 0.0F, power * 3.0F, ModifierUtil.getInaccuracy(toolStack, player));
+                            abstractarrow.shootFromRotation(player, living.getXRot() + angle, livingEntityPatch.getYRot(), 0.0F, power * 3.0F, inaccuracy);
                         } else {
                             Vec3 targetPos = target.getEyePosition();
 //                        Vec3 vec3 = (targetPos.subtract(abstractarrow.position()).add(0.0D, angle / 5, 0.0D)).normalize().scale(speed * power);
                             Vec3 vec3 = getShootDirection(targetPos, abstractarrow.position(), speed * power).add(0.0D, angle / 5, 0.0D).normalize().scale(speed * power);
                             if (!vec3.equals(Vec3.ZERO)) {
+                                vec3 = vec3.normalize().add(RANDOM.triangle(0.0D, 0.0172275D * (double)inaccuracy), RANDOM.triangle(0.0D, 0.0172275D * (double)inaccuracy), RANDOM.triangle(0.0D, 0.0172275D * (double)inaccuracy)).scale(speed * power);
                                 abstractarrow.setDeltaMovement(vec3);
                                 double d0 = vec3.horizontalDistance();
                                 abstractarrow.setYRot((float)(Mth.atan2(vec3.x, vec3.z) * (double)(180F / (float)Math.PI)));

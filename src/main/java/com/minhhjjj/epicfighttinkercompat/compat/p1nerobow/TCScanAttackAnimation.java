@@ -8,9 +8,15 @@ package com.minhhjjj.epicfighttinkercompat.compat.p1nerobow;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.entity.PartEntity;
 import org.jetbrains.annotations.Nullable;
+import slimeknights.tconstruct.library.modifiers.hook.build.ConditionalStatModifierHook;
+import slimeknights.tconstruct.library.tools.item.ModifiableItem;
+import slimeknights.tconstruct.library.tools.item.ranged.ModifiableBowItem;
+import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.AnimationPlayer;
 import yesman.epicfight.api.animation.Joint;
@@ -70,7 +76,16 @@ public class TCScanAttackAnimation extends AttackAnimation {
         if(target == null) {
             target = getNearestScannedTarget(entityPatch);
         }
-        if (target != null && elapsedTime < phase.contact) {
+
+        ItemStack stack = entityPatch.getOriginal().getMainHandItem();
+        Vec3 vec3 = Vec3.ZERO;
+        if (target != null && stack.getItem() instanceof ModifiableBowItem) {
+            ToolStack tool = ToolStack.from(stack);
+//            vec3 = EFBowAnimations.getShootDirection(target.getEyePosition(), entityPatch.getOriginal().position(),
+//                    ConditionalStatModifierHook.getModifiedStat(tool, entityPatch.getOriginal(), ToolStats.VELOCITY) * 3.0f);
+        }
+
+        if (elapsedTime < phase.contact && target != null) {
             Vec3 playerPosition = entityPatch.getOriginal().position();
             Vec3 targetPosition = target.position();
             float yaw = (float) MathUtils.getYRotOfVector(targetPosition.subtract(playerPosition));
