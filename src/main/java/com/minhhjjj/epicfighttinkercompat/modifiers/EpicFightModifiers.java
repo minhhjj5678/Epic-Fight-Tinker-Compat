@@ -21,6 +21,8 @@ public class EpicFightModifiers {
     public static final ModifierId SPEARY = new ModifierId(EpicFightTinkerCompat.MODID, "speary");
     public static final ModifierId DAGGER = new ModifierId(EpicFightTinkerCompat.MODID, "dagger");
 
+    public static final ModifierId ARROW_TEMPEST = new ModifierId(EpicFightTinkerCompat.MODID, "arrow_tempest");
+
     public static final ModifierId BLOCKING = new ModifierId(TConstruct.MOD_ID, "blocking");
     public static final ModifierId THROWING = new ModifierId(TConstruct.MOD_ID, "throwing");
 

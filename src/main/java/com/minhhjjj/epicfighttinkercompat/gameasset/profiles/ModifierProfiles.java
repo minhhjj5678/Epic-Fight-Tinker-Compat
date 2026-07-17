@@ -2,6 +2,7 @@ package com.minhhjjj.epicfighttinkercompat.gameasset.profiles;
 
 
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
+import com.minhhjjj.epicfighttinkercompat.gameasset.EFTSkills;
 import com.minhhjjj.epicfighttinkercompat.modifiers.EpicFightModifiers;
 
 import com.minhhjjj.epicfighttinkercompat.tool.capabilities.TCWeaponCapability;
@@ -29,6 +30,11 @@ public class ModifierProfiles {
     public static final ModifierProfile TORMENT = ModList.get().isLoaded("wom") ? createTormentProfile() : null;
     public static final ModifierProfile RUINE = ModList.get().isLoaded("wom") ? createRuineProfile() : null;
     public static final ModifierProfile AGONY = ModList.get().isLoaded("wom") ? createAgonyProfile() : null;
+
+    public static final ModifierProfile ARROW_TEMPEST = ModifierProfile.builder(EpicFightModifiers.ARROW_TEMPEST)
+            .styleProvider(livingEntityPatch -> Styles.TWO_HAND)
+            .innateSkill(EFTSkills.ARROW_TEMPEST_SKILL)
+            .build();
 
     public static final ModifierProfile SPEARY = ModifierProfile.builder(EpicFightModifiers.SPEARY)
             .styleProvider((LivingEntityPatch<?> patch) -> {

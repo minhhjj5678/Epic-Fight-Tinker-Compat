@@ -17,6 +17,7 @@ public record ModifierProfile(
         Map<Style, CombatProfile> weaponSets,
         Collider collider,
         WeaponCategory weaponCategory,
+        Skill innateSkill,
         int priority
 ) {
 
@@ -33,8 +34,8 @@ public record ModifierProfile(
         private final Map<Style, CombatProfile> weaponSets;
         private Collider collider;
         private WeaponCategory weaponCategory;
-        private int priority;
-        private Skill passiveSkill;
+        private int priority = 0;
+        private Skill innateSkill;
 
         public Builder(ModifierId modifierId) {
             this.modifierId = modifierId;
@@ -61,13 +62,18 @@ public record ModifierProfile(
             return this;
         }
 
+        public Builder innateSkill(Skill innateSkill) {
+            this.innateSkill = innateSkill;
+            return this;
+        }
+
         public Builder priority(int priority) {
             this.priority = priority;
             return this;
         }
 
         public final ModifierProfile build() {
-            return new ModifierProfile(modifierId, styleProvider, weaponSets, collider, weaponCategory, priority);
+            return new ModifierProfile(modifierId, styleProvider, weaponSets, collider, weaponCategory, innateSkill, priority);
         }
     }
 }

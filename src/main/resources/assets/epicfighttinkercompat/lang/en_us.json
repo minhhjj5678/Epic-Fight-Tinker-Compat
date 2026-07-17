@@ -62,6 +62,12 @@
   "modifier.epicfighttinkercompat.agony_spear.description": "Changes javelin moveset to the Agony moveset",
   "modifier.epicfighttinkercompat.speary.requirements": "Cannot be combined with other modifier moveset",
   "modifier.epicfighttinkercompat.agony_spear.requirements": "Cannot be combined with other modifier moveset",
+  "modifier.epicfighttinkercompat.arrow_tempest": "Arrow Tempest",
+  "modifier.epicfighttinkercompat.arrow_tempest.1": "Arrow Tempest",
+  "modifier.epicfighttinkercompat.arrow_tempest.2": "Seeking Tempest",
+  "modifier.epicfighttinkercompat.arrow_tempest.flavor": "I need more arrow",
+  "modifier.epicfighttinkercompat.arrow_tempest.description": "Overwhelm large amount of enemies with the high cost of ammo",
+
 
   "upgrades.melee.epicfighttinkercompat.so_sticky": "So Sticky",
   "upgrades.armor.epicfighttinkercompat.weightless": "Weightless",

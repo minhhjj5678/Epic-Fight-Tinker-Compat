@@ -8,6 +8,7 @@
 package com.minhhjjj.epicfighttinkercompat.compat.p1nerobow;
 
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
+import com.minhhjjj.epicfighttinkercompat.skill.ArrowTempestSkill;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -60,9 +61,9 @@ import yesman.epicfight.world.damagesource.StunType;
 import java.util.function.Predicate;
 
 public class EFBowAnimations {
-    private static final Collider BOW_DASH = new MultiOBBCollider(2, 1, 1.5, 1, 0, 0, 0);
-    private static final Collider BOW_ELBOW = new MultiOBBCollider(2, 1, 1, 1, 0, 1, 0);
-    private static final Collider BOW_SCAN = new MultiOBBCollider(2, 8, 48D, 48, 0.0D, 1, -48);
+    public static final Collider BOW_DASH = new MultiOBBCollider(2, 1, 1.5, 1, 0, 0, 0);
+    public static final Collider BOW_ELBOW = new MultiOBBCollider(2, 1, 1, 1, 0, 1, 0);
+    public static final Collider BOW_SCAN = new MultiOBBCollider(2, 8, 48D, 48, 0.0D, 1, -48);
     private static final RandomSource RANDOM = RandomSource.create();
 
     public static AnimationManager.AnimationAccessor<MovementAnimation> BOW_RUN;
@@ -333,6 +334,7 @@ public class EFBowAnimations {
                         if (flag1 || player.getAbilities().instabuild && (foundAmmo.is(Items.SPECTRAL_ARROW) || foundAmmo.is(Items.TIPPED_ARROW))) {
                             abstractarrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                         }
+                        abstractarrow.getTags().add(ArrowTempestSkill.KEY_SCAN_ATTACK);
                         level.addFreshEntity(abstractarrow);
                         level.playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundSource.PLAYERS, 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F);
                     }

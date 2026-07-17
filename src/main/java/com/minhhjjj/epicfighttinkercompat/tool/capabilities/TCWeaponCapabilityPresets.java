@@ -134,6 +134,7 @@ public class TCWeaponCapabilityPresets {
 	public static final Function<Item, CapabilityItem.Builder> LONGBOW = (item) -> {
 		TCWeaponCapability.Builder builder = TCWeaponCapability.builder();
 		builder.defaultMoveSet(CombatProfiles.p1neroBow())
+			.addModifier(ModifierProfiles.ARROW_TEMPEST)
 			.category(WeaponCategories.BOW)
 			.collider(ColliderPreset.FIST)
 			.canBePlacedOffhand(true)

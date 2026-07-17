@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.CombatProfile;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.CombatProfiles;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfile;
@@ -17,6 +18,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
+import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
+import slimeknights.tconstruct.library.tools.item.ModifiableArrowItem;
+import slimeknights.tconstruct.library.tools.item.ModifiableItem;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.LivingMotion;
@@ -176,6 +180,15 @@ public class TCWeaponCapability extends CapabilityItem {
     }
 
     public Skill getInnateSkill(PlayerPatch<?> playerpatch, ItemStack itemstack) {
+        if (itemstack.getItem() instanceof IModifiableDisplay) {
+            ToolStack tool = ToolStack.from(itemstack);
+            for (ModifierProfile modifierProfile : this.modifierProfiles) {
+                if (tool.getModifierLevel(modifierProfile.modifierId()) > 0 && modifierProfile.innateSkill() != null) {
+                    return modifierProfile.innateSkill();
+                }
+            }
+        }
+
         BiFunction<ItemStack, PlayerPatch<?>, Skill> innateSkillFunction = this.getCurrentCP(playerpatch).innateSkill();
         return innateSkillFunction == null ? null : innateSkillFunction.apply(itemstack, playerpatch);
     }
