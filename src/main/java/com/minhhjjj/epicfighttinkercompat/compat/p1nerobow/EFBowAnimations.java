@@ -9,6 +9,7 @@ package com.minhhjjj.epicfighttinkercompat.compat.p1nerobow;
 
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import com.minhhjjj.epicfighttinkercompat.skill.ArrowTempestSkill;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -36,6 +37,7 @@ import slimeknights.tconstruct.library.tools.capability.PersistentDataCapability
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableBowItem;
+import slimeknights.tconstruct.library.tools.item.ranged.ModifiableLauncherItem;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
@@ -58,9 +60,14 @@ import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.damagesource.StunType;
 
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
 public class EFBowAnimations {
+    public static final Set<UUID> DRAWING_PLAYERS = ConcurrentHashMap.newKeySet();
+
     public static final Collider BOW_DASH = new MultiOBBCollider(2, 1, 1.5, 1, 0, 0, 0);
     public static final Collider BOW_ELBOW = new MultiOBBCollider(2, 1, 1, 1, 0, 1, 0);
     public static final Collider BOW_SCAN = new MultiOBBCollider(2, 8, 48D, 48, 0.0D, 1, -48);
@@ -175,7 +182,19 @@ public class EFBowAnimations {
     }
 
     public static AnimationEvent.InTimeEvent<?> setFullBowUseTime(float time) {
-        return AnimationEvent.InTimeEvent.create(time, (livingEntityPatch, assetAccessor, animationParameters) -> livingEntityPatch.getOriginal().getMainHandItem().getOrCreateTag().putBoolean("is_full", true), AnimationEvent.Side.CLIENT);
+        return AnimationEvent.InTimeEvent.create(time, (livingEntityPatch, assetAccessor, animationParameters) -> {
+            LivingEntity living = livingEntityPatch.getOriginal();
+            if (living == null) return;
+            if (living.level().isClientSide) {
+                DRAWING_PLAYERS.add(living.getUUID());
+            }
+            living.startUsingItem(InteractionHand.MAIN_HAND);
+            ItemStack itemStack = living.getMainHandItem();
+            CompoundTag ticPersistent = itemStack.getOrCreateTagElement("tic_persistent");
+            ItemStack ammo = findValidAmmo(living);
+
+            ticPersistent.put(ModifiableLauncherItem.KEY_DRAWBACK_AMMO.toString(), ammo.save(new CompoundTag()));
+        }, AnimationEvent.Side.BOTH);
     }
     
     public static AnimationEvent.InTimeEvent<?> shootIn(float time) {
@@ -208,7 +227,15 @@ public class EFBowAnimations {
     private static void shootOnce(LivingEntityPatch<?> livingEntityPatch, float speed) {
         LivingEntity living = livingEntityPatch.getOriginal();
         ItemStack itemStack = living.getMainHandItem();
-        itemStack.getOrCreateTag().putBoolean("is_full", false);
+
+        if (livingEntityPatch.getOriginal().level().isClientSide) {
+            DRAWING_PLAYERS.remove(livingEntityPatch.getOriginal().getUUID());
+        }
+        CompoundTag ticPersistent = itemStack.getTagElement("tic_persistent");
+        if (ticPersistent != null) {
+            ticPersistent.remove(ModifiableLauncherItem.KEY_DRAWBACK_AMMO.toString());
+        }
+
         ToolStack toolStack = ToolStack.from(itemStack);
         Item item = itemStack.getItem();
         Level level = living.level();
@@ -216,14 +243,7 @@ public class EFBowAnimations {
         if (livingEntityPatch.getOriginal() instanceof ServerPlayer player && item instanceof ModifiableBowItem bowItem && !toolStack.isBroken()) {
             boolean flag = player.getAbilities().instabuild || itemStack.getEnchantmentLevel(Enchantments.INFINITY_ARROWS) > 0 && !toolStack.getVolatileData().getBoolean(BowAmmoModifierHook.SKIP_INVENTORY_AMMO);
 
-            Predicate<ItemStack> ammoPredicate;
-            switch (toolStack.getPersistentData().getInt(ModifiableBowItem.KEY_BALLISTA)) {
-                case 1 -> ammoPredicate = null;
-                case 2 -> ammoPredicate = (stack) -> stack.is(TinkerTags.Items.BALLISTA_AMMO);
-                case 3 -> ammoPredicate = bowItem.getSupportedHeldProjectiles();
-                default -> ammoPredicate = ModifiableBowItem.isBallista(toolStack) ? bowItem.getSupportedBallistaAmmo() : bowItem.getSupportedHeldProjectiles();
-            }
-            ItemStack foundAmmo = BowAmmoModifierHook.getAmmo(toolStack, itemStack, player, ammoPredicate);
+            ItemStack foundAmmo = findValidAmmo(player);
 
             int i = item.getUseDuration(itemStack) - leftTime;
             i = net.minecraftforge.event.ForgeEventFactory.onArrowLoose(itemStack, level, player, i, !foundAmmo.isEmpty() || flag);
@@ -256,6 +276,13 @@ public class EFBowAnimations {
                         desiredProjectiles = BowAmmoModifierHook.getDesiredProjectiles(toolStack);
                     }
 
+                    Predicate<ItemStack> ammoPredicate;
+                    switch (toolStack.getPersistentData().getInt(ModifiableBowItem.KEY_BALLISTA)) {
+                        case 1 -> ammoPredicate = null;
+                        case 2 -> ammoPredicate = (stack) -> stack.is(TinkerTags.Items.BALLISTA_AMMO);
+                        case 3 -> ammoPredicate = bowItem.getSupportedHeldProjectiles();
+                        default -> ammoPredicate = ModifiableBowItem.isBallista(toolStack) ? bowItem.getSupportedBallistaAmmo() : bowItem.getSupportedHeldProjectiles();
+                    }
                     ItemStack ammo = BowAmmoModifierHook.consumeAmmo(toolStack, itemStack, player, player, ammoPredicate, desiredProjectiles);
                     if (ammo.isEmpty()) {
                         ammo = new ItemStack(Items.ARROW);
@@ -354,6 +381,23 @@ public class EFBowAnimations {
         OpenMatrix4f rotation = new OpenMatrix4f().rotate(-(float) Math.toRadians(entity.yBodyRotO + 180.0F), new Vec3f(0.0F, 1.0F, 0.0F));
         OpenMatrix4f.mul(rotation, transformMatrix, transformMatrix);
         return new Vec3(transformMatrix.m30 + (float) entity.getX(), transformMatrix.m31 + (float) entity.getY(), transformMatrix.m32 + (float) entity.getZ());
+    }
+
+    public static ItemStack findValidAmmo(LivingEntity living) {
+        ItemStack foundAmmo = ItemStack.EMPTY;
+        ItemStack itemStack = living.getMainHandItem();
+        if (itemStack.getItem() instanceof ModifiableBowItem bowItem) {
+            ToolStack toolStack = ToolStack.from(itemStack);
+            Predicate<ItemStack> ammoPredicate;
+            switch (toolStack.getPersistentData().getInt(ModifiableBowItem.KEY_BALLISTA)) {
+                case 1 -> ammoPredicate = null;
+                case 2 -> ammoPredicate = (stack) -> stack.is(TinkerTags.Items.BALLISTA_AMMO);
+                case 3 -> ammoPredicate = bowItem.getSupportedHeldProjectiles();
+                default -> ammoPredicate = ModifiableBowItem.isBallista(toolStack) ? bowItem.getSupportedBallistaAmmo() : bowItem.getSupportedHeldProjectiles();
+            }
+            foundAmmo = BowAmmoModifierHook.getAmmo(toolStack, itemStack, living, ammoPredicate);
+        }
+        return foundAmmo;
     }
 
 }

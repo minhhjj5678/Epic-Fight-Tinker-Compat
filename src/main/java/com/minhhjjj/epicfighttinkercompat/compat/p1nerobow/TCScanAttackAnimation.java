@@ -81,11 +81,11 @@ public class TCScanAttackAnimation extends AttackAnimation {
         Vec3 vec3 = Vec3.ZERO;
         if (target != null && stack.getItem() instanceof ModifiableBowItem) {
             ToolStack tool = ToolStack.from(stack);
-//            vec3 = EFBowAnimations.getShootDirection(target.getEyePosition(), entityPatch.getOriginal().position(),
-//                    ConditionalStatModifierHook.getModifiedStat(tool, entityPatch.getOriginal(), ToolStats.VELOCITY) * 3.0f);
+            vec3 = EFBowAnimations.getShootDirection(target.getEyePosition(), entityPatch.getOriginal().position(),
+                    ConditionalStatModifierHook.getModifiedStat(tool, entityPatch.getOriginal(), ToolStats.VELOCITY) * 3.0f);
         }
 
-        if (elapsedTime < phase.contact && target != null) {
+        if (elapsedTime < phase.contact && !vec3.equals(Vec3.ZERO)) {
             Vec3 playerPosition = entityPatch.getOriginal().position();
             Vec3 targetPosition = target.position();
             float yaw = (float) MathUtils.getYRotOfVector(targetPosition.subtract(playerPosition));

@@ -2,6 +2,7 @@ package com.minhhjjj.epicfighttinkercompat.gameasset;
 
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import com.minhhjjj.epicfighttinkercompat.compat.p1nerobow.EFBowAnimations;
+import com.minhhjjj.epicfighttinkercompat.compat.p1nerobow.TCScanAttackAnimation;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import yesman.epicfight.api.animation.AnimationManager;
@@ -37,7 +38,7 @@ public class EFTAnimations {
         BIPED_WALK_HAMMER = builder.nextAccessor("biped/living/walk_hammer", (accessor) -> new MovementAnimation(true, accessor, Armatures.BIPED));
         BIPED_RUN_HAMMER = builder.nextAccessor("biped/living/run_hammer", (accessor) -> new MovementAnimation(true, accessor, Armatures.BIPED));
         HAMMER_AUTO1 = builder.nextAccessor("biped/combat/hammer_auto1", (accessor) -> new BasicAttackAnimation(0.25f, 0.15f, 0.52f, 0.95f, null, Armatures.BIPED.get().toolR, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.0f));
-        TEST = builder.nextAccessor("biped/combat/arrow_tempest_skill",(accessor) -> new AttackAnimation(0.25f,
+        TEST = builder.nextAccessor("biped/combat/arrow_tempest_skill",(accessor) -> new TCScanAttackAnimation(0.25f,
                 0.15f, 0.52f, 0.95f, 0.95f, EFBowAnimations.BOW_SCAN, Armatures.BIPED.get().toolR, accessor, Armatures.BIPED).addEvents(
                 shoot(7.5F / 60, 0f), shoot(15F / 60, 45f), shoot(22.5F / 60, 90f),
                 shoot(30F / 60, 135f), shoot(37.5F / 60, 180f), shoot(45F / 60, 225f),

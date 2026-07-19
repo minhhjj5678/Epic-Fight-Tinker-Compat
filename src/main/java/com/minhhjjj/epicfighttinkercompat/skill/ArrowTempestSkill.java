@@ -11,6 +11,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -26,6 +27,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -50,22 +52,26 @@ import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.network.EpicFightNetworkManager;
 import yesman.epicfight.network.server.SPSetSkillContainerValue;
+import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.skill.weaponinnate.SimpleWeaponInnateSkill;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
+import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
 @Mod.EventBusSubscriber(modid = EpicFightTinkerCompat.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
     private static final UUID EVENT_UUID = UUID.fromString("c9e8b1d4-6f2a-47bd-98f1-1d6c5a72e4b9");
     private static final ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(EpicFightMod.MODID, "textures/gui/skills/weapon_innate/steel_whirlwind.png");
+    private static final Map<String, ItemStack> CURRENT_TOOLS = new ConcurrentHashMap<>();
+    private static final Set<String> PENDING_STACK_RESTORE = ConcurrentHashMap.newKeySet();
     public static final float DEFAULT_COOLDOWN = 10f;
     public static final String KEY_SCAN_ATTACK = "key_scan_attack";
     public static final String KEY_SKILL_ATTACK = "key_skill_attack";
@@ -90,15 +96,10 @@ public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
                         if (playerPatch != null) {
                             SkillContainer container = playerPatch.getSkill(SkillSlots.WEAPON_INNATE);
                             if (container != null && container.getSkill() instanceof ArrowTempestSkill) {
-                                int lastStack = container.getStack();
                                 float lastResource = container.getResource();
                                 float newResource = lastResource + bonusResource;
                                 container.setResource(newResource);
                                 EpicFightNetworkManager.sendToAll(SPSetSkillContainerValue.resource(SkillSlots.WEAPON_INNATE, newResource, player.getId()));
-                                EpicFightTinkerCompat.LOGGER.info("last stack: {}, current stack: {}, last resource: {}, new resource: {}, current resource: {}", lastStack, container.getStack(), lastResource, newResource, container.getResource());
-//                                if (container.getResource() == 0.0f && container.getStack() != lastStack) {
-//                                    EpicFightNetworkManager.sendToAll(SPSetSkillContainerValue.stacks(SkillSlots.WEAPON_INNATE, container.getStack(), player.getId()));
-//                                }
                             }
                         }
                     }
@@ -107,20 +108,64 @@ public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
         }
     }
 
+//    @SubscribeEvent()
+//    public static void onWeaponSwap(LivingEquipmentChangeEvent event) {
+//        if (event.getSlot() == EquipmentSlot.MAINHAND && event.getEntity() instanceof ServerPlayer player) {
+//            ItemStack oldItem = event.getFrom();
+//            ItemStack newItem = event.getTo();
+//            if (oldItem.getItem() instanceof ModifiableBowItem && newItem.getItem() instanceof ModifiableBowItem) {
+//                PlayerPatch<?> playerPatch = EpicFightCapabilities.getEntityPatch(player, PlayerPatch.class);
+//                ToolStack oldTool = ToolStack.from(oldItem);
+//                ToolStack newTool = ToolStack.from(newItem);
+//                CapabilityItem oldCapabilityItem = EpicFightCapabilities.getItemStackCapability(oldItem);
+//                CapabilityItem newCapabilityItem = EpicFightCapabilities.getItemStackCapability(newItem);
+//                if (playerPatch != null && !oldCapabilityItem.isEmpty() && !newCapabilityItem.isEmpty()) {
+//                    Skill oldSkill = oldCapabilityItem.getInnateSkill(playerPatch, oldItem);
+//                    Skill newSkill = newCapabilityItem.getInnateSkill(playerPatch, newItem);
+//                    if (oldSkill instanceof ArrowTempestSkill && oldSkill == newSkill) {
+//                        SkillContainer container = playerPatch.getSkill(SkillSlots.WEAPON_INNATE);
+//                        if (container != null) {
+//                            float newResource = newItem.getOrCreateTag().getFloat(KEY_RESOURCE);
+//                            int newStacks = newItem.getOrCreateTag().getInt(KEY_STACKS);
+//                            oldTool.getPersistentData().putFloat(ResourceLocation.fKEY_RESOURCE, container.getResource());
+//                            oldTool.getPersistentData().putInt(KEY_STACKS, container.getStack());
+//                            container.setStack(newStacks);
+//                            container.setResource(newResource);
+//
+//                            CURRENT_TOOLS.put(getMapKey(player), newItem);
+//                            CURRENT_TOOLS.put(player.getUUID() + "-client",  newItem);
+//                            EpicFightNetworkManager.sendToAll(SPSetSkillContainerValue.stacks(SkillSlots.WEAPON_INNATE, newStacks, player.getId()));
+//                            EpicFightNetworkManager.sendToAll(SPSetSkillContainerValue.resource(SkillSlots.WEAPON_INNATE, newResource, player.getId()));
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+    @SubscribeEvent
+    public static void onPlayerRemove(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.getEntity() == null || event.getEntity().level().isClientSide) return;
+        CURRENT_TOOLS.remove(getMapKey(event.getEntity()));
+    }
+
     public ArrowTempestSkill(SimpleWeaponInnateSkill.Builder builder) {
         super(builder.setResource(Resource.COOLDOWN));
     }
 
     public void onInitiate(SkillContainer container) {
         super.onInitiate(container);
-        if (container.getExecutor().getOriginal() != null) {
+        if (container.getExecutor().getOriginal() instanceof Player) {
             ItemStack itemStack = container.getExecutor().getOriginal().getMainHandItem();
-            if (!itemStack.isEmpty()) {
-                EpicFightTinkerCompat.LOGGER.info("Item: {}", itemStack.getItem());
-                container.setResource(itemStack.getOrCreateTag().getFloat(KEY_RESOURCE));
-                container.setStack(itemStack.getOrCreateTag().getInt(KEY_STACKS));
-                EpicFightTinkerCompat.LOGGER.info("resource: {}, stacks: {}", container.getResource(), container.getStack());
-
+            if (!itemStack.isEmpty() && itemStack.getItem() instanceof ModifiableBowItem) {
+                CURRENT_TOOLS.put(getMapKey(container.getExecutor().getOriginal()), itemStack);
+                PENDING_STACK_RESTORE.add(getMapKey(container.getExecutor().getOriginal()));
+                float resource = itemStack.getOrCreateTag().getFloat(KEY_RESOURCE);
+                int stacks = itemStack.getOrCreateTag().getInt(KEY_STACKS);
+                container.setMaxResource(this.consumption);
+                this.maxStackSize = 2;
+                container.setStack(stacks);
+                container.setResource(resource);
 
                 if (!container.getExecutor().getOriginal().level().isClientSide) {
                     EpicFightNetworkManager.sendToAll(SPSetSkillContainerValue.stacks(SkillSlots.WEAPON_INNATE, container.getStack(), container.getExecutor().getOriginal().getId()));
@@ -128,60 +173,36 @@ public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
                 }
             }
         }
-
-//        container.getExecutor().getEventListener().addEventListener(PlayerEventListener.EventType.DEAL_DAMAGE_EVENT_HURT, EVENT_UUID, (event) -> {
-//            if (!(container.getExecutor().getOriginal() instanceof ServerPlayer)) return;
-////            if (Arrays.stream(EFBowAnimations.getComboAttack()).anyMatch(a -> a.get().equals(event.getDamageSource().getAnimation()))) {
-//            if (List.of(EFBowAnimations.BOW_ATTACK).contains(event.getDamageSource().getAnimation())) {
-//                container.setResource(container.getResource() + 5);
-//            }
-//        });
-//
-//        container.getExecutor().getEventListener().addEventListener(PlayerEventListener.EventType.PROJECTILE_HIT_EVENT, EVENT_UUID, (event) -> {
-//            EpicFightTinkerCompat.LOGGER.info("Damage source: {} | owner: {}", event.getPlayerPatch().getOriginal(), event.getForgeEvent().getProjectile().getOwner());
-//            if (event.getForgeEvent().getProjectile() instanceof AbstractArrow arrow) {
-//                if (arrow.getTags().contains(KEY_SCAN_ATTACK)) {
-//                    container.setResource(container.getResource() + 5);
-//                } else if (!arrow.getTags().contains(KEY_SKILL_ATTACK)) {
-//                    container.setResource(container.getResource() + 10);
-//                }
-//            }
-//        });
     }
 
     public void onRemoved(SkillContainer container) {
         super.onRemoved(container);
-//        if (container.getExecutor().getOriginal() != null) {
-//            ItemStack itemStack = container.getExecutor().getOriginal().getMainHandItem();
-//            if (!itemStack.isEmpty()) {
-//                itemStack.getOrCreateTag().putFloat(KEY_RESOURCE, container.getResource());
-//                itemStack.getOrCreateTag().putInt(KEY_STACKS, container.getStack());
-//            }
-//        }
+        if (container.getExecutor().getOriginal() instanceof Player) {
+            ItemStack itemStack = CURRENT_TOOLS.remove(getMapKey(container.getExecutor().getOriginal()));
+            if (itemStack != null && !itemStack.isEmpty() && itemStack.getItem() instanceof ModifiableBowItem) {
+                float resource = container.getResource();
+                int stacks = container.getStack();
+                itemStack.getOrCreateTag().putFloat(KEY_RESOURCE, resource);
+                itemStack.getOrCreateTag().putInt(KEY_STACKS, stacks);
+            }
+        }
 //        container.getExecutor().getEventListener().removeListener(PlayerEventListener.EventType.DEAL_DAMAGE_EVENT_HURT, EVENT_UUID);
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void onWeaponSwap(LivingEquipmentChangeEvent event) {
-        if (event.getSlot() == EquipmentSlot.MAINHAND && event.getEntity() instanceof ServerPlayer player) {
-            ItemStack oldItem = event.getFrom();
-            EpicFightTinkerCompat.LOGGER.info("oldItem: {}", oldItem.getItem());
-            if (!oldItem.isEmpty() && oldItem.getItem() instanceof ModifiableBowItem) {
-                PlayerPatch<?> playerPatch = EpicFightCapabilities.getEntityPatch(player, PlayerPatch.class);
-                if (playerPatch != null) {
-                    SkillContainer container = playerPatch.getSkill(SkillSlots.WEAPON_INNATE);
-                    if (container != null && container.getSkill() instanceof ArrowTempestSkill) {
-                        oldItem.getOrCreateTag().putFloat(KEY_RESOURCE, container.getResource());
-                        oldItem.getOrCreateTag().putInt(KEY_STACKS, container.getStack());
-                        EpicFightTinkerCompat.LOGGER.info("resource: {}, stacks: {}", container.getResource(), container.getStack());
-                    }
-                }
-            }
-        }
+    private static String getMapKey(LivingEntity entity) {
+        return entity.getUUID() + (entity.level().isClientSide ? "-client" : "-server");
     }
 
     public void updateContainer(SkillContainer container) {
         super.updateContainer(container);
+        Entity entity = container.getExecutor().getOriginal();
+        if (entity instanceof Player player && PENDING_STACK_RESTORE.contains(getMapKey(player))) {
+            ItemStack itemStack = CURRENT_TOOLS.getOrDefault(getMapKey(player), ItemStack.EMPTY);
+            if (!itemStack.isEmpty()) {
+                container.setStack(itemStack.getOrCreateTag().getInt(KEY_STACKS));
+            }
+            PENDING_STACK_RESTORE.remove(getMapKey(player));
+        }
     }
 
     public ResourceLocation getSkillTexture() {
