@@ -7,7 +7,6 @@
  */
 package com.minhhjjj.epicfighttinkercompat.compat.p1nerobow;
 
-import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import com.minhhjjj.epicfighttinkercompat.skill.ArrowTempestSkill;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -155,11 +154,29 @@ public class EFBowAnimations {
                         .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.KNOCKDOWN)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(2.0f))
                         .setResourceLocation(MOD_ID, "biped/bow_dash_attack")
+                        .addProperty(AnimationProperty.AttackAnimationProperty.PLAY_SPEED_MODIFIER,
+                                (dynamicAnimation, living, defaultSpeed, v1, v2) -> {
+                                    ItemStack itemStack = living.getOriginal().getMainHandItem();
+                                    if (itemStack.getItem() instanceof ModifiableBowItem) {
+                                        ToolStack tool = ToolStack.from(itemStack);
+                                        return tool.getStats().get(ToolStats.DRAW_SPEED);
+                                    }
+                                    return 1.0F;
+                                })
                         .addProperty(AnimationProperty.AttackAnimationProperty.FIXED_MOVE_DISTANCE, true));
         BOW_JUMP_ATTACK = builder.nextAccessor("biped/bow_jump_attack", accessor ->
                 new TCScanAttackAnimation(0.15F, 0, 0.15F, 20 / 60F, 80 / 60F,
                         InteractionHand.MAIN_HAND, BOW_SCAN, Armatures.BIPED.get().rootJoint, accessor, Armatures.BIPED)
                         .setResourceLocation(MOD_ID, "biped/bow_jump_attack")
+                        .addProperty(AnimationProperty.AttackAnimationProperty.PLAY_SPEED_MODIFIER,
+                                (dynamicAnimation, living, defaultSpeed, v1, v2) -> {
+                                    ItemStack itemStack = living.getOriginal().getMainHandItem();
+                                    if (itemStack.getItem() instanceof ModifiableBowItem) {
+                                        ToolStack tool = ToolStack.from(itemStack);
+                                        return tool.getStats().get(ToolStats.DRAW_SPEED);
+                                    }
+                                    return 1.0F;
+                                })
                         .addEvents(setFullBowUseTime(10 / 60F), shootIn(15 / 60F),
                                 setFullBowUseTime(16 / 60F), shootIn(20 / 60F)));
 

@@ -9,10 +9,8 @@ import net.minecraftforge.fml.common.Mod;
 import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.forgeevent.SkillBuildEvent;
 import yesman.epicfight.api.utils.math.ValueModifier;
-import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategories;
-import yesman.epicfight.skill.weaponinnate.GuillotineAxeSkill;
 import yesman.epicfight.skill.weaponinnate.SimpleWeaponInnateSkill;
 import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
 import yesman.epicfight.world.damagesource.EpicFightDamageTypeTags;
@@ -35,9 +33,9 @@ public class EFTSkills {
         SkillBuildEvent.ModRegistryWorker modRegistry = build.createRegistryWorker(EpicFightTinkerCompat.MODID);
         TINKER_RIGHT_CLICK_SKILL = modRegistry.build("tinker_right_click_skill", TinkerRightClickSkill::new, Skill.createBuilder().setCategory(SkillCategories.GUARD).setResource(Skill.Resource.NONE));
         SWAP_SKILL = modRegistry.build("swap_skill", SwapSkill::new, Skill.createBuilder().setCategory(SkillCategories.WEAPON_PASSIVE).setResource(Skill.Resource.NONE).setActivateType(Skill.ActivateType.ONE_SHOT));
-        WeaponInnateSkill theGuillotine = (WeaponInnateSkill)modRegistry.build("arrow_tempest_skill", ArrowTempestSkill::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(EFTAnimations.TEST).setResource(Skill.Resource.COOLDOWN));
-        theGuillotine.newProperty().addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(1.0F)).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(2.5F)).addProperty(AnimationProperty.AttackPhaseProperty.ARMOR_NEGATION_MODIFIER, ValueModifier.adder(20.0F)).addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(2.0F)).addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG).addProperty(AnimationProperty.AttackPhaseProperty.EXTRA_DAMAGE, Set.of(ExtraDamageInstance.SWEEPING_EDGE_ENCHANTMENT.create(new float[0]))).addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(EpicFightDamageTypeTags.WEAPON_INNATE));
-        ARROW_TEMPEST_SKILL = theGuillotine;
+        WeaponInnateSkill arrowTempestSkill = modRegistry.build("arrow_tempest_skill", ArrowTempestSkill::new, SimpleWeaponInnateSkill.createSimpleWeaponInnateBuilder().setAnimations(EFTAnimations.ARROW_TEMPEST).setResource(Skill.Resource.COOLDOWN));
+        arrowTempestSkill.newProperty().addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(1.0F)).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(2.5F)).addProperty(AnimationProperty.AttackPhaseProperty.ARMOR_NEGATION_MODIFIER, ValueModifier.adder(20.0F)).addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(2.0F)).addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG).addProperty(AnimationProperty.AttackPhaseProperty.EXTRA_DAMAGE, Set.of(ExtraDamageInstance.SWEEPING_EDGE_ENCHANTMENT.create(new float[0]))).addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG, Set.of(EpicFightDamageTypeTags.WEAPON_INNATE));
+        ARROW_TEMPEST_SKILL = arrowTempestSkill;
     }
 
     private EFTSkills() {}

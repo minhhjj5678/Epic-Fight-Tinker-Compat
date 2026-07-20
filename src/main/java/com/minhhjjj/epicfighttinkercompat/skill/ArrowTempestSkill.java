@@ -3,13 +3,17 @@ package com.minhhjjj.epicfighttinkercompat.skill;
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import com.minhhjjj.epicfighttinkercompat.compat.p1nerobow.EFBowAnimations;
 import com.minhhjjj.epicfighttinkercompat.compat.p1nerobow.TCScanAttackAnimation;
+import com.minhhjjj.epicfighttinkercompat.gameasset.EFTAnimations;
 import com.minhhjjj.epicfighttinkercompat.modifiers.EpicFightModifiers;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -38,6 +42,7 @@ import slimeknights.tconstruct.library.tools.capability.PersistentDataCapability
 import slimeknights.tconstruct.library.tools.helper.ModifierUtil;
 import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableBowItem;
+import slimeknights.tconstruct.library.tools.item.ranged.ModifiableLauncherItem;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
@@ -64,10 +69,12 @@ import java.util.function.Predicate;
 
 @Mod.EventBusSubscriber(modid = EpicFightTinkerCompat.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
-    private static final ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(EpicFightMod.MODID, "textures/gui/skills/weapon_innate/steel_whirlwind.png");
+    private static final ResourceLocation ARROW_TEMPEST = ResourceLocation.fromNamespaceAndPath(EpicFightTinkerCompat.MODID, "textures/gui/skills/weapon_innate/arrow_tempest.png");
+    private static final ResourceLocation SEEKING_TEMPEST = ResourceLocation.fromNamespaceAndPath(EpicFightTinkerCompat.MODID, "textures/gui/skills/weapon_innate/arrow_tempest.png");
     private static final Map<String, ItemStack> CURRENT_TOOLS = new ConcurrentHashMap<>();
     private static final Set<String> PENDING_STACK_RESTORE = ConcurrentHashMap.newKeySet();
-    public static final float DEFAULT_COOLDOWN = 10f;
+    public static final int AMMO_COUNT = 8;
+    public static final float RADIUS = 20;
     public static final String KEY_SCAN_ATTACK = "key_scan_attack";
     public static final String KEY_SKILL_ATTACK = "key_skill_attack";
     public static final String KEY_RESOURCE = "key_resource";
@@ -202,6 +209,11 @@ public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
         }
     }
 
+    public void executeOnServer(SkillContainer container, FriendlyByteBuf args) {
+        this.attackAnimation = ToolStack.from(container.getExecutor().getOriginal().getMainHandItem()).getModifierLevel(EpicFightModifiers.ARROW_TEMPEST) > 1 ? EFTAnimations.SEEKING_TEMPEST : EFTAnimations.ARROW_TEMPEST;
+        super.executeOnServer(container, args);
+    }
+
     private static String getMapKey(LivingEntity entity) {
         return entity.getUUID() + (entity.level().isClientSide ? "-client" : "-server");
     }
@@ -235,7 +247,7 @@ public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
     }
 
     public ResourceLocation getSkillTexture() {
-        return resourceLocation;
+        return SEEKING_TEMPEST;
     }
 
     public float getCooldownRegenPerSecond(PlayerPatch<?> executor) {
@@ -260,7 +272,15 @@ public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
     public static void shootOnce(LivingEntityPatch<?> livingEntityPatch, float bonusAngle, ItemStack itemStack, ToolStack toolStack, ModifiableBowItem bowItem) {
         int modifierLevel = toolStack.getModifierLevel(EpicFightModifiers.ARROW_TEMPEST);
         LivingEntity living = livingEntityPatch.getOriginal();
-        itemStack.getOrCreateTag().putBoolean("is_full", false);
+
+        if (livingEntityPatch.getOriginal().level().isClientSide) {
+            EFBowAnimations.DRAWING_PLAYERS.remove(livingEntityPatch.getOriginal().getUUID());
+        }
+        CompoundTag ticPersistent = itemStack.getTagElement("tic_persistent");
+        if (ticPersistent != null) {
+            ticPersistent.remove(ModifiableLauncherItem.KEY_DRAWBACK_AMMO.toString());
+        }
+
         Item item = itemStack.getItem();
         Level level = living.level();
         int leftTime = 0;
@@ -333,7 +353,8 @@ public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
                         waterInertia = ConditionalStatModifierHook.getModifiedStat(thrown, living, ToolStats.WATER_INERTIA);
                     }
 
-                    for (int arrowIndex = 0;  arrowIndex < ammo.getCount(); ++arrowIndex) {
+                    int ammoCount = modifierLevel > 1 ? AMMO_COUNT + (ammo.getCount() - 1) / 2: ammo.getCount();
+                    for (int arrowIndex = 0;  arrowIndex < ammoCount; ++arrowIndex) {
                         AbstractArrow abstractarrow;
                         if (thrownTool) {
                             ThrownTool thrown = new ThrownTool(level, player, ammo, f, velocity, waterInertia);
@@ -344,9 +365,14 @@ public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
                         }
 
                         abstractarrow.setPos(EFBowAnimations.getJointWorldPos(livingEntityPatch, Armatures.BIPED.get().handL));
-                        float angle = startAngle + (float)(10 * arrowIndex);
-
-                        abstractarrow.shootFromRotation(player, living.getXRot() + angle, livingEntityPatch.getYRot() + bonusAngle, 0.0F, power * 3.0F, ModifierUtil.getInaccuracy(toolStack, player));
+                        if (modifierLevel > 1) {
+                            float angleX = Mth.randomBetween(player.level().random, -RADIUS, RADIUS);
+                            float angleY = (float) (Math.sqrt(RADIUS * RADIUS - angleX * angleX) * (Math.random() > 0.5 ? 1 : -1));
+                            abstractarrow.shootFromRotation(player, living.getXRot() + angleX, livingEntityPatch.getYRot() + angleY, 0.0f, power * 3.0F, ModifierUtil.getInaccuracy(toolStack, player));
+                        } else {
+                            float angle = startAngle + (float)(10 * arrowIndex);
+                            abstractarrow.shootFromRotation(player, living.getXRot() + angle, livingEntityPatch.getYRot() + bonusAngle, 0.0F, power * 3.0F, ModifierUtil.getInaccuracy(toolStack, player));
+                        }
 
                         float baseArrowDamage = (float)(abstractarrow.getBaseDamage() - (double)2.0F + (double)toolStack.getStats().get(ToolStats.PROJECTILE_DAMAGE));
                         abstractarrow.setBaseDamage(ConditionalStatModifierHook.getModifiedStat(toolStack, living, ToolStats.PROJECTILE_DAMAGE, baseArrowDamage));
