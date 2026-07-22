@@ -2,12 +2,15 @@ package com.minhhjjj.epicfighttinkercompat.gameasset.profiles;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import slimeknights.tconstruct.library.modifiers.ModifierId;
+import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.item.Style;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
 
@@ -17,7 +20,7 @@ public record ModifierProfile(
         Map<Style, CombatProfile> weaponSets,
         Collider collider,
         WeaponCategory weaponCategory,
-        Skill innateSkill,
+        BiFunction<ToolStack, PlayerPatch<?>, Skill> innateSkill,
         int priority
 ) {
 
@@ -35,7 +38,7 @@ public record ModifierProfile(
         private Collider collider;
         private WeaponCategory weaponCategory;
         private int priority = 0;
-        private Skill innateSkill;
+        private BiFunction<ToolStack, PlayerPatch<?>, Skill> innateSkill = (item, patch) -> null;
 
         public Builder(ModifierId modifierId) {
             this.modifierId = modifierId;
@@ -62,7 +65,7 @@ public record ModifierProfile(
             return this;
         }
 
-        public Builder innateSkill(Skill innateSkill) {
+        public Builder innateSkill(BiFunction<ToolStack, PlayerPatch<?>, Skill> innateSkill) {
             this.innateSkill = innateSkill;
             return this;
         }

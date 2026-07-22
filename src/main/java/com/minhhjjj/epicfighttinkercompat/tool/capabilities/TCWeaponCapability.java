@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
+import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
 import slimeknights.tconstruct.library.tools.item.ModifiableArrowItem;
 import slimeknights.tconstruct.library.tools.item.ModifiableItem;
@@ -180,11 +181,12 @@ public class TCWeaponCapability extends CapabilityItem {
     }
 
     public Skill getInnateSkill(PlayerPatch<?> playerpatch, ItemStack itemstack) {
-        if (itemstack.getItem() instanceof IModifiableDisplay) {
+        if (itemstack.getItem() instanceof IModifiable) {
             ToolStack tool = ToolStack.from(itemstack);
             for (ModifierProfile modifierProfile : this.modifierProfiles) {
-                if (tool.getModifierLevel(modifierProfile.modifierId()) > 0 && modifierProfile.innateSkill() != null) {
-                    return modifierProfile.innateSkill();
+                if (modifierProfile.innateSkill() != null) {
+                    Skill innateSkill = modifierProfile.innateSkill().apply(tool, playerpatch);
+                    if (innateSkill != null) return innateSkill;
                 }
             }
         }

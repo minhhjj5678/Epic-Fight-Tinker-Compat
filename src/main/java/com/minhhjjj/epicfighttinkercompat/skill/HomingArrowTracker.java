@@ -32,7 +32,6 @@ public class HomingArrowTracker {
 
     public static class ArrowProfile {
         public LivingEntity target;
-        public int ticks = 1;
         public int lastTimeTargeting = 0;
 
         ArrowProfile(LivingEntity target) {
@@ -85,11 +84,28 @@ public class HomingArrowTracker {
             Map.Entry<AbstractArrow, ArrowProfile> entry = iterator.next();
             AbstractArrow arrow = entry.getKey();
             LivingEntity target = entry.getValue().target;
-            int ticks = entry.getValue().ticks++;
             if (arrow == null || arrow.isRemoved() || arrow.getDeltaMovement().lengthSqr() < 0.01D) {
                 iterator.remove();
                 continue;
-            } else if (target == null || !isValidTarget(target, arrow)) {
+            }
+
+            if (arrow.level() instanceof ServerLevel serverLevel) {
+                serverLevel.sendParticles(ParticleTypes.END_ROD,
+                        arrow.getX(), arrow.getY(), arrow.getZ(),
+                        3,
+                        0.0, 0.0, 0.0,
+                        0.01
+                );
+
+                serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
+                        arrow.getX(), arrow.getY(), arrow.getZ(),
+                        3,
+                        0.05, 0.05, 0.05,
+                        0.02
+                );
+            }
+
+            if (target == null || !isValidTarget(target, arrow)) {
                 if (!updateTarget(arrow)) {
                     if (entry.getValue().lastTimeTargeting > STOP_THRESHOLD) {
                         iterator.remove();
@@ -126,32 +142,17 @@ public class HomingArrowTracker {
             }
             arrow.setNoPhysics(isInsideBlock);
 
+            int ticks = arrow.tickCount;
             double speed = Math.max(arrow.getDeltaMovement().length(), 1.5D);
             Vec3 targetPos = target.getEyePosition();
             Vec3 vec3 = targetPos.subtract(arrow.position()).normalize().scale(speed);
-            Vec3 smoothedMovement = arrow.getDeltaMovement().lerp(vec3, ticks * 0.005).normalize().scale(speed);
+            Vec3 smoothedMovement = arrow.getDeltaMovement().lerp(vec3, ticks * 0.01).normalize().scale(speed);
             arrow.setDeltaMovement(smoothedMovement);
             double d0 = smoothedMovement.horizontalDistance();
             arrow.setYRot((float)(Mth.atan2(smoothedMovement.x, smoothedMovement.z) * (double)(180F / (float)Math.PI)));
             arrow.setXRot((float)(Mth.atan2(smoothedMovement.y, d0) * (double)(180F / (float)Math.PI)));
             arrow.yRotO = arrow.getYRot();
             arrow.xRotO = arrow.getXRot();
-
-            if (arrow.level() instanceof ServerLevel serverLevel) {
-                serverLevel.sendParticles(ParticleTypes.END_ROD,
-                        arrow.getX(), arrow.getY(), arrow.getZ(),
-                        1,
-                        0.0, 0.0, 0.0,
-                        0.01
-                );
-
-                serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
-                        arrow.getX(), arrow.getY(), arrow.getZ(),
-                        1,
-                        0.05, 0.05, 0.05,
-                        0.02
-                );
-            }
 
             arrow.hasImpulse = true;
         }

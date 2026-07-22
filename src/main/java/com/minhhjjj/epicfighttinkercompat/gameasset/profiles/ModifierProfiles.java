@@ -1,7 +1,6 @@
 package com.minhhjjj.epicfighttinkercompat.gameasset.profiles;
 
 
-import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import com.minhhjjj.epicfighttinkercompat.gameasset.EFTSkills;
 import com.minhhjjj.epicfighttinkercompat.modifiers.EpicFightModifiers;
 
@@ -13,7 +12,6 @@ import reascer.wom.gameasset.WOMSkills;
 import reascer.wom.gameasset.colliders.WOMWeaponColliders;
 import reascer.wom.skill.WOMSkillDataKeys;
 import reascer.wom.world.capabilities.item.WOMWeaponCategories;
-import slimeknights.tconstruct.library.modifiers.ModifierId;
 import yesman.epicfight.gameasset.ColliderPreset;
 import yesman.epicfight.skill.*;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
@@ -33,7 +31,7 @@ public class ModifierProfiles {
 
     public static final ModifierProfile ARROW_TEMPEST = ModifierProfile.builder(EpicFightModifiers.ARROW_TEMPEST)
             .styleProvider(livingEntityPatch -> Styles.TWO_HAND)
-            .innateSkill(EFTSkills.ARROW_TEMPEST_SKILL)
+            .innateSkill(((tool, playerPatch) -> tool.getModifierLevel(EpicFightModifiers.ARROW_TEMPEST) > 1 ? EFTSkills.SEEKING_TEMPEST_SKILL : (tool.getModifierLevel(EpicFightModifiers.ARROW_TEMPEST) > 0 ? EFTSkills.ARROW_TEMPEST_SKILL : null)))
             .build();
 
     public static final ModifierProfile SPEARY = ModifierProfile.builder(EpicFightModifiers.SPEARY)

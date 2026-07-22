@@ -31,7 +31,9 @@ public class TinkerItemProperties {
     private static final ResourceLocation CHARGING_ID = TConstruct.getResource("charging");
     private static final ItemPropertyFunction CHARGING = (stack, level, holder, seed) -> {
         if (holder != null && EFBowAnimations.DRAWING_PLAYERS.contains(holder.getUUID())) {
-            return 1.0f;
+            if (holder.getMainHandItem() == stack) {
+                return 1.0f;
+            }
         }
 
         if (holder != null && holder.isUsingItem() && holder.getUseItem() == stack) {
@@ -54,7 +56,9 @@ public class TinkerItemProperties {
     private static final ResourceLocation CHARGE_ID = TConstruct.getResource("charge");
     private static final ItemPropertyFunction CHARGE = (stack, level, holder, seed) -> {
         if (holder != null && EFBowAnimations.DRAWING_PLAYERS.contains(holder.getUUID())) {
-            return 0.9f;
+            if (holder.getMainHandItem() == stack) {
+                return 0.9f;
+            }
         }
 
         if (holder != null && holder.getUseItem() == stack) {

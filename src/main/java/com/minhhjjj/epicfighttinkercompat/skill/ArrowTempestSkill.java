@@ -5,20 +5,17 @@ import com.minhhjjj.epicfighttinkercompat.compat.p1nerobow.EFBowAnimations;
 import com.minhhjjj.epicfighttinkercompat.compat.p1nerobow.TCScanAttackAnimation;
 import com.minhhjjj.epicfighttinkercompat.gameasset.EFTAnimations;
 import com.minhhjjj.epicfighttinkercompat.modifiers.EpicFightModifiers;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.Item;
@@ -26,10 +23,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
-import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import slimeknights.tconstruct.common.TinkerTags;
@@ -51,34 +48,26 @@ import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.entity.ThrownTool;
 import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.gameasset.Armatures;
-import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.network.EpicFightNetworkManager;
 import yesman.epicfight.network.server.SPSetSkillContainerValue;
-import yesman.epicfight.skill.Skill;
+import yesman.epicfight.skill.SkillBuilder;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.skill.SkillSlots;
-import yesman.epicfight.skill.weaponinnate.SimpleWeaponInnateSkill;
+import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
-import yesman.epicfight.world.capabilities.item.CapabilityItem;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
 @Mod.EventBusSubscriber(modid = EpicFightTinkerCompat.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
-    private static final ResourceLocation ARROW_TEMPEST = ResourceLocation.fromNamespaceAndPath(EpicFightTinkerCompat.MODID, "textures/gui/skills/weapon_innate/arrow_tempest.png");
-    private static final ResourceLocation SEEKING_TEMPEST = ResourceLocation.fromNamespaceAndPath(EpicFightTinkerCompat.MODID, "textures/gui/skills/weapon_innate/arrow_tempest.png");
-    private static final Map<String, ItemStack> CURRENT_TOOLS = new ConcurrentHashMap<>();
-    private static final Set<String> PENDING_STACK_RESTORE = ConcurrentHashMap.newKeySet();
+public class ArrowTempestSkill extends PersistentWeaponInnateSkill {
     public static final int AMMO_COUNT = 8;
     public static final float RADIUS = 20;
+    public static final float RANGE = 20;
     public static final String KEY_SCAN_ATTACK = "key_scan_attack";
     public static final String KEY_SKILL_ATTACK = "key_skill_attack";
-    public static final String KEY_RESOURCE = "key_resource";
-    public static final String KEY_STACKS = "key_stacks";
 
     @SubscribeEvent
     public static void onArrowImpact(ProjectileImpactEvent event) {
@@ -97,7 +86,7 @@ public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
                         PlayerPatch<?> playerPatch = EpicFightCapabilities.getEntityPatch(player, PlayerPatch.class);
                         if (playerPatch != null) {
                             SkillContainer container = playerPatch.getSkill(SkillSlots.WEAPON_INNATE);
-                            if (container != null && container.getSkill() instanceof ArrowTempestSkill) {
+                            if (container != null && container.getSkill() != null) {
                                 float lastResource = container.getResource();
                                 float newResource = lastResource + bonusResource;
                                 container.setResource(newResource);
@@ -110,148 +99,13 @@ public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
         }
     }
 
-    @SubscribeEvent()
-    public static void onWeaponSwap(LivingEquipmentChangeEvent event) {
-        if (event.getSlot() == EquipmentSlot.MAINHAND && event.getEntity() instanceof ServerPlayer player) {
-            ItemStack oldItem = event.getFrom();
-            ItemStack newItem = event.getTo();
-            if (getUniqueUUID(oldItem).equals(getUniqueUUID(newItem))) {
-                CURRENT_TOOLS.put(getMapKey(player), newItem);
-                CURRENT_TOOLS.put(player.getUUID() + "-client",  newItem);
-                return;
-            }
-
-            if (oldItem.getItem() instanceof ModifiableBowItem && newItem.getItem() instanceof ModifiableBowItem) {
-                PlayerPatch<?> playerPatch = EpicFightCapabilities.getEntityPatch(player, PlayerPatch.class);
-                CapabilityItem oldCapabilityItem = EpicFightCapabilities.getItemStackCapability(oldItem);
-                CapabilityItem newCapabilityItem = EpicFightCapabilities.getItemStackCapability(newItem);
-                if (playerPatch != null && !oldCapabilityItem.isEmpty() && !newCapabilityItem.isEmpty()) {
-                    Skill oldSkill = oldCapabilityItem.getInnateSkill(playerPatch, oldItem);
-                    Skill newSkill = newCapabilityItem.getInnateSkill(playerPatch, newItem);
-                    if (oldSkill instanceof ArrowTempestSkill && oldSkill == newSkill) {
-                        SkillContainer container = playerPatch.getSkill(SkillSlots.WEAPON_INNATE);
-                        if (container != null) {
-                            ItemStack cachedItem = CURRENT_TOOLS.getOrDefault(getMapKey(player), ItemStack.EMPTY);
-                            if (cachedItem.isEmpty()) return;
-                            float newResource = newItem.getOrCreateTag().getFloat(KEY_RESOURCE);
-                            int newStacks = newItem.getOrCreateTag().getInt(KEY_STACKS);
-                            cachedItem.getOrCreateTag().putFloat(KEY_RESOURCE, container.getResource());
-                            cachedItem.getOrCreateTag().putInt(KEY_STACKS, container.getStack());
-
-                            if (newStacks == 0) {
-                                container.setStack(0);
-                                container.setResource(newResource);
-                            } else {
-                                container.setResource(newResource);
-                                container.setStack(newStacks);
-                            }
-
-                            CURRENT_TOOLS.put(getMapKey(player), newItem);
-                            CURRENT_TOOLS.put(player.getUUID() + "-client",  newItem);
-                            if (newStacks == 0) {
-                                EpicFightNetworkManager.sendToAll(SPSetSkillContainerValue.stacks(SkillSlots.WEAPON_INNATE, newStacks, player.getId()));
-                                EpicFightNetworkManager.sendToAll(SPSetSkillContainerValue.resource(SkillSlots.WEAPON_INNATE, newResource, player.getId()));
-                            } else {
-                                EpicFightNetworkManager.sendToAll(SPSetSkillContainerValue.resource(SkillSlots.WEAPON_INNATE, newResource, player.getId()));
-                                EpicFightNetworkManager.sendToAll(SPSetSkillContainerValue.stacks(SkillSlots.WEAPON_INNATE, newStacks, player.getId()));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static void onPlayerRemove(PlayerEvent.PlayerLoggedOutEvent event) {
-        if (event.getEntity() == null || event.getEntity().level().isClientSide) return;
-        CURRENT_TOOLS.remove(getMapKey(event.getEntity()));
-    }
-
-    public ArrowTempestSkill(SimpleWeaponInnateSkill.Builder builder) {
+    public ArrowTempestSkill(SkillBuilder<? extends WeaponInnateSkill> builder) {
         super(builder.setResource(Resource.COOLDOWN));
     }
 
-    public void onInitiate(SkillContainer container) {
-        super.onInitiate(container);
-        if (container.getExecutor().getOriginal() instanceof Player) {
-            ItemStack itemStack = container.getExecutor().getOriginal().getMainHandItem();
-            if (!itemStack.isEmpty() && itemStack.getItem() instanceof ModifiableBowItem) {
-                getUniqueUUID(itemStack);
-                CURRENT_TOOLS.put(getMapKey(container.getExecutor().getOriginal()), itemStack);
-                PENDING_STACK_RESTORE.add(getMapKey(container.getExecutor().getOriginal()));
-                float resource = itemStack.getOrCreateTag().getFloat(KEY_RESOURCE);
-                int stacks = itemStack.getOrCreateTag().getInt(KEY_STACKS);
-                container.setMaxResource(this.consumption);
-                this.maxStackSize = 2;
-
-                if (stacks == 0) {
-                    container.setStack(0);
-                    container.setResource(resource);
-                } else {
-                    container.setResource(resource);
-                    container.setStack(stacks);
-                }
-            }
-        }
-    }
-
-    public void onRemoved(SkillContainer container) {
-        super.onRemoved(container);
-        if (container.getExecutor().getOriginal() instanceof Player) {
-            ItemStack itemStack = CURRENT_TOOLS.remove(getMapKey(container.getExecutor().getOriginal()));
-            if (itemStack != null && !itemStack.isEmpty() && itemStack.getItem() instanceof ModifiableBowItem) {
-                float resource = container.getResource();
-                int stacks = container.getStack();
-                itemStack.getOrCreateTag().putFloat(KEY_RESOURCE, resource);
-                itemStack.getOrCreateTag().putInt(KEY_STACKS, stacks);
-            }
-        }
-    }
-
     public void executeOnServer(SkillContainer container, FriendlyByteBuf args) {
-        this.attackAnimation = ToolStack.from(container.getExecutor().getOriginal().getMainHandItem()).getModifierLevel(EpicFightModifiers.ARROW_TEMPEST) > 1 ? EFTAnimations.SEEKING_TEMPEST : EFTAnimations.ARROW_TEMPEST;
+        container.getExecutor().playAnimationSynchronized(EFTAnimations.ARROW_TEMPEST, 0.0F);
         super.executeOnServer(container, args);
-    }
-
-    private static String getMapKey(LivingEntity entity) {
-        return entity.getUUID() + (entity.level().isClientSide ? "-client" : "-server");
-    }
-
-    private static UUID getUniqueUUID(ItemStack stack) {
-        if (!stack.getOrCreateTag().contains("eft_uuid_tool")) {
-            stack.getOrCreateTag().putUUID("eft_uuid_tool", UUID.randomUUID());
-        }
-        return stack.getOrCreateTag().getUUID("eft_uuid_tool");
-    }
-
-    public void updateContainer(SkillContainer container) {
-        super.updateContainer(container);
-        Entity entity = container.getExecutor().getOriginal();
-        if (entity instanceof Player player && PENDING_STACK_RESTORE.contains(getMapKey(player))) {
-            ItemStack itemStack = CURRENT_TOOLS.getOrDefault(getMapKey(player), ItemStack.EMPTY);
-            if (!itemStack.isEmpty()) {
-                int stacks = itemStack.getOrCreateTag().getInt(KEY_STACKS);
-                float resource = itemStack.getOrCreateTag().getFloat(KEY_RESOURCE);
-
-                if (stacks == 0) {
-                    container.setStack(0);
-                    container.setResource(resource);
-                } else {
-                    container.setResource(resource);
-                    container.setStack(stacks);
-                }
-            }
-            PENDING_STACK_RESTORE.remove(getMapKey(player));
-        }
-    }
-
-    public ResourceLocation getSkillTexture() {
-        return SEEKING_TEMPEST;
-    }
-
-    public float getCooldownRegenPerSecond(PlayerPatch<?> executor) {
-        return 1f;
     }
 
     public static AnimationEvent.InTimeEvent<?> shoot(float time, float bonusAngle) {
@@ -260,10 +114,7 @@ public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
             ToolStack toolStack = ToolStack.from(itemStack);
             Item item = itemStack.getItem();
             if (item instanceof ModifiableBowItem bowItem) {
-                int shootTime = toolStack.getModifierLevel(EpicFightModifiers.ARROW_TEMPEST) > 1 ? 1 : 3;
-                for (int i = 0; i < shootTime; i++) {
-                    shootOnce(livingEntityPatch, bonusAngle + i * 15f, itemStack, toolStack, bowItem);
-                }
+                shootOnce(livingEntityPatch, bonusAngle, itemStack, toolStack, bowItem);
             }
             livingEntityPatch.getOriginal().stopUsingItem();
         }), AnimationEvent.Side.BOTH);
@@ -275,6 +126,7 @@ public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
 
         if (livingEntityPatch.getOriginal().level().isClientSide) {
             EFBowAnimations.DRAWING_PLAYERS.remove(livingEntityPatch.getOriginal().getUUID());
+            living.getMainHandItem().getOrCreateTag().remove("is_full");
         }
         CompoundTag ticPersistent = itemStack.getTagElement("tic_persistent");
         if (ticPersistent != null) {
@@ -337,7 +189,6 @@ public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
                     float velocity = ConditionalStatModifierHook.getModifiedStat(toolStack, player, ToolStats.VELOCITY);
                     boolean thrownTool = ammo.is(TinkerTags.Items.BALLISTA_AMMO);
                     float waterInertia = 0.6F;
-                    float startAngle = ModifiableBowItem.getAngleStart(ammo.getCount());
                     int primaryIndex = ammo.getCount() / 2;
                     SoundEvent sound = SoundEvents.ARROW_SHOOT;
                     if (thrownTool) {
@@ -353,7 +204,11 @@ public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
                         waterInertia = ConditionalStatModifierHook.getModifiedStat(thrown, living, ToolStats.WATER_INERTIA);
                     }
 
-                    int ammoCount = modifierLevel > 1 ? AMMO_COUNT + (ammo.getCount() - 1) / 2: ammo.getCount();
+                    AABB aabb = player.getBoundingBox().inflate(RANGE);
+                    List<LivingEntity> targetList = player.level().getEntitiesOfClass(LivingEntity.class, aabb);
+                    targetList.removeIf(entity -> entity.equals(player) || !entity.isAlive());
+
+                    int ammoCount = modifierLevel > 1 ? AMMO_COUNT + (ammo.getCount() - 1) : targetList.size();
                     for (int arrowIndex = 0;  arrowIndex < ammoCount; ++arrowIndex) {
                         AbstractArrow abstractarrow;
                         if (thrownTool) {
@@ -370,8 +225,7 @@ public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
                             float angleY = (float) (Math.sqrt(RADIUS * RADIUS - angleX * angleX) * (Math.random() > 0.5 ? 1 : -1));
                             abstractarrow.shootFromRotation(player, living.getXRot() + angleX, livingEntityPatch.getYRot() + angleY, 0.0f, power * 3.0F, ModifierUtil.getInaccuracy(toolStack, player));
                         } else {
-                            float angle = startAngle + (float)(10 * arrowIndex);
-                            abstractarrow.shootFromRotation(player, living.getXRot() + angle, livingEntityPatch.getYRot() + bonusAngle, 0.0F, power * 3.0F, ModifierUtil.getInaccuracy(toolStack, player));
+                            abstractarrow.shootFromRotation(player, -75, livingEntityPatch.getYRot(), 0.0F, power, ModifierUtil.getInaccuracy(toolStack, player));
                         }
 
                         float baseArrowDamage = (float)(abstractarrow.getBaseDamage() - (double)2.0F + (double)toolStack.getStats().get(ToolStats.PROJECTILE_DAMAGE));
@@ -394,7 +248,8 @@ public class ArrowTempestSkill extends SimpleWeaponInnateSkill {
 
                         LivingEntity target = TCScanAttackAnimation.getTarget(livingEntityPatch);
                         if (modifierLevel == 1) {
-                            abstractarrow.setKnockback(10);
+                            TempestArrowTracker.addArrow(abstractarrow, targetList.get(arrowIndex).getEyePosition());
+                            abstractarrow.setKnockback(2);
                         } else {
                             HomingArrowTracker.addArrow(abstractarrow, target);
                         }
