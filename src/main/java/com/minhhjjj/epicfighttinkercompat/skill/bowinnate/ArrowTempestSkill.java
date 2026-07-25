@@ -1,11 +1,11 @@
-package com.minhhjjj.epicfighttinkercompat.skill;
+package com.minhhjjj.epicfighttinkercompat.skill.bowinnate;
 
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import com.minhhjjj.epicfighttinkercompat.compat.p1nerobow.EFBowAnimations;
 import com.minhhjjj.epicfighttinkercompat.compat.p1nerobow.TCScanAttackAnimation;
 import com.minhhjjj.epicfighttinkercompat.gameasset.EFTAnimations;
 import com.minhhjjj.epicfighttinkercompat.modifiers.EpicFightModifiers;
-import net.minecraft.core.BlockPos;
+import com.minhhjjj.epicfighttinkercompat.skill.PersistentWeaponInnateSkill;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,7 +23,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
@@ -108,19 +107,19 @@ public class ArrowTempestSkill extends PersistentWeaponInnateSkill {
         super.executeOnServer(container, args);
     }
 
-    public static AnimationEvent.InTimeEvent<?> shoot(float time, float bonusAngle) {
+    public static AnimationEvent.InTimeEvent<?> shoot(float time) {
         return AnimationEvent.InTimeEvent.create(time, ((livingEntityPatch, assetAccessor, animationParameters) -> {
             ItemStack itemStack = livingEntityPatch.getOriginal().getMainHandItem();
             ToolStack toolStack = ToolStack.from(itemStack);
             Item item = itemStack.getItem();
             if (item instanceof ModifiableBowItem bowItem) {
-                shootOnce(livingEntityPatch, bonusAngle, itemStack, toolStack, bowItem);
+                shootOnce(livingEntityPatch, itemStack, toolStack, bowItem);
             }
             livingEntityPatch.getOriginal().stopUsingItem();
         }), AnimationEvent.Side.BOTH);
     }
 
-    public static void shootOnce(LivingEntityPatch<?> livingEntityPatch, float bonusAngle, ItemStack itemStack, ToolStack toolStack, ModifiableBowItem bowItem) {
+    public static void shootOnce(LivingEntityPatch<?> livingEntityPatch, ItemStack itemStack, ToolStack toolStack, ModifiableBowItem bowItem) {
         int modifierLevel = toolStack.getModifierLevel(EpicFightModifiers.ARROW_TEMPEST);
         LivingEntity living = livingEntityPatch.getOriginal();
 

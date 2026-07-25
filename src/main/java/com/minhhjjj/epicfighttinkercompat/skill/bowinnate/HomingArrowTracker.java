@@ -1,4 +1,4 @@
-package com.minhhjjj.epicfighttinkercompat.skill;
+package com.minhhjjj.epicfighttinkercompat.skill.bowinnate;
 
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import net.minecraft.core.BlockPos;

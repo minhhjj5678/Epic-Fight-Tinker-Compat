@@ -1,9 +1,7 @@
-package com.minhhjjj.epicfighttinkercompat.skill;
+package com.minhhjjj.epicfighttinkercompat.skill.bowinnate;
 
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
-import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;

@@ -7,7 +7,7 @@
  */
 package com.minhhjjj.epicfighttinkercompat.compat.p1nerobow;
 
-import com.minhhjjj.epicfighttinkercompat.skill.ArrowTempestSkill;
+import com.minhhjjj.epicfighttinkercompat.skill.bowinnate.ArrowTempestSkill;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;

@@ -18,7 +18,7 @@ import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.world.damagesource.StunType;
 
-import static com.minhhjjj.epicfighttinkercompat.skill.ArrowTempestSkill.shoot;
+import static com.minhhjjj.epicfighttinkercompat.skill.bowinnate.ArrowTempestSkill.shoot;
 
 @Mod.EventBusSubscriber(
         modid = EpicFightTinkerCompat.MODID,
@@ -53,7 +53,7 @@ public class EFTAnimations {
                     }
                     return 1.0F;
                 })
-                .addEvents(EFBowAnimations.setFullBowUseTime(50/60f), shoot(110F / 60, 0f)));
+                .addEvents(EFBowAnimations.setFullBowUseTime(50/60f), shoot(110F / 60)));
         SEEKING_TEMPEST = builder.nextAccessor("biped/combat/seeking_tempest_skill", (accessor) -> new TCScanAttackAnimation(
                 0.15f,
                 0f,
@@ -73,7 +73,7 @@ public class EFTAnimations {
                         }
                         return 1.0F;
                     })
-                .addEvents(EFBowAnimations.setFullBowUseTime(50/60f), shoot(110/60f, 0))
+                .addEvents(EFBowAnimations.setFullBowUseTime(50/60f), shoot(110/60f))
         );
         EFBowAnimations.buildBowAnimations(builder);
     }

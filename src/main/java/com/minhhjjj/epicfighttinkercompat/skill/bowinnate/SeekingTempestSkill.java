@@ -1,6 +1,7 @@
-package com.minhhjjj.epicfighttinkercompat.skill;
+package com.minhhjjj.epicfighttinkercompat.skill.bowinnate;
 
 import com.minhhjjj.epicfighttinkercompat.gameasset.EFTAnimations;
+import com.minhhjjj.epicfighttinkercompat.skill.PersistentWeaponInnateSkill;
 import net.minecraft.network.FriendlyByteBuf;
 import yesman.epicfight.skill.SkillBuilder;
 import yesman.epicfight.skill.SkillContainer;
