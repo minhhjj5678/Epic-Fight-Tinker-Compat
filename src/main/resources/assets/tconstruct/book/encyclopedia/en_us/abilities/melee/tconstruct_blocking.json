@@ -1,0 +1,20 @@
+{
+  "modifier_id": "tconstruct:blocking",
+  "text": [
+    {
+      "text": "Allows using the tool as a shield, blocking many potential attacks. Can often block while charging the tool. "
+    },
+    {
+      "text": "Most tools can block up to 5 damage, but some (such as staffs) can block amounts in the range of 15 to 20 damage."
+    },
+    {
+      "text": "Since tools require the Guard skill to be learned to perform blocking, this modifier no longer requires an ability slot.",
+      "paragraph": true
+    }
+  ],
+  "more_text_space": true,
+  "effects": [
+    "Single level",
+    "Does not require an ability slot"
+  ]
+}
