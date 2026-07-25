@@ -2,12 +2,16 @@
   "modifier_id": "epicfighttinkercompat:arrow_tempest",
   "text": [
     {
-      "text": "Level 1: shot total 24 arrow in 360 rotation. Cooldown: 20s.\nLevel 2: shot total 8 arrows that targeting mob. Cooldown: 30s"
+      "text": "Level 1: Targets all mobs within a 20-block radius, launching a volley of arrows into the sky that rain down on the targets. Cooldown: 30s."
+    },
+    {
+      "text": "Level 2: Shoots a total of 8 arrows targeting mobs. Cooldown: 25s.",
+      "paragraph": true
     }
   ],
   "more_text_space": true,
   "effects": [
-    "Maximum of 2 level",
+    "Maximum of 2 levels",
     "Applies to longbow only",
     "Does not require a modifier slot"
   ]

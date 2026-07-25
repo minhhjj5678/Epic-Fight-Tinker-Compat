@@ -1,0 +1,20 @@
+{
+  "type": "tconstruct:modifier",
+  "allow_crystal": true,
+  "inputs": [
+    {
+      "item": "minecraft:sculk_sensor"
+    },
+    {
+      "item": "epicfighttinkercompat:wind_essence"
+    },
+    {
+      "item": "minecraft:ender_eye"
+    }
+  ],
+  "level": 1,
+  "result": "epicfighttinkercompat:arrow_tempest",
+  "tools": {
+    "tag": "tconstruct:modifiable/ranged/longbows"
+  }
+}

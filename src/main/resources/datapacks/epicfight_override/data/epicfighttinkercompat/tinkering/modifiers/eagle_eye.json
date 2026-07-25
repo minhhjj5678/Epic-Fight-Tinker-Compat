@@ -1,0 +1,10 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "p1nero_bow"
+    }
+  ],
+  "level_display": "tconstruct:default",
+  "tooltip_display": "always"
+}

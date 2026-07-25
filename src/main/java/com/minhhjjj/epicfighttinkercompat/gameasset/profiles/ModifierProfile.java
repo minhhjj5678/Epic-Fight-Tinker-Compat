@@ -14,11 +14,13 @@ import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.item.Style;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
 
+import javax.annotation.Nonnull;
+
 public record ModifierProfile(
-        ModifierId modifierId,
+        @Nonnull ModifierId modifierId,
         Function<LivingEntityPatch<?>, Style> styleProvider,
         Map<Style, CombatProfile> weaponSets,
-        Collider collider,
+        Function<ToolStack, Collider> collider,
         WeaponCategory weaponCategory,
         BiFunction<ToolStack, PlayerPatch<?>, Skill> innateSkill,
         int priority
@@ -35,7 +37,7 @@ public record ModifierProfile(
         private final ModifierId modifierId;
         private Function<LivingEntityPatch<?>, Style> styleProvider;
         private final Map<Style, CombatProfile> weaponSets;
-        private Collider collider;
+        private Function<ToolStack, Collider> collider = tool -> null;
         private WeaponCategory weaponCategory;
         private int priority = 0;
         private BiFunction<ToolStack, PlayerPatch<?>, Skill> innateSkill = (item, patch) -> null;
@@ -55,7 +57,7 @@ public record ModifierProfile(
             return this;
         }
 
-        public Builder collider(Collider collider) {
+        public Builder collider(Function<ToolStack, Collider> collider) {
             this.collider = collider;
             return this;
         }

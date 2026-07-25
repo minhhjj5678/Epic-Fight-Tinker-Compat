@@ -1,0 +1,17 @@
+{
+  "modifier_id": "epicfighttinkercompat:eagle_eye",
+  "text": [
+    {
+      "text": "Increases auto-aim range by 16 blocks per levels. "
+    },
+    {
+      "text": "Automatically calculates ballistic trajectories at level 2."
+    }
+  ],
+  "more_text_space": true,
+  "effects": [
+    "Maximum of 3 levels",
+    "Applies to longbow only",
+    "Does not require a modifier slot"
+  ]
+}

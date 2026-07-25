@@ -5,7 +5,6 @@ import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.modifiers.util.ModifierDeferredRegister;
 import slimeknights.tconstruct.library.modifiers.util.StaticModifier;
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
-import slimeknights.tconstruct.library.modifiers.Modifier;
 
 public class EpicFightModifiers {
     public static final ModifierDeferredRegister MODIFIERS = ModifierDeferredRegister.create(EpicFightTinkerCompat.MODID);
@@ -21,6 +20,7 @@ public class EpicFightModifiers {
     public static final ModifierId SPEARY = new ModifierId(EpicFightTinkerCompat.MODID, "speary");
     public static final ModifierId DAGGER = new ModifierId(EpicFightTinkerCompat.MODID, "dagger");
 
+    public static final ModifierId EAGLE_EYE = new ModifierId(EpicFightTinkerCompat.MODID, "eagle_eye");
     public static final ModifierId ARROW_TEMPEST = new ModifierId(EpicFightTinkerCompat.MODID, "arrow_tempest");
 
     public static final ModifierId BLOCKING = new ModifierId(TConstruct.MOD_ID, "blocking");

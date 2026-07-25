@@ -13,7 +13,8 @@
     "tool.MixinBlockingModifier",
     "tool.MixinCapabilityItem",
     "tool.MixinModifiableItem",
-    "tool.MixinToolStack"
+    "tool.MixinToolStack",
+    "MixinLivingEntityPatch"
   ],
   "client": [
     "doublejump.MixinPhantomAscentSkill",

@@ -2,10 +2,12 @@ package com.minhhjjj.epicfighttinkercompat.tool.capabilities;
 
 import java.util.function.Function;
 
+import com.minhhjjj.epicfighttinkercompat.compat.p1nerobow.EFBowAnimations;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.CombatProfiles;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.fml.ModList;
 import yesman.epicfight.gameasset.ColliderPreset;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
@@ -135,8 +137,9 @@ public class TCWeaponCapabilityPresets {
 		TCWeaponCapability.Builder builder = TCWeaponCapability.builder();
 		builder.defaultMoveSet(CombatProfiles.p1neroBow())
 			.addModifier(ModifierProfiles.ARROW_TEMPEST)
+			.addModifier(ModifierProfiles.EAGLE_EYE)
 			.category(WeaponCategories.BOW)
-			.collider(ColliderPreset.FIST)
+			.collider(ModList.get().isLoaded("p1nero_bow") ? EFBowAnimations.BOW_SCAN_LEVEL0 : ColliderPreset.FIST)
 			.canBePlacedOffhand(true)
 			.reach(0.8F)
 			.zoomInType(CapabilityItem.ZoomInType.USE_TICK)

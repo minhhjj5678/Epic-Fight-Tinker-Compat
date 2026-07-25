@@ -7,6 +7,7 @@
  */
 package com.minhhjjj.epicfighttinkercompat.compat.p1nerobow;
 
+import com.minhhjjj.epicfighttinkercompat.modifiers.EpicFightModifiers;
 import com.minhhjjj.epicfighttinkercompat.skill.bowinnate.ArrowTempestSkill;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -69,7 +70,11 @@ public class EFBowAnimations {
 
     public static final Collider BOW_DASH = new MultiOBBCollider(2, 1, 1.5, 1, 0, 0, 0);
     public static final Collider BOW_ELBOW = new MultiOBBCollider(2, 1, 1, 1, 0, 1, 0);
-    public static final Collider BOW_SCAN = new MultiOBBCollider(2, 8, 48D, 48, 0.0D, 1, -48);
+    public static final Collider BOW_SCAN_LEVEL0 = new MultiOBBCollider(2, 8, 8.7, 8.7, 0.0D, 1, -8.7);
+    public static final Collider BOW_SCAN_LEVEL1 = new MultiOBBCollider(2, 8, 17.4, 17.4, 0.0D, 1, -17.4);
+    public static final Collider BOW_SCAN_LEVEL2 = new MultiOBBCollider(2, 8, 26.1, 26.1, 0.0D, 1, -26.1);
+    public static final Collider BOW_SCAN_LEVEL3 = new MultiOBBCollider(2, 8, 34.8, 34.8, 0.0D, 1, -34.8);
+
     private static final RandomSource RANDOM = RandomSource.create();
 
     public static AnimationManager.AnimationAccessor<MovementAnimation> BOW_RUN;
@@ -101,7 +106,7 @@ public class EFBowAnimations {
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1, v2) -> BOW_RUN.get().getPlaySpeed(livingEntityPatch, dynamicAnimation) * 2.0F)));
         BOW_AUTO1 = builder.nextAccessor("biped/bow_auto1", accessor ->
                 new TCScanAttackAnimation(0.15F, 0, 0.15F, 65 / 60F, 65 / 60F,
-                        InteractionHand.MAIN_HAND, BOW_SCAN, Armatures.BIPED.get().rootJoint, accessor, Armatures.BIPED)
+                        InteractionHand.MAIN_HAND, null, Armatures.BIPED.get().rootJoint, accessor, Armatures.BIPED)
                         .setResourceLocation(MOD_ID, "biped/bow_auto1")
                         .addProperty(AnimationProperty.AttackAnimationProperty.PLAY_SPEED_MODIFIER,
                                 (dynamicAnimation, living, defaultSpeed, v1, v2) -> {
@@ -117,7 +122,7 @@ public class EFBowAnimations {
                                 setFullBowUseTime(50 / 60F), shootIn(60 / 60F)));
         BOW_AUTO2 = builder.nextAccessor("biped/bow_auto2", accessor ->
                 new TCScanAttackAnimation(0.15F, 0, 0.15F, 65 / 60F, 65 / 60F,
-                        InteractionHand.MAIN_HAND, BOW_SCAN, Armatures.BIPED.get().rootJoint, accessor, Armatures.BIPED)
+                        InteractionHand.MAIN_HAND, null, Armatures.BIPED.get().rootJoint, accessor, Armatures.BIPED)
                         .setResourceLocation(MOD_ID, "biped/bow_auto2")
                         .addProperty(AnimationProperty.AttackAnimationProperty.PLAY_SPEED_MODIFIER,
                                 (dynamicAnimation, living, defaultSpeed, v1, v2) -> {
@@ -133,7 +138,7 @@ public class EFBowAnimations {
                                 setFullBowUseTime(50 / 60F), shootIn(60 / 60F)));
         BOW_AUTO3 = builder.nextAccessor("biped/bow_auto3", accessor ->
                 new TCScanAttackAnimation(0.15F, 0, 0.15F, 100 / 60F, 120 / 60F,
-                        InteractionHand.MAIN_HAND, BOW_SCAN, Armatures.BIPED.get().rootJoint, accessor, Armatures.BIPED)
+                        InteractionHand.MAIN_HAND, null, Armatures.BIPED.get().rootJoint, accessor, Armatures.BIPED)
                         .setResourceLocation(MOD_ID, "biped/bow_auto3")
                         .addProperty(AnimationProperty.AttackAnimationProperty.PLAY_SPEED_MODIFIER,
                                 (dynamicAnimation, living, defaultSpeed, v1, v2) -> {
@@ -166,7 +171,7 @@ public class EFBowAnimations {
                         .addProperty(AnimationProperty.AttackAnimationProperty.FIXED_MOVE_DISTANCE, true));
         BOW_JUMP_ATTACK = builder.nextAccessor("biped/bow_jump_attack", accessor ->
                 new TCScanAttackAnimation(0.15F, 0, 0.15F, 20 / 60F, 80 / 60F,
-                        InteractionHand.MAIN_HAND, BOW_SCAN, Armatures.BIPED.get().rootJoint, accessor, Armatures.BIPED)
+                        InteractionHand.MAIN_HAND, null, Armatures.BIPED.get().rootJoint, accessor, Armatures.BIPED)
                         .setResourceLocation(MOD_ID, "biped/bow_jump_attack")
                         .addProperty(AnimationProperty.AttackAnimationProperty.PLAY_SPEED_MODIFIER,
                                 (dynamicAnimation, living, defaultSpeed, v1, v2) -> {
@@ -346,8 +351,10 @@ public class EFBowAnimations {
                             abstractarrow.shootFromRotation(player, living.getXRot() + angle, livingEntityPatch.getYRot(), 0.0F, power * 3.0F, inaccuracy);
                         } else {
                             Vec3 targetPos = target.getEyePosition();
-//                        Vec3 vec3 = (targetPos.subtract(abstractarrow.position()).add(0.0D, angle / 5, 0.0D)).normalize().scale(speed * power);
-                            Vec3 vec3 = getShootDirection(targetPos, abstractarrow.position(), speed * power).add(0.0D, angle / 5, 0.0D).normalize().scale(speed * power);
+                            Vec3 vec3 = (targetPos.subtract(abstractarrow.position()).add(0.0D, angle / 5, 0.0D)).normalize().scale(speed * power);
+                            if (toolStack.getModifierLevel(EpicFightModifiers.EAGLE_EYE) > 1) {
+                                vec3 = getShootDirection(targetPos, abstractarrow.position(), speed * power).add(0.0D, angle / 5, 0.0D).normalize().scale(speed * power);
+                            }
                             if (!vec3.equals(Vec3.ZERO)) {
                                 vec3 = vec3.normalize().add(RANDOM.triangle(0.0D, 0.0172275D * (double)inaccuracy), RANDOM.triangle(0.0D, 0.0172275D * (double)inaccuracy), RANDOM.triangle(0.0D, 0.0172275D * (double)inaccuracy)).scale(speed * power);
                                 abstractarrow.setDeltaMovement(vec3);

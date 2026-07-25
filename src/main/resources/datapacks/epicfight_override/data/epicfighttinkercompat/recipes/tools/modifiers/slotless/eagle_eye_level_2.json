@@ -1,0 +1,32 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "p1nero_bow"
+    }
+  ],
+  "type": "tconstruct:modifier",
+  "allow_crystal": false,
+  "inputs": [
+    {
+      "item": "minecraft:spider_eye"
+    },
+    {
+      "item": "minecraft:blaze_powder"
+    },
+    {
+      "item": "minecraft:soul_lantern"
+    },
+    {
+      "item": "minecraft:amethyst_shard"
+    },
+    {
+      "item": "minecraft:ender_eye"
+    }
+  ],
+  "level": 2,
+  "result": "epicfighttinkercompat:eagle_eye",
+  "tools": {
+    "tag": "tconstruct:modifiable/ranged/longbows"
+  }
+}

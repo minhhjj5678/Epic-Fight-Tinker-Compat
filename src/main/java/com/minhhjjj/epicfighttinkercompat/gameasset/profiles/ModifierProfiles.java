@@ -1,6 +1,7 @@
 package com.minhhjjj.epicfighttinkercompat.gameasset.profiles;
 
 
+import com.minhhjjj.epicfighttinkercompat.compat.p1nerobow.EFBowAnimations;
 import com.minhhjjj.epicfighttinkercompat.gameasset.EFTSkills;
 import com.minhhjjj.epicfighttinkercompat.modifiers.EpicFightModifiers;
 
@@ -12,6 +13,7 @@ import reascer.wom.gameasset.WOMSkills;
 import reascer.wom.gameasset.colliders.WOMWeaponColliders;
 import reascer.wom.skill.WOMSkillDataKeys;
 import reascer.wom.world.capabilities.item.WOMWeaponCategories;
+import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.gameasset.ColliderPreset;
 import yesman.epicfight.skill.*;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
@@ -29,6 +31,22 @@ public class ModifierProfiles {
     public static final ModifierProfile RUINE = ModList.get().isLoaded("wom") ? createRuineProfile() : null;
     public static final ModifierProfile AGONY = ModList.get().isLoaded("wom") ? createAgonyProfile() : null;
 
+    public static final ModifierProfile EAGLE_EYE = ModifierProfile.builder(EpicFightModifiers.EAGLE_EYE)
+            .collider(tool -> {
+                int level = tool.getModifierLevel(EpicFightModifiers.EAGLE_EYE);
+                Collider collider = ColliderPreset.FIST;
+
+                if (ModList.get().isLoaded("p1nero_bow")) {
+                    if (level == 1) collider = EFBowAnimations.BOW_SCAN_LEVEL1;
+                    else if (level == 2) collider = EFBowAnimations.BOW_SCAN_LEVEL2;
+                    else if (level == 3) collider = EFBowAnimations.BOW_SCAN_LEVEL3;
+                    else collider = EFBowAnimations.BOW_SCAN_LEVEL0;
+                }
+
+                return collider;
+            })
+            .build();
+
     public static final ModifierProfile ARROW_TEMPEST = ModifierProfile.builder(EpicFightModifiers.ARROW_TEMPEST)
             .styleProvider(livingEntityPatch -> Styles.TWO_HAND)
             .innateSkill(((tool, playerPatch) -> tool.getModifierLevel(EpicFightModifiers.ARROW_TEMPEST) > 1 ? EFTSkills.SEEKING_TEMPEST_SKILL : (tool.getModifierLevel(EpicFightModifiers.ARROW_TEMPEST) > 0 ? EFTSkills.ARROW_TEMPEST_SKILL : null)))
@@ -44,7 +62,7 @@ public class ModifierProfiles {
             .addMoveSet(Styles.ONE_HAND, CombatProfiles.spear1HSet().build())
             .addMoveSet(Styles.TWO_HAND, CombatProfiles.spear2HSet().build())
             .weaponCategory(WeaponCategories.SPEAR)
-            .collider(ColliderPreset.SPEAR)
+            .collider(tool -> ColliderPreset.SPEAR)
             .priority(50)
             .build();
 
@@ -133,7 +151,7 @@ public class ModifierProfiles {
                 .addMoveSet(Styles.TWO_HAND, CombatProfiles.agonyGroundSet().build())
                 .addMoveSet(Styles.ONE_HAND, CombatProfiles.agonyAirSet().build())
                 .weaponCategory(WOMWeaponCategories.AGONY)
-                .collider(WOMWeaponColliders.AGONY)
+                .collider((tool) -> WOMWeaponColliders.AGONY)
                 .priority(120)
                 .build();
     }
@@ -152,7 +170,7 @@ public class ModifierProfiles {
                 .addMoveSet(Styles.TWO_HAND, CombatProfiles.ruine2HSet().build())
                 .addMoveSet(Styles.OCHS, CombatProfiles.ruineOchsSet().build())
                 .weaponCategory(WOMWeaponCategories.RUINE)
-                .collider(WOMWeaponColliders.RUINE)
+                .collider((tool) -> WOMWeaponColliders.RUINE)
                 .priority(130)
                 .build();
     }
@@ -169,7 +187,7 @@ public class ModifierProfiles {
                 .addMoveSet(Styles.TWO_HAND, CombatProfiles.torment2HSet().build())
                 .addMoveSet(Styles.OCHS, CombatProfiles.tormentOchsSet().build())
                 .weaponCategory(WOMWeaponCategories.TORMENT)
-                .collider(WOMWeaponColliders.TORMENT)
+                .collider(tool -> WOMWeaponColliders.TORMENT)
                 .priority(140)
                 .build();
     }

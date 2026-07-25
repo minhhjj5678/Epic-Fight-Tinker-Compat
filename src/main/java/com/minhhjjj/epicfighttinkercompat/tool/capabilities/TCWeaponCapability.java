@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.CombatProfile;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.CombatProfiles;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfile;
@@ -19,9 +18,6 @@ import net.minecraft.world.item.UseAnim;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.item.IModifiableDisplay;
-import slimeknights.tconstruct.library.tools.item.ModifiableArrowItem;
-import slimeknights.tconstruct.library.tools.item.ModifiableItem;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.LivingMotion;
@@ -205,11 +201,24 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public Collider getWeaponCollider() {
-        ModifierProfile modifierProfile = this.getModifierProfile();
-        if (modifierProfile != null && modifierProfile.collider() != null) {
-            return modifierProfile.collider();
-        }
         return super.getWeaponCollider();
+    }
+
+    public Collider getWeaponCollider(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
+        Collider collider = null;
+        ToolStack toolStack = getToolStack(entityPatch, hand);
+        if (toolStack != null) {
+            for (ModifierProfile modifierProfile : this.modifierProfiles) {
+                ModifierId modifierId = modifierProfile.modifierId();
+                int level = toolStack.getModifierLevel(modifierId);
+                if (level > 0 && modifierProfile.collider() != null) {
+                    collider = modifierProfile.collider().apply(toolStack);
+                }
+            }
+        }
+
+        // fallback to non-context method
+        return collider != null ? collider : getWeaponCollider();
     }
 
     @Override
@@ -377,7 +386,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
         for (Map.Entry<Integer, List<ModifierProfile>> entry : groupedByPriority.entrySet()) {
             List<ModifierProfile> profiles = entry.getValue();
-            if (profiles.size() < 2) {
+            if (profiles.size() < 2 || entry.getKey() == 0) { // priority 0 is used for special modifier profiles
                 continue;
             }
             String profileList = profiles.stream().map(profile -> String.valueOf(profile.modifierId())).collect(java.util.stream.Collectors.joining(", "));

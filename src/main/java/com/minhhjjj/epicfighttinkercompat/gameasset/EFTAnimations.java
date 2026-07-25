@@ -44,7 +44,7 @@ public class EFTAnimations {
         BIPED_RUN_HAMMER = builder.nextAccessor("biped/living/run_hammer", (accessor) -> new MovementAnimation(true, accessor, Armatures.BIPED));
         HAMMER_AUTO1 = builder.nextAccessor("biped/combat/hammer_auto1", (accessor) -> new BasicAttackAnimation(0.25f, 0.15f, 0.52f, 0.95f, null, Armatures.BIPED.get().toolR, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.0f));
         ARROW_TEMPEST = builder.nextAccessor("biped/combat/arrow_tempest_skill",(accessor) -> new TCScanAttackAnimation(0.25f,
-                0.15f, 0.52f, 0.95f, 0.95f, EFBowAnimations.BOW_SCAN, Armatures.BIPED.get().rootJoint, accessor, Armatures.BIPED)
+                0.15f, 0.52f, 0.95f, 0.95f, null, Armatures.BIPED.get().rootJoint, accessor, Armatures.BIPED)
                 .addProperty(AnimationProperty.AttackAnimationProperty.PLAY_SPEED_MODIFIER, (dynamicAnimation, living, defaultSpeed, v1, v2) -> {
                     ItemStack itemStack = living.getOriginal().getMainHandItem();
                     if (itemStack.getItem() instanceof ModifiableBowItem) {
@@ -60,7 +60,7 @@ public class EFTAnimations {
                 0.15f,
                 130/60f,
                 150/60f,
-                EFBowAnimations.BOW_SCAN,
+                null,
                 Armatures.BIPED.get().rootJoint,
                 accessor,
                 Armatures.BIPED

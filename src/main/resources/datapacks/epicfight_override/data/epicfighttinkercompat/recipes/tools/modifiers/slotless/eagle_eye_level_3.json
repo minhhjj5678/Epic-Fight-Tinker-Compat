@@ -1,0 +1,32 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "p1nero_bow"
+    }
+  ],
+  "type": "tconstruct:modifier",
+  "allow_crystal": false,
+  "inputs": [
+    {
+      "item": "tconstruct:earth_slime_crystal"
+    },
+    {
+      "item": "minecraft:recovery_compass"
+    },
+    {
+      "item": "tconstruct:sky_slime_crystal"
+    },
+    {
+      "item": "tconstruct:ichor_slime_crystal"
+    },
+    {
+      "item": "tconstruct:ender_slime_crystal"
+    }
+  ],
+  "level": 3,
+  "result": "epicfighttinkercompat:eagle_eye",
+  "tools": {
+    "tag": "tconstruct:modifiable/ranged/longbows"
+  }
+}
