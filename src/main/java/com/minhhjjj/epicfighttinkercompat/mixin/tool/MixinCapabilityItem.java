@@ -19,7 +19,6 @@ public class MixinCapabilityItem {
     )
     private Skill injectCustomPassiveSkill(Skill originalSkill, @Local(argsOnly = true) PlayerPatch<?> playerPatch) {
         if ((Object) this instanceof TCWeaponCapability tcCap) {
-            EpicFightTinkerCompat.LOGGER.info("Getting Custom Passive Skill");
             return tcCap.getPassiveSkill(playerPatch);
         }
         return originalSkill;
