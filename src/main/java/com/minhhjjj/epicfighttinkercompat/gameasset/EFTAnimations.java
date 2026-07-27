@@ -3,6 +3,7 @@ package com.minhhjjj.epicfighttinkercompat.gameasset;
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import com.minhhjjj.epicfighttinkercompat.compat.p1nerobow.EFBowAnimations;
 import com.minhhjjj.epicfighttinkercompat.compat.p1nerobow.TCScanAttackAnimation;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -11,10 +12,7 @@ import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.property.AnimationProperty;
-import yesman.epicfight.api.animation.types.AttackAnimation;
-import yesman.epicfight.api.animation.types.BasicAttackAnimation;
-import yesman.epicfight.api.animation.types.MovementAnimation;
-import yesman.epicfight.api.animation.types.StaticAnimation;
+import yesman.epicfight.api.animation.types.*;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.world.damagesource.StunType;
 
@@ -29,6 +27,9 @@ public class EFTAnimations {
     public static AnimationManager.AnimationAccessor<MovementAnimation> BIPED_WALK_HAMMER;
     public static AnimationManager.AnimationAccessor<MovementAnimation> BIPED_RUN_HAMMER;
     public static AnimationManager.AnimationAccessor<BasicAttackAnimation> HAMMER_AUTO1;
+    public static AnimationManager.AnimationAccessor<StaticAnimation> BIPED_HOLD_SWASHER;
+    public static AnimationManager.AnimationAccessor<AimAnimation> BIPED_SWASHER_AIM;
+    public static AnimationManager.AnimationAccessor<ReboundAnimation> BIPED_SWASHER_SHOT;
 
     public static AnimationManager.AnimationAccessor<AttackAnimation> ARROW_TEMPEST;
     public static AnimationManager.AnimationAccessor<AttackAnimation> SEEKING_TEMPEST;
@@ -75,6 +76,36 @@ public class EFTAnimations {
                     })
                 .addEvents(EFBowAnimations.setFullBowUseTime(50/60f), shoot(110/60f))
         );
+        BIPED_HOLD_SWASHER = builder.nextAccessor("biped/living/hold_swasher", accessor -> new StaticAnimation(true, accessor, Armatures.BIPED));
+        BIPED_SWASHER_AIM = builder.nextAccessor("biped/combat/swasher_aim",
+                accessor -> new AimAnimation(
+                        false,
+                        accessor,
+                        "biped/combat/swasher_aim_mid",
+                        "biped/combat/swasher_aim_up",
+                        "biped/combat/swasher_aim_down",
+                        "biped/combat/swasher_aim_lying",
+                        Armatures.BIPED)
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, (AnimationProperty.PlaybackSpeedModifier)(animation, entitypatch, speed, prevElapsedTime, elapsedTime) -> {
+                    if (animation.isLinkAnimation()) {
+                        return 1.0F;
+                    } else {
+                        return (entitypatch.getOriginal()).isUsingItem() && elapsedTime + 0.05F * speed > animation.getTotalTime() ? 0.0F : 1.0F;
+                    }
+                }));
+        BIPED_SWASHER_SHOT = builder.nextAccessor("biped/combat/swasher_shot",
+                accessor -> new ReboundAnimation(
+                        false,
+                        accessor,
+                        "biped/combat/swasher_shot_mid",
+                        "biped/combat/swasher_shot_up",
+                        "biped/combat/swasher_shot_down",
+                        "biped/combat/swasher_shot_lying",
+                        Armatures.BIPED
+                ));
+
+
         EFBowAnimations.buildBowAnimations(builder);
+
     }
 }

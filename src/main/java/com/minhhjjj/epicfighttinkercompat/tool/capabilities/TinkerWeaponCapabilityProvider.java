@@ -63,7 +63,7 @@ public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
         presets.put("mattock", TCWeaponCapabilityPresets.TC_PICKAXE);
         presets.put("plate_shield", TCWeaponCapabilityPresets.TC_SHIELD);
         presets.put("travelers_shield", TCWeaponCapabilityPresets.TC_SHIELD);
-        presets.put("swasher", TCWeaponCapabilityPresets.TC_SWORD);
+        presets.put("swasher", TCWeaponCapabilityPresets.SWASHER);
         presets.put("fishing_rod", TCWeaponCapabilityPresets.TC_SWORD);
         presets.put("katana", TCWeaponCapabilityPresets.KATANA);
         presets.put("fuma_shuriken", TCWeaponCapabilityPresets.FUMA_SHURIKEN);

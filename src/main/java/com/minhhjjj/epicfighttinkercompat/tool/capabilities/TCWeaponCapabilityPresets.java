@@ -228,6 +228,16 @@ public class TCWeaponCapabilityPresets {
 			.zoomInType(CapabilityItem.ZoomInType.USE_TICK)
 			.styleProvider((patch) -> Styles.ONE_HAND);
 
+	public static final Function<Item, CapabilityItem.Builder> SWASHER = item -> TCWeaponCapability.builder()
+			.defaultMoveSet(CombatProfiles.swasher())
+			.addWeaponSet(Styles.ONE_HAND,  CombatProfiles.swasher())
+			.category(WeaponCategories.SWORD)
+			.collider(ColliderPreset.SWORD)
+			.reach(1.0F)
+			.zoomInType(CapabilityItem.ZoomInType.USE_TICK)
+			.styleProvider((patch) -> Styles.ONE_HAND);
+
+
 	public static final Function<Item, CapabilityItem.Builder> UNKNOWN = (item) -> TCWeaponCapability.builder()
 			.defaultMoveSet(CombatProfiles.fist())
 			.addWeaponSet(Styles.ONE_HAND,  CombatProfiles.fist())

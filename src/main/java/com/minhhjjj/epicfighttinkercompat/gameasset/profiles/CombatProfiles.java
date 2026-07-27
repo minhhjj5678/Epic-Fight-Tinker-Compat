@@ -435,4 +435,14 @@ public class CombatProfiles {
 				.addLivingMotionModifier(LivingMotions.BLOCK, Animations.SWORD_GUARD)
 				.addLivingMotionsRecursive(Animations.BIPED_HOLD_LONGSWORD, new LivingMotion[]{LivingMotions.IDLE, LivingMotions.KNEEL, LivingMotions.WALK, LivingMotions.FALL, LivingMotions.FLOAT, LivingMotions.FALL, LivingMotions.CHASE, LivingMotions.RUN, LivingMotions.SNEAK, LivingMotions.SWIM});
 	}
+
+	public static CombatProfile.CombatProfileBuilder swasher() {
+		return CombatProfile.builder()
+				.addComboAttacks(Animations.SWORD_AUTO1, Animations.SWORD_AUTO2, Animations.SWORD_AUTO3, Animations.SWORD_DASH, Animations.SWORD_AIR_SLASH)
+				.addGuardAnimations(BlockType.GUARD, Animations.SWORD_GUARD_HIT)
+				.addGuardAnimations(BlockType.GUARD_BREAK, Animations.BIPED_COMMON_NEUTRALIZED)
+				.addLivingMotionModifier(LivingMotions.AIM, EFTAnimations.BIPED_SWASHER_AIM)
+				.addLivingMotionModifier(LivingMotions.SHOT, EFTAnimations.BIPED_SWASHER_SHOT)
+				.addLivingMotionModifier(LivingMotions.BLOCK, Animations.SWORD_GUARD);
+	}
 }
