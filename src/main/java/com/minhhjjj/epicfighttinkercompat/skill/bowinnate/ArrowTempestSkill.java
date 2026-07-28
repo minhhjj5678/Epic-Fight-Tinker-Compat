@@ -156,6 +156,10 @@ public class ArrowTempestSkill extends PersistentWeaponInnateSkill {
                     foundAmmo = new ItemStack(Items.ARROW);
                 }
 
+                AABB aabb = player.getBoundingBox().inflate(RANGE);
+                List<LivingEntity> targetList = player.level().getEntitiesOfClass(LivingEntity.class, aabb);
+                targetList.removeIf(entity -> entity.equals(player) || !entity.isAlive());
+
                 float f = 1.0F;
                 boolean flag1 = player.getAbilities().instabuild || (foundAmmo.getItem() instanceof ArrowItem && ((ArrowItem) foundAmmo.getItem()).isInfinite(foundAmmo, itemStack, player));
                 if (!level.isClientSide) {
@@ -174,8 +178,10 @@ public class ArrowTempestSkill extends PersistentWeaponInnateSkill {
                                 }
                             }
                         }
-                    } else {
-                        desiredProjectiles = BowAmmoModifierHook.getDesiredProjectiles(toolStack);
+                    } else if (modifierLevel == 1) {
+                        desiredProjectiles = targetList.size();
+                    } else if (modifierLevel == 2) {
+                        desiredProjectiles = AMMO_COUNT;
                     }
 
                     ItemStack ammo = BowAmmoModifierHook.consumeAmmo(toolStack, itemStack, player, player, ammoPredicate, desiredProjectiles);
@@ -203,11 +209,7 @@ public class ArrowTempestSkill extends PersistentWeaponInnateSkill {
                         waterInertia = ConditionalStatModifierHook.getModifiedStat(thrown, living, ToolStats.WATER_INERTIA);
                     }
 
-                    AABB aabb = player.getBoundingBox().inflate(RANGE);
-                    List<LivingEntity> targetList = player.level().getEntitiesOfClass(LivingEntity.class, aabb);
-                    targetList.removeIf(entity -> entity.equals(player) || !entity.isAlive());
-
-                    int ammoCount = modifierLevel > 1 ? AMMO_COUNT + (ammo.getCount() - 1) : targetList.size();
+                    int ammoCount = ammo.getCount();
                     for (int arrowIndex = 0;  arrowIndex < ammoCount; ++arrowIndex) {
                         AbstractArrow abstractarrow;
                         if (thrownTool) {
