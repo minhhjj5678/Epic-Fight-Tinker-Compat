@@ -5,16 +5,17 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "epicfighttinkercompat.refmap.json",
   "mixins": [
+    "MixinLivingEntityPatch",
     "doublejump.MixinDoubleJumpHandler",
     "lifesteal.MixinToolAttackContext",
     "skill.MixinGuardSkill",
+    "skill.MixinSkillContainer",
     "sweepingedge.MixinEnchantmentHelper",
     "sweepingedge.MixinSweepWeaponAttack",
     "tool.MixinBlockingModifier",
     "tool.MixinCapabilityItem",
     "tool.MixinModifiableItem",
-    "tool.MixinToolStack",
-    "MixinLivingEntityPatch"
+    "tool.MixinToolStack"
   ],
   "client": [
     "doublejump.MixinPhantomAscentSkill",

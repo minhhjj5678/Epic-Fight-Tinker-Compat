@@ -1,10 +1,12 @@
 package com.minhhjjj.epicfighttinkercompat.skill;
 
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
@@ -30,8 +32,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Mod.EventBusSubscriber(modid = EpicFightTinkerCompat.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public abstract class PersistentWeaponInnateSkill extends WeaponInnateSkill {
-    private static final Map<String, ItemStack> CURRENT_TOOLS = new ConcurrentHashMap<>();
-    private static final Set<String> PENDING_STACK_RESTORE = ConcurrentHashMap.newKeySet();
+    private static final Map<UUID, Map<ResourceLocation, ItemStack>> SERVER_CURRENT_TOOLS = new ConcurrentHashMap<>();
+    private static final Map<UUID, Map<ResourceLocation, ItemStack>> CLIENT_CURRENT_TOOLS = new ConcurrentHashMap<>();
+
+    // Using a nested CompoundTag allows storing multiple skill states concurrently for future multi-skill item support
     public static final String KEY_RESOURCE = "key_resource";
     public static final String KEY_STACKS = "key_stacks";
 
@@ -51,26 +55,25 @@ public abstract class PersistentWeaponInnateSkill extends WeaponInnateSkill {
                     Skill newSkill = newCapabilityItem.getInnateSkill(playerPatch, newItem);
 
                     if (oldSkill instanceof PersistentWeaponInnateSkill persistentSkill && oldSkill == newSkill) {
-                        String skillPath = persistentSkill.getRegistryName().getPath();
-                        String clientPath = player.getUUID() + "-client-" + skillPath;
-                        String serverPath = getMapKey(player, skillPath);
-                        String resourcePath = KEY_RESOURCE + "_" + skillPath;
-                        String stacksPath = KEY_STACKS + "_" + skillPath;
+                        ResourceLocation skillResource = persistentSkill.getRegistryName();
+                        String skillPath = skillResource.getPath();
 
                         if (getUniqueUUID(oldItem).equals(getUniqueUUID(newItem))) {
-                            CURRENT_TOOLS.put(serverPath, newItem);
-                            CURRENT_TOOLS.put(clientPath,  newItem);
+                            SERVER_CURRENT_TOOLS.computeIfAbsent(player.getUUID(), k -> new ConcurrentHashMap<>()).put(skillResource, newItem);
+                            CLIENT_CURRENT_TOOLS.computeIfAbsent(player.getUUID(), k -> new ConcurrentHashMap<>()).put(skillResource, newItem);
                             return;
                         }
 
                         SkillContainer container = playerPatch.getSkill(SkillSlots.WEAPON_INNATE);
                         if (container != null) {
-                            ItemStack cachedItem = CURRENT_TOOLS.getOrDefault(serverPath, ItemStack.EMPTY);
+                            ItemStack cachedItem = SERVER_CURRENT_TOOLS.getOrDefault(player.getUUID(), new ConcurrentHashMap<>()).getOrDefault(persistentSkill.getRegistryName(), ItemStack.EMPTY);
                             if (cachedItem.isEmpty()) return;
-                            float newResource = newItem.getOrCreateTag().getFloat(resourcePath);
-                            int newStacks = newItem.getOrCreateTag().getInt(stacksPath);
-                            cachedItem.getOrCreateTag().putFloat(resourcePath, container.getResource());
-                            cachedItem.getOrCreateTag().putInt(stacksPath, container.getStack());
+                            float newResource = newItem.getOrCreateTag().getCompound(KEY_RESOURCE).getFloat(skillPath);
+                            int newStacks = newItem.getOrCreateTag().getCompound(KEY_STACKS).getInt(skillPath);
+
+                            CompoundTag itemTag = cachedItem.getOrCreateTag();
+                            getOrCreateSubTag(itemTag, KEY_RESOURCE).putFloat(skillPath, container.getResource());
+                            getOrCreateSubTag(itemTag, KEY_STACKS).putInt(skillPath, container.getStack());
 
                             if (newStacks == 0) {
                                 container.setStack(0);
@@ -80,8 +83,8 @@ public abstract class PersistentWeaponInnateSkill extends WeaponInnateSkill {
                                 container.setStack(newStacks);
                             }
 
-                            CURRENT_TOOLS.put(serverPath, newItem);
-                            CURRENT_TOOLS.put(clientPath, newItem);
+                            SERVER_CURRENT_TOOLS.computeIfAbsent(player.getUUID(), k -> new ConcurrentHashMap<>()).put(skillResource, newItem);
+                            CLIENT_CURRENT_TOOLS.computeIfAbsent(player.getUUID(), k -> new ConcurrentHashMap<>()).put(skillResource, newItem);
                             if (newStacks == 0) {
                                 EpicFightNetworkManager.sendToAll(SPSetSkillContainerValue.stacks(SkillSlots.WEAPON_INNATE, newStacks, player.getId()));
                                 EpicFightNetworkManager.sendToAll(SPSetSkillContainerValue.resource(SkillSlots.WEAPON_INNATE, newResource, player.getId()));
@@ -100,8 +103,8 @@ public abstract class PersistentWeaponInnateSkill extends WeaponInnateSkill {
     public static void onPlayerRemove(PlayerEvent.PlayerLoggedOutEvent event) {
         Player player = event.getEntity();
         if (player == null) return;
-        CURRENT_TOOLS.keySet().removeIf(key -> key.contains(player.getUUID().toString()));
-        PENDING_STACK_RESTORE.removeIf(key -> key.contains(player.getUUID().toString()));
+        SERVER_CURRENT_TOOLS.remove(player.getUUID());
+        CLIENT_CURRENT_TOOLS.remove(player.getUUID());
     }
 
     public PersistentWeaponInnateSkill(SkillBuilder<? extends WeaponInnateSkill> builder) {
@@ -115,12 +118,12 @@ public abstract class PersistentWeaponInnateSkill extends WeaponInnateSkill {
             ItemStack itemStack = player.getMainHandItem();
             if (isValidTool(itemStack)) {
                 getUniqueUUID(itemStack);
-                String skillPath = this.getRegistryName().getPath();
-                CURRENT_TOOLS.put(getMapKey(player, skillPath), itemStack);
-                PENDING_STACK_RESTORE.add(getMapKey(player, skillPath));
+                ResourceLocation skillResource = this.getRegistryName();
+                var currentToolMap = getMapSide(player);
+                currentToolMap.computeIfAbsent(player.getUUID(), k -> new ConcurrentHashMap<>()).put(skillResource, itemStack);
 
-                float resource = itemStack.getOrCreateTag().getFloat(KEY_RESOURCE + "_" + skillPath);
-                int stacks = itemStack.getOrCreateTag().getInt(KEY_STACKS + "_"  + skillPath);
+                float resource = itemStack.getOrCreateTag().getCompound(KEY_RESOURCE).getFloat(skillResource.getPath());
+                int stacks = itemStack.getOrCreateTag().getCompound(KEY_STACKS).getInt(skillResource.getPath());
                 container.setMaxResource(this.consumption);
                 if (stacks == 0) {
                     container.setStack(0);
@@ -136,37 +139,18 @@ public abstract class PersistentWeaponInnateSkill extends WeaponInnateSkill {
     public void onRemoved(SkillContainer container) {
         super.onRemoved(container);
         Entity entity = container.getExecutor().getOriginal();
-        String skillPath = this.getRegistryName().getPath();
+        ResourceLocation skillResource = this.getRegistryName();
         if (entity instanceof Player player) {
-            ItemStack itemStack = CURRENT_TOOLS.remove(getMapKey(player, this.getRegistryName().getPath()));
+            var currentToolMap = getMapSide(player);
+            ItemStack itemStack = currentToolMap.getOrDefault(player.getUUID(), new ConcurrentHashMap<>()).get(skillResource);
             if (isValidTool(itemStack)) {
                 float resource = container.getResource();
                 int stacks = container.getStack();
-                itemStack.getOrCreateTag().putFloat(KEY_RESOURCE + "_" + skillPath, resource);
-                itemStack.getOrCreateTag().putInt(KEY_STACKS + "_" + skillPath, stacks);
-            }
-        }
-    }
 
-    public void updateContainer(SkillContainer container) {
-        super.updateContainer(container);
-        Entity entity = container.getExecutor().getOriginal();
-        String skillPath = this.getRegistryName().getPath();
-        if (entity instanceof Player player && PENDING_STACK_RESTORE.contains(getMapKey(player, skillPath))) {
-            ItemStack itemStack = CURRENT_TOOLS.getOrDefault(getMapKey(player, skillPath), ItemStack.EMPTY);
-            if (!itemStack.isEmpty()) {
-                int stacks = itemStack.getOrCreateTag().getInt(KEY_STACKS + "_" + skillPath);
-                float resource = itemStack.getOrCreateTag().getFloat(KEY_RESOURCE + "_" + skillPath);
-
-                if (stacks == 0) {
-                    container.setStack(0);
-                    container.setResource(resource);
-                } else {
-                    container.setResource(resource);
-                    container.setStack(stacks);
-                }
+                CompoundTag itemTag = itemStack.getOrCreateTag();
+                getOrCreateSubTag(itemTag, KEY_RESOURCE).putFloat(skillResource.getPath(), resource);
+                getOrCreateSubTag(itemTag, KEY_STACKS).putInt(skillResource.getPath(), stacks);
             }
-            PENDING_STACK_RESTORE.remove(getMapKey(player, this.getRegistryName().getPath()));
         }
     }
 
@@ -174,8 +158,8 @@ public abstract class PersistentWeaponInnateSkill extends WeaponInnateSkill {
         return itemStack != null && itemStack.getItem() instanceof IModifiable;
     }
 
-    private static String getMapKey(LivingEntity entity, String skillId) {
-        return entity.getUUID() + (entity.level().isClientSide ? "-client-" : "-server-") + skillId;
+    private static Map<UUID, Map<ResourceLocation, ItemStack>> getMapSide(Player player) {
+        return player.level().isClientSide() ? CLIENT_CURRENT_TOOLS : SERVER_CURRENT_TOOLS;
     }
 
     private static UUID getUniqueUUID(ItemStack stack) {
@@ -183,6 +167,14 @@ public abstract class PersistentWeaponInnateSkill extends WeaponInnateSkill {
             stack.getOrCreateTag().putUUID("eft_uuid_tool", UUID.randomUUID());
         }
         return stack.getOrCreateTag().getUUID("eft_uuid_tool");
+    }
+
+    private static CompoundTag getOrCreateSubTag(CompoundTag parent, String key) {
+        if (!parent.contains(key, Tag.TAG_COMPOUND)) {
+            CompoundTag tag = new CompoundTag();
+            parent.put(key, tag);
+        }
+        return parent.getCompound(key);
     }
 
 }
