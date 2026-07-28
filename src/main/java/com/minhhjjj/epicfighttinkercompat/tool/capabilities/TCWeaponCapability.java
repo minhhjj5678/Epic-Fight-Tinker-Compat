@@ -1,6 +1,7 @@
 package com.minhhjjj.epicfighttinkercompat.tool.capabilities;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -9,7 +10,6 @@ import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.CombatProfiles;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfile;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfiles;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -55,16 +55,9 @@ public class TCWeaponCapability extends CapabilityItem {
     private static final ModifierId THROWING_ID = new ModifierId(TConstruct.MOD_ID, "throwing");
     private static final ModifierId BLOCKING_ID = new ModifierId(TConstruct.MOD_ID, "blocking");
 
-    private final WeakHashMap<ItemStack, CachedProfile> profileCache = new WeakHashMap<>();
+    private final Map<Integer, CachedProfile> profileCache = new ConcurrentHashMap<>();
 
-    private static class CachedProfile {
-        final CompoundTag nbtHash;
-        final ModifierProfile modifierProfile;
-
-        CachedProfile(CompoundTag nbtHash, ModifierProfile modifierProfile) {
-            this.nbtHash = nbtHash;
-            this.modifierProfile = modifierProfile;
-        }
+    private record CachedProfile(ModifierProfile modifierProfile) {
     }
 
     protected TCWeaponCapability(CapabilityItem.Builder builder) {
@@ -88,15 +81,17 @@ public class TCWeaponCapability extends CapabilityItem {
     }
 
     public CombatProfile getCurrentCP(LivingEntityPatch<?> patch) {
-        ItemStack stack = patch.getOriginal().getMainHandItem();
-        if (stack.isEmpty()) {
+        ToolStack tool = getToolStack(patch, InteractionHand.MAIN_HAND);
+        if (tool == null) {
             return this.defaultWeaponSet != null ? this.defaultWeaponSet : this.weaponSets.get(Styles.COMMON);
         }
 
-        CompoundTag stackNBT = stack.getTag();
-        CachedProfile cached = profileCache.get(stack);
-        if (cached != null && Objects.equals(cached.nbtHash, stackNBT)) {
-            if (cached.modifierProfile != null && cached.modifierProfile.styleProvider() != null) {
+        // Hash modifier entries to use as cache key
+        int hashCode = tool.getModifierList().hashCode();
+
+        CachedProfile cached = profileCache.get(hashCode);
+        if (cached != null) {
+            if (cached.modifierProfile() != null && cached.modifierProfile.styleProvider() != null) {
                 CombatProfile CP = cached.modifierProfile.weaponSets().get(cached.modifierProfile.styleProvider().apply(patch));
                 if (CP != null) {
                     return CP;
@@ -128,7 +123,7 @@ public class TCWeaponCapability extends CapabilityItem {
         }
 
         combatProfile = (combatProfile == null) ? this.defaultWeaponSet != null ? this.defaultWeaponSet : this.weaponSets.get(Styles.COMMON) : combatProfile;
-        profileCache.put(stack, new CachedProfile(stackNBT == null ? null : stackNBT.copy(), cachedMP));
+        profileCache.put(hashCode, new CachedProfile(cachedMP));
         return combatProfile;
     }
 
