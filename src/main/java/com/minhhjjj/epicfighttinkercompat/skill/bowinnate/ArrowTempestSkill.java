@@ -186,7 +186,8 @@ public class ArrowTempestSkill extends PersistentWeaponInnateSkill {
 
                     ItemStack ammo = BowAmmoModifierHook.consumeAmmo(toolStack, itemStack, player, player, ammoPredicate, desiredProjectiles);
                     if (ammo.isEmpty()) {
-                        ammo = new ItemStack(Items.ARROW);
+                        return;
+//                        ammo = new ItemStack(Items.ARROW);
                     }
 
                     ArrowItem arrowitem = (ArrowItem)(ammo.getItem() instanceof ArrowItem ? ammo.getItem() : Items.ARROW);
@@ -249,8 +250,10 @@ public class ArrowTempestSkill extends PersistentWeaponInnateSkill {
 
                         LivingEntity target = TCScanAttackAnimation.getTarget(livingEntityPatch);
                         if (modifierLevel == 1) {
-                            TempestArrowTracker.addArrow(abstractarrow, targetList.get(arrowIndex).getEyePosition());
-                            abstractarrow.setKnockback(2);
+                            if (arrowIndex < targetList.size() && !targetList.isEmpty()) {
+                                TempestArrowTracker.addArrow(abstractarrow, targetList.get(arrowIndex).getEyePosition());
+                                abstractarrow.setKnockback(2);
+                            }
                         } else {
                             HomingArrowTracker.addArrow(abstractarrow, target);
                         }
