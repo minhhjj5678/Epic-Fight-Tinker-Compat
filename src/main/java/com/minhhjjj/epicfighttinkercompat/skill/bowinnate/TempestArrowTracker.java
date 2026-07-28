@@ -19,7 +19,7 @@ import java.util.WeakHashMap;
 public class TempestArrowTracker {
     private static final Map<AbstractArrow, Vec3> TRACKED_ARROWS = new WeakHashMap<>();
     private static final int TICKS_BEFORE_TARGETING = 10;
-    private static final double BOOST_SPEED = 10;
+    private static final double BOOST_SPEED = 3;
 
     public static void addArrow(AbstractArrow arrow, Vec3 targetPos) {
         if (arrow == null || targetPos == null) return;
@@ -44,7 +44,7 @@ public class TempestArrowTracker {
             BlockHitResult hitResult = arrow.level().clip(new ClipContext(currentPos, nextPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, arrow));
             if (arrow.tickCount > TICKS_BEFORE_TARGETING || hitResult.getType() == HitResult.Type.BLOCK) {
                 iterator.remove();
-                double speed = arrow.getDeltaMovement().length() * (hitResult.getType() == HitResult.Type.BLOCK ? BOOST_SPEED * arrow.tickCount / TICKS_BEFORE_TARGETING : BOOST_SPEED);
+                double speed = arrow.getDeltaMovement().length() * (hitResult.getType() == HitResult.Type.BLOCK ? BOOST_SPEED * ((double) arrow.tickCount / TICKS_BEFORE_TARGETING) : BOOST_SPEED);
                 Vec3 vec3 = entry.getValue().subtract(arrow.position()).normalize().scale(speed);
                 arrow.setDeltaMovement(vec3);
                 double d0 = vec3.horizontalDistance();
@@ -52,9 +52,11 @@ public class TempestArrowTracker {
                 arrow.setXRot((float)(Mth.atan2(vec3.y, d0) * (double)(180F / (float)Math.PI)));
                 arrow.yRotO = arrow.getYRot();
                 arrow.xRotO = arrow.getXRot();
-
                 arrow.hasImpulse = true;
-
+            } else if (arrow.getDeltaMovement().length() < 1) {
+                double speed = 1.0d;
+                arrow.setDeltaMovement(arrow.getDeltaMovement().normalize().scale(speed));
+                arrow.hasImpulse = true;
             }
         }
     }
