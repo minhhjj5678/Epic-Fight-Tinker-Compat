@@ -252,7 +252,7 @@ public class ArrowTempestSkill extends PersistentWeaponInnateSkill {
                         if (modifierLevel == 1) {
                             if (arrowIndex < targetList.size() && !targetList.isEmpty()) {
                                 TempestArrowTracker.addArrow(abstractarrow, targetList.get(arrowIndex).getEyePosition());
-                                abstractarrow.setKnockback(2);
+                                abstractarrow.setKnockback(abstractarrow.getKnockback() + 2);
                             }
                         } else {
                             HomingArrowTracker.addArrow(abstractarrow, target);
