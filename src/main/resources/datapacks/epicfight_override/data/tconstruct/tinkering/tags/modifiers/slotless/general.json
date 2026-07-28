@@ -2,9 +2,6 @@
   "replace": false,
   "values": [
     "epicfighttinkercompat:speary",
-    "epicfighttinkercompat:torment_blade",
-    "epicfighttinkercompat:ruine_blade",
-    "epicfighttinkercompat:agony_spear",
     "epicfighttinkercompat:shortsword",
     "epicfighttinkercompat:longsword",
     "epicfighttinkercompat:greatsword",
@@ -13,6 +10,21 @@
     "epicfighttinkercompat:axe",
     "epicfighttinkercompat:dagger",
     "epicfighttinkercompat:arrow_tempest",
-    "epicfighttinkercompat:eagle_eye"
+    {
+      "id": "epicfighttinkercompat:eagle_eye",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:torment_blade",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:ruine_blade",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:agony_spear",
+      "required": false
+    }
   ]
 }
