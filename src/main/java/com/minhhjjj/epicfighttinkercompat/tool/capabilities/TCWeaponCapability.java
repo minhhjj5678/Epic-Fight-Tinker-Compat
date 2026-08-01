@@ -4,18 +4,24 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
-import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.CombatProfile;
-import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.CombatProfiles;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfile;
-import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfiles;
+import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfileReloadListener;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.UseAnim;
 import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
@@ -25,25 +31,26 @@ import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.collider.Collider;
+import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.guard.GuardSkill;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
-import yesman.epicfight.world.capabilities.item.CapabilityItem;
-import yesman.epicfight.world.capabilities.item.Style;
-import yesman.epicfight.world.capabilities.item.WeaponCategory;
+import yesman.epicfight.world.capabilities.item.*;
 import net.minecraft.sounds.SoundEvent;
 import yesman.epicfight.particle.HitParticleType;
 import yesman.epicfight.world.entity.eventlistener.ComboCounterHandleEvent;
 
 
 public class TCWeaponCapability extends CapabilityItem {
-    protected CombatProfile defaultWeaponSet;
-    protected Map<Style, CombatProfile> weaponSets;
-    protected List<ModifierProfile> modifierProfiles;
     protected Function<LivingEntityPatch<?>, Style> styleProvider;
-
-    // copied from WeaponCapability
+    protected BiFunction<LivingEntityPatch<?>, InteractionHand, LivingMotion> motionPredicator;
+    protected Map<Style, Map<GuardSkill.BlockType, AnimationManager.AnimationAccessor<? extends StaticAnimation>>> guardMotions;
+    protected final Map<Style, List<AnimationManager.AnimationAccessor<? extends AttackAnimation>>> autoAttackMotions;
+    protected final Map<Style, Function<ItemStack, Skill>> innateSkill;
+    protected final Skill passiveSkill;
+    protected final Map<Style, Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>>> livingMotionModifiers;
+    protected final Function<LivingEntityPatch<?>, Boolean> weaponCombinationPredicator;
     protected SoundEvent smashingSound;
     protected SoundEvent hitSound;
     protected HitParticleType hitParticle;
@@ -52,23 +59,24 @@ public class TCWeaponCapability extends CapabilityItem {
     protected final ComboCounterHandleEvent.ComboCounterHandler comboCounterHandler;
     protected final CapabilityItem.ZoomInType zoomInType;
     protected final float reach;
-    private static final ModifierId THROWING_ID = new ModifierId(TConstruct.MOD_ID, "throwing");
     private static final ModifierId BLOCKING_ID = new ModifierId(TConstruct.MOD_ID, "blocking");
 
-    private final Map<Integer, CachedProfile> profileCache = new ConcurrentHashMap<>();
+    private final Map<ResourceLocation, CapabilityItem> weaponCache = new ConcurrentHashMap<>();
 
-    private record CachedProfile(ModifierProfile modifierProfile) {
-    }
 
     protected TCWeaponCapability(CapabilityItem.Builder builder) {
         super(builder);
         Builder tcBuilder = (Builder)builder;
-        this.defaultWeaponSet = tcBuilder.defaultWeaponSet;
-        this.modifierProfiles = tcBuilder.modifierProfiles;
-        this.weaponSets = tcBuilder.weaponSets;
         this.styleProvider = tcBuilder.styleProvider;
+        this.motionPredicator = tcBuilder.motionPredicator;
+        this.guardMotions = tcBuilder.guardMotions;
 
         // assign copied weapon-capability fields
+        this.autoAttackMotions = tcBuilder.autoAttackMotionMap;
+        this.innateSkill = tcBuilder.innateSkillByStyle;
+        this.passiveSkill = tcBuilder.passiveSkill;
+        this.livingMotionModifiers = tcBuilder.livingMotionModifiers;
+        this.weaponCombinationPredicator = tcBuilder.weaponCombinationPredicator;
         this.smashingSound = tcBuilder.swingSound;
         this.hitSound = tcBuilder.hitSound;
         this.hitParticle = tcBuilder.hitParticle;
@@ -77,78 +85,52 @@ public class TCWeaponCapability extends CapabilityItem {
         this.comboCounterHandler = tcBuilder.comboCounterHandler;
         this.zoomInType = tcBuilder.zoomInType;
         this.reach = tcBuilder.reach;
-        sortModifierProfiles();
-    }
-
-    public CombatProfile getCurrentCP(LivingEntityPatch<?> patch) {
-        ToolStack tool = getToolStack(patch, InteractionHand.MAIN_HAND);
-        if (tool == null) {
-            return this.defaultWeaponSet != null ? this.defaultWeaponSet : this.weaponSets.get(Styles.COMMON);
-        }
-
-        // Hash modifier entries to use as cache key
-        int hashCode = tool.getModifierList().hashCode();
-
-        CachedProfile cached = profileCache.get(hashCode);
-        if (cached != null) {
-            if (cached.modifierProfile() != null && cached.modifierProfile.styleProvider() != null) {
-                CombatProfile CP = cached.modifierProfile.weaponSets().get(cached.modifierProfile.styleProvider().apply(patch));
-                if (CP != null) {
-                    return CP;
-                }
-            }
-            return this.weaponSets.getOrDefault(this.styleProvider.apply(patch), this.defaultWeaponSet != null ? this.defaultWeaponSet : this.weaponSets.get(Styles.COMMON));
-        }
-
-        CombatProfile combatProfile = null;
-        ModifierProfile cachedMP = null;
-        ModifierProfile modifierProfile = this.getModifierProfile(patch, InteractionHand.MAIN_HAND);
-        if (modifierProfile != null) {
-            Style resolvedStyle = modifierProfile.styleProvider().apply(patch);
-            CombatProfile moveSet = modifierProfile.weaponSets().get(resolvedStyle);
-            if (moveSet != null) {
-                combatProfile = moveSet;
-            }
-            cachedMP = modifierProfile;
-        }
-
-        if (combatProfile == null) {
-            Style style = this.styleProvider.apply(patch);
-            if (style != Styles.COMMON) {
-                CombatProfile styleMoveSet = this.weaponSets.get(style);
-                if (styleMoveSet != null) {
-                    combatProfile = styleMoveSet;
-                }
-            }
-        }
-
-        combatProfile = (combatProfile == null) ? this.defaultWeaponSet != null ? this.defaultWeaponSet : this.weaponSets.get(Styles.COMMON) : combatProfile;
-        profileCache.put(hashCode, new CachedProfile(cachedMP));
-        return combatProfile;
     }
 
     public Style getStyle(LivingEntityPatch<?> patch) {
-        ModifierProfile modifierProfile = this.getModifierProfile(patch, InteractionHand.MAIN_HAND);
-        if (modifierProfile != null && modifierProfile.styleProvider() != null) {
-            Style modifierStyle = modifierProfile.styleProvider().apply(patch);
-            if (modifierStyle != null) {
-                return modifierStyle;
+        CapabilityItem weapon = this.getWeapon(patch);
+        if (weapon != null) {
+            Style weaponStyle = weapon.getStyle(patch);
+            if (weaponStyle != Styles.COMMON) {
+                return weaponStyle;
             }
         }
 
         if (this.styleProvider != null) {
-            Style baseStyle = this.styleProvider.apply(patch);
-            if (baseStyle != null) {
-                return baseStyle;
-            }
+            return this.styleProvider.apply(patch);
         }
 
         return Styles.COMMON;
     }
 
+    public CapabilityItem getWeapon(LivingEntityPatch<?> patch) {
+        return this.getWeapon(patch, InteractionHand.MAIN_HAND);
+    }
+
+    public CapabilityItem getWeapon(LivingEntityPatch<?> patch, InteractionHand hand) {
+        CapabilityItem weapon = null;
+        ModifierProfile modifierProfile = this.getModifierProfile(patch, hand, profile -> profile.weaponType() != null);
+        if (modifierProfile != null) {
+            ResourceLocation rl = modifierProfile.weaponType();
+            Item dummy = Items.STICK;
+            if (weaponCache.containsKey(rl)) {
+                weapon = weaponCache.get(rl);
+            } else {
+                Function<Item, CapabilityItem.Builder> func = WeaponTypeReloadListener.get(rl);
+                if (func != null) {
+                    weapon = func.apply(dummy).build();
+                    weaponCache.put(rl, weapon);
+                }
+            }
+        }
+        return weapon;
+    }
+
     @Override
     public List<AnimationManager.AnimationAccessor<? extends AttackAnimation>> getAutoAttackMotion(PlayerPatch<?> playerpatch) {
-        return this.getCurrentCP(playerpatch).attackMotions();
+        CapabilityItem delegatedCapability = this.getWeapon(playerpatch);
+        return delegatedCapability != null ? delegatedCapability.getAutoAttackMotion(playerpatch)
+                : this.autoAttackMotions.getOrDefault(this.styleProvider.apply(playerpatch), this.autoAttackMotions.get(Styles.COMMON));
     }
 
     @Override
@@ -168,48 +150,59 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @SuppressWarnings("removal")
     public List<AnimationManager.AnimationAccessor<? extends AttackAnimation>> getMountAttackMotion() {
-        return this.defaultWeaponSet.mountAttackMotions();
+        return this.autoAttackMotions.get(Styles.MOUNT);
     }
 
     public Skill getInnateSkill(PlayerPatch<?> playerpatch, ItemStack itemstack) {
         if (itemstack.getItem() instanceof IModifiable) {
             ToolStack tool = ToolStack.from(itemstack);
-            for (ModifierProfile modifierProfile : this.modifierProfiles) {
-                if (modifierProfile.innateSkill() != null) {
-                    Skill innateSkill = modifierProfile.innateSkill().apply(tool, playerpatch);
-                    if (innateSkill != null) return innateSkill;
-                }
+
+            ModifierProfile modifierProfile = this.getModifierProfile(playerpatch, InteractionHand.MAIN_HAND,
+                    profile -> profile.innateSkill() != null && profile.innateSkill().apply(tool, playerpatch) != null);
+
+            if (modifierProfile != null) {
+                return modifierProfile.innateSkill().apply(tool, playerpatch);
             }
         }
 
-        BiFunction<ItemStack, PlayerPatch<?>, Skill> innateSkillFunction = this.getCurrentCP(playerpatch).innateSkill();
-        return innateSkillFunction == null ? null : innateSkillFunction.apply(itemstack, playerpatch);
+        CapabilityItem delegatedCapability = this.getWeapon(playerpatch);
+        if (delegatedCapability != null) {
+            Skill skill = delegatedCapability.getInnateSkill(playerpatch, itemstack);
+            if (skill != null) {
+                return skill;
+            }
+        }
+
+        Function<ItemStack, Skill> innateProvider = this.innateSkill.getOrDefault(this.styleProvider.apply(playerpatch), this.innateSkill.get(Styles.COMMON));
+        return innateProvider == null ? null : innateProvider.apply(itemstack);
     }
 
     public WeaponCategory getWeaponCategory(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
-        ModifierProfile modifierProfile = this.getModifierProfile(entityPatch, hand);
-        if (modifierProfile != null && modifierProfile.weaponCategory() != null) {
+        ModifierProfile modifierProfile = this.getModifierProfile(entityPatch, hand, profile -> profile.weaponCategory() != null);
+        if (modifierProfile != null) {
             return modifierProfile.weaponCategory();
         }
-        return super.getWeaponCategory();
+
+        CapabilityItem weapon = this.getWeapon(entityPatch, hand);
+        if (weapon != null && weapon.getWeaponCategory() != WeaponCategories.FIST) {
+            return weapon.getWeaponCategory();
+        }
+
+        return this.getWeaponCategory();
     }
 
     @Override
     public Collider getWeaponCollider() {
-        return super.getWeaponCollider();
+        return this.collider;
     }
 
     public Collider getWeaponCollider(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
         Collider collider = null;
-        ToolStack toolStack = getToolStack(entityPatch, hand);
-        if (toolStack != null) {
-            for (ModifierProfile modifierProfile : this.modifierProfiles) {
-                ModifierId modifierId = modifierProfile.modifierId();
-                int level = toolStack.getModifierLevel(modifierId);
-                if (level > 0 && modifierProfile.collider() != null) {
-                    collider = modifierProfile.collider().apply(toolStack);
-                }
-            }
+        ToolStack tool = this.getToolStack(entityPatch, hand);
+        ModifierProfile modifierProfile = this.getModifierProfile(entityPatch, hand, profile -> profile.collider() != null
+                && profile.collider().apply(tool) != null);
+        if (modifierProfile != null) {
+            collider = modifierProfile.collider().apply(tool);
         }
 
         // fallback to non-context method
@@ -218,49 +211,59 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> getLivingMotionModifier(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
-        CombatProfile set = getCurrentCP(entityPatch);
+        CapabilityItem delegatedCapability = this.getWeapon(entityPatch);
+        if (delegatedCapability != null) {
+            return delegatedCapability.getLivingMotionModifier(entityPatch, hand);
+        }
 
-        if (set == null) {
+        if (this.livingMotionModifiers == null) {
             return Collections.emptyMap();
         }
-        Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> result = new HashMap<>();
 
-        for (Map.Entry<LivingMotion, List<AnimationManager.AnimationAccessor<? extends StaticAnimation>>> entry : set.livingMotions().entrySet()) {
-            List<AnimationManager.AnimationAccessor<? extends StaticAnimation>> animations = entry.getValue();
-            if (animations != null && !animations.isEmpty()) {
-                result.put(entry.getKey(), animations.get(0));
-            }
+        Style currentStyle = this.styleProvider.apply(entityPatch);
+        Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> styleMotions = this.livingMotionModifiers.get(currentStyle);
+        Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> commonMotions = this.livingMotionModifiers.get(Styles.COMMON);
+
+        if (commonMotions == null || commonMotions.isEmpty()) {
+            return styleMotions != null ? styleMotions : Collections.emptyMap();
+        }
+        if (styleMotions == null || styleMotions.isEmpty()) {
+            return commonMotions;
         }
 
-        ToolStack toolStack = getToolStack(entityPatch, hand);
-        if (entityPatch.getOriginal().isCrouching() && result.containsKey(LivingMotions.BLOCK) && toolStack != null && toolStack.getModifierLevel(Objects.requireNonNull(THROWING_ID, "throwing id")) > 0) {
-            result.remove(LivingMotions.BLOCK);
-        }
-
+        Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> result = new HashMap<>(commonMotions);
+        result.putAll(styleMotions);
         return result;
     }
 
     @Override
     public boolean checkOffhandValid(LivingEntityPatch<?> entityPatch) {
-        return super.checkOffhandValid(entityPatch) || this.getCurrentCP(entityPatch).visibleOffhand();
+        CapabilityItem delegatedCapability = this.getWeapon(entityPatch);
+        if (delegatedCapability != null) {
+            return delegatedCapability.checkOffhandValid(entityPatch);
+        }
+        
+        return super.checkOffhandValid(entityPatch) || this.weaponCombinationPredicator.apply(entityPatch);
     }
 
     @Override
     public LivingMotion getLivingMotion(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
-        InteractionHand checkedHand = Objects.requireNonNull(hand, "hand");
-        CombatProfile set = getCurrentCP(entityPatch);
+        CapabilityItem delegatedCapability = this.getWeapon(entityPatch);
 
-        if (set != null && set.motionPredicate() != null && entityPatch instanceof PlayerPatch<?> playerPatch) {
-            LivingMotion motion = set.motionPredicate().apply(playerPatch, checkedHand);
+        if (delegatedCapability != null) {
+            LivingMotion motion = delegatedCapability.getLivingMotion(entityPatch, hand);
             if (motion != null) {
                 return motion;
             }
         }
 
+        LivingMotion motion = this.motionPredicator.apply(entityPatch, hand);
+        if (motion != null) {
+            return motion;
+        };
+
         if (!entityPatch.getOriginal().isUsingItem()) return null;
-
         if (entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.DRINK || entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.EAT || entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.BLOCK) return null;
-
         return LivingMotions.AIM;
     }
 
@@ -271,24 +274,25 @@ public class TCWeaponCapability extends CapabilityItem {
             return null;
         }
 
-        CombatProfile set = getCurrentCP(playerpatch);
-        if (set == null) {
-            return null;
+        CapabilityItem delegatedCapability = this.getWeapon(playerpatch);
+        if (delegatedCapability != null && delegatedCapability.getGuardMotion(skill, blockType, playerpatch) != null) {
+            return delegatedCapability.getGuardMotion(skill, blockType, playerpatch);
         }
 
-        List<AnimationManager.AnimationAccessor<? extends StaticAnimation>> motions = set.guardMotions().get(blockType);
-        if (motions == null || motions.isEmpty()) {
-            return null;
-        }
-
-        return motions.get(0);
+        Map<GuardSkill.BlockType, AnimationManager.AnimationAccessor<? extends StaticAnimation>> styleGuardMotions = this.guardMotions.get(this.styleProvider.apply(playerpatch));
+        return styleGuardMotions != null ? styleGuardMotions.get(blockType) : null;
     }
 
     @Override
     public UseAnim getUseAnimation(LivingEntityPatch<?> entityPatch) {
-        CombatProfile set = getCurrentCP(entityPatch);
+        CapabilityItem delegatedCap = this.getWeapon(entityPatch);
+        if (delegatedCap != null && delegatedCap.getUseAnimation(entityPatch) != UseAnim.NONE) {
+            return delegatedCap.getUseAnimation(entityPatch);
+        }
+
         ToolStack toolStack = getToolStack(entityPatch, null);
-        if (set != null && set.livingMotions().containsKey(LivingMotions.BLOCK) && toolStack != null && toolStack.getModifierLevel(Objects.requireNonNull(BLOCKING_ID, "blocking modifier id")) > 0) {
+        Style baseStyle = this.styleProvider.apply(entityPatch);
+        if (this.livingMotionModifiers.containsKey(baseStyle) && this.livingMotionModifiers.get(baseStyle).containsKey(LivingMotions.BLOCK) && toolStack != null && toolStack.getModifierLevel(BLOCKING_ID) > 0) {
             return UseAnim.BLOCK;
         }
         return UseAnim.NONE;
@@ -309,21 +313,18 @@ public class TCWeaponCapability extends CapabilityItem {
         return this.reach;
     }
 
+    @SuppressWarnings("removal")
     public Skill getPassiveSkill(PlayerPatch<?> playerPatch) {
-        CombatProfile set = getCurrentCP(playerPatch);
-        if (set != null) {
-            return set.passiveSkill();
+        CapabilityItem delegatedCap = this.getWeapon(playerPatch);
+        if (delegatedCap != null && delegatedCap.getPassiveSkill() != null) {
+            return delegatedCap.getPassiveSkill();
         }
-        return null;
+        return this.getPassiveSkill();
     }
 
     @SuppressWarnings("removal")
     public Skill getPassiveSkill() {
-        CombatProfile set = this.defaultWeaponSet;
-        if (set != null) {
-            return set.passiveSkill();
-        }
-        return null;
+        return this.passiveSkill;
     }
 
     @SuppressWarnings("null")
@@ -335,58 +336,22 @@ public class TCWeaponCapability extends CapabilityItem {
         return null;
     }
 
-    protected ModifierProfile getModifierProfile(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
+    protected ModifierProfile getModifierProfile(LivingEntityPatch<?> entityPatch, InteractionHand hand, Predicate<ModifierProfile> profilePredicate) {
         ToolStack toolStack = getToolStack(entityPatch, hand);
+        ModifierProfile foundProfile = null;
         if (toolStack != null) {
-            for (ModifierProfile modifierProfile : this.modifierProfiles) {
-                ModifierId modifierId = modifierProfile.modifierId();
-                if (modifierId == null || modifierProfile.weaponSets().isEmpty()) {
-                    continue;
-                }
-
-                int level = toolStack.getModifierLevel(modifierId);
-                if (level > 0) {
-                    return modifierProfile;
+            for (ModifierEntry entry : toolStack.getModifierList()) {
+                if (entry.getLevel() <= 0) continue;
+                ModifierProfile profile = ModifierProfileReloadListener.get(entry.getId());
+                if (profile != null && (foundProfile == null || profile.priority() > foundProfile.priority())) {
+                    if (profilePredicate.test(profile)) {
+                        foundProfile = profile;
+                    }
                 }
             }
         }
-        return null;
-    }
 
-    protected ModifierProfile getModifierProfile() {
-        return null;
-    }
-
-    protected void sortModifierProfiles() {
-        this.warnDuplicatePriorities();
-        this.modifierProfiles.sort((first, second) -> {
-            if (first.modifierId() == null && second.modifierId() == null) {
-                return 0;
-            }
-            if (first.modifierId() == null) {
-                return 1;
-            }
-            if (second.modifierId() == null) {
-                return -1;
-            }
-            return Integer.compare(second.priority(), first.priority());
-        });
-    }
-
-    protected void warnDuplicatePriorities() {
-        Map<Integer, List<ModifierProfile>> groupedByPriority = new HashMap<>();
-        for (ModifierProfile modifierProfile : this.modifierProfiles) {
-            groupedByPriority.computeIfAbsent(modifierProfile.priority(), key -> new ArrayList<>()).add(modifierProfile);
-        }
-
-        for (Map.Entry<Integer, List<ModifierProfile>> entry : groupedByPriority.entrySet()) {
-            List<ModifierProfile> profiles = entry.getValue();
-            if (profiles.size() < 2 || entry.getKey() == 0) { // priority 0 is used for special modifier profiles
-                continue;
-            }
-            String profileList = profiles.stream().map(profile -> String.valueOf(profile.modifierId())).collect(java.util.stream.Collectors.joining(", "));
-            com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat.LOGGER.warn("Duplicate TC modifier priority {} detected for profiles: {}", entry.getKey(), profileList);
-        }
+        return foundProfile;
     }
 
     public boolean canHoldInOffhandAlone() {
@@ -395,7 +360,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @SuppressWarnings("removal")
     public boolean availableOnHorse() {
-        return this.defaultWeaponSet != null && !this.defaultWeaponSet.mountAttackMotions().isEmpty();
+        return this.autoAttackMotions.containsKey(Styles.MOUNT);
     }
 
     public static Builder builder() {
@@ -409,15 +374,16 @@ public class TCWeaponCapability extends CapabilityItem {
         HitParticleType hitParticle;
         Map<Style, List<AnimationManager.AnimationAccessor<? extends AttackAnimation>>> autoAttackMotionMap;
         Map<Style, Function<ItemStack, Skill>> innateSkillByStyle;
+        Skill passiveSkill = null;
+        Map<Style, Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>>> livingMotionModifiers;
+        Function<LivingEntityPatch<?>, Boolean> weaponCombinationPredicator;
+        BiFunction<LivingEntityPatch<?>, InteractionHand, LivingMotion> motionPredicator;
+        Map<Style, Map<GuardSkill.BlockType, AnimationManager.AnimationAccessor<? extends StaticAnimation>>> guardMotions;
         Function<Style, Boolean> comboCancel;
         ComboCounterHandleEvent.ComboCounterHandler comboCounterHandler;
         boolean canBePlacedOffhand;
         CapabilityItem.ZoomInType zoomInType;
         float reach;
-
-        protected CombatProfile defaultWeaponSet;
-        protected List<ModifierProfile> modifierProfiles;
-        protected Map<Style, CombatProfile> weaponSets;
 
         Builder() {
             super();
@@ -428,18 +394,24 @@ public class TCWeaponCapability extends CapabilityItem {
             this.hitParticle = yesman.epicfight.particle.EpicFightParticles.HIT_BLADE.get();
             this.autoAttackMotionMap = new HashMap<>();
             this.innateSkillByStyle = new HashMap<>();
+            this.livingMotionModifiers = new HashMap<>();
+            this.livingMotionModifier(Styles.COMMON, LivingMotions.AIM, Animations.BIPED_JAVELIN_AIM);
+            this.livingMotionModifier(Styles.COMMON, LivingMotions.SHOT, Animations.BIPED_JAVELIN_THROW);
+            this.guardMotions = new HashMap<>();
+            this.weaponCombinationPredicator = (entitypatch) -> false;
+            this.motionPredicator = (patch, hand) -> null;
             this.canBePlacedOffhand = true;
             this.comboCancel = (style) -> true;
             this.comboCounterHandler = ComboCounterHandleEvent.ComboCounterHandler.DEFAULT_COMBO_HANDLER;
             this.zoomInType = CapabilityItem.ZoomInType.NONE;
             this.reach = 0.2F;
-
-            // TC defaults
-            this.modifierProfiles = new ArrayList<>();
-            this.weaponSets = new HashMap<>();
-            this.weaponSets.put(Styles.COMMON, CombatProfiles.fist().build());
-            this.modifierProfiles.addAll(ModifierProfiles.defaultModifierProfiles);
         }
+
+        public Builder innateSkill(Style style, Function<ItemStack, Skill> innateSkill) {
+            this.innateSkillByStyle.put(style, innateSkill);
+            return this;
+        }
+
 
         public Builder styleProvider(Function<LivingEntityPatch<?>, Style> styleProvider) {
             this.styleProvider = styleProvider;
@@ -492,21 +464,48 @@ public class TCWeaponCapability extends CapabilityItem {
             return this;
         }
 
-        public Builder defaultMoveSet(CombatProfile.CombatProfileBuilder weaponSet) {
-            this.defaultWeaponSet = weaponSet.build();
+        @SafeVarargs
+        public final Builder newStyleCombo(Style style, AnimationManager.AnimationAccessor<? extends AttackAnimation>... animation) {
+            this.autoAttackMotionMap.put(style, Lists.newArrayList(animation));
             return this;
         }
 
-        public Builder addWeaponSet(Styles style, CombatProfile.CombatProfileBuilder set) {
-            this.weaponSets.computeIfAbsent(style, (k) -> set.build());
-            return this;
-        }
+        public Builder livingMotionModifier(Style wieldStyle, LivingMotion livingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation> animation) {
+            if (AnimationManager.checkNull(animation)) {
+                EpicFightTinkerCompat.LOGGER.warn("Unable to put an empty animation to weapon capability builder: {}, {}", livingMotion.toString(), animation.toString());
+            } else {
+                if (this.livingMotionModifiers == null) {
+                    this.livingMotionModifiers = Maps.newHashMap();
+                }
 
-        public Builder addModifier(ModifierProfile modifierProfile) {
-            if (modifierProfile != null && !this.modifierProfiles.contains(modifierProfile)) {
-                this.modifierProfiles.add(modifierProfile);
+                if (!this.livingMotionModifiers.containsKey(wieldStyle)) {
+                    this.livingMotionModifiers.put(wieldStyle, Maps.newHashMap());
+                }
+
+                this.livingMotionModifiers.get(wieldStyle).put(livingMotion, animation);
             }
             return this;
         }
+
+        public Builder weaponCombinationPredicator(Function<LivingEntityPatch<?>, Boolean> predicator) {
+            this.weaponCombinationPredicator = predicator;
+            return this;
+        }
+
+        public Builder motionPredicator(BiFunction<LivingEntityPatch<?>, InteractionHand, LivingMotion> motionPredicate) {
+            this.motionPredicator = motionPredicate;
+            return this;
+        }
+
+        public Builder guardMotion(Style style, GuardSkill.BlockType blockType, AnimationManager.AnimationAccessor<? extends StaticAnimation> animation) {
+            this.guardMotions.computeIfAbsent(style, k -> new HashMap<>()).put(blockType, animation);
+            return this;
+        }
+
+        public Builder passiveSkill(Skill passiveSkill) {
+            this.passiveSkill = passiveSkill;
+            return this;
+        }
+
     }
 }
