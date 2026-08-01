@@ -1,5 +1,6 @@
 package com.minhhjjj.epicfighttinkercompat;
 
+import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfileReloadListener;
 import com.mojang.logging.LogUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackType;
@@ -76,6 +77,7 @@ public class EpicFightTinkerCompat
         MaterialRegistry.getInstance().registerStatType(EpicFightBootsStats.TYPE);
         MaterialRegistry.getInstance().registerStatType(EpicFightMailleStats.TYPE);
 
+
     });
     }
 
@@ -96,6 +98,7 @@ public class EpicFightTinkerCompat
     public void onAddReloadListeners(AddReloadListenerEvent event)
     {
         event.addListener(new EpicFightCacheReloadListener());
+        event.addListener(new ModifierProfileReloadListener());
     }
 
     private static class EpicFightCacheReloadListener extends SimplePreparableReloadListener<Void> {
