@@ -62,7 +62,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
     private static final ModifierId BLOCKING_ID = new ModifierId(TConstruct.MOD_ID, "blocking");
 
-    private final Map<ResourceLocation, CapabilityItem> weaponCache = new ConcurrentHashMap<>();
+    private static final Map<Pair<ResourceLocation, Item>, CapabilityItem> WEAPONS_CACHE = new ConcurrentHashMap<>();
 
     protected TCWeaponCapability(CapabilityItem.Builder builder) {
         super(builder);
@@ -108,12 +108,13 @@ public class TCWeaponCapability extends CapabilityItem {
         if (modifierProfile != null) {
             ResourceLocation rl = modifierProfile.weaponType();
             Item item = this.getToolStack().getItem();
-            if (weaponCache.containsKey(rl)) {
-                weapon = weaponCache.get(rl);
+            Pair<ResourceLocation, Item> key = Pair.of(rl, item);
+            if (WEAPONS_CACHE.containsKey(key)) {
+                weapon = WEAPONS_CACHE.get(key);
             } else {
                 Function<Item, CapabilityItem.Builder> func = WeaponTypeReloadListener.get(rl);
                 weapon = func.apply(item).build();
-                weaponCache.put(rl, weapon);
+                WEAPONS_CACHE.put(key, weapon);
             }
         }
         return weapon;
