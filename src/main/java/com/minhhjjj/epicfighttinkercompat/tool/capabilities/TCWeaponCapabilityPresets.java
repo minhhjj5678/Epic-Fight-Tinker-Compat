@@ -6,10 +6,8 @@ import com.minhhjjj.epicfighttinkercompat.compat.p1nerobow.EFBowAnimations;
 import com.minhhjjj.epicfighttinkercompat.gameasset.EFTAnimations;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.fml.ModList;
-import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.ColliderPreset;
@@ -17,7 +15,6 @@ import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.skill.SkillSlots;
-import yesman.epicfight.skill.guard.GuardSkill;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
@@ -26,7 +23,6 @@ import yesman.epicfight.world.capabilities.item.CapabilityItem.WeaponCategories;
 import yesman.epicfight.api.collider.MultiOBBCollider;
 import yesman.epicfight.api.collider.Collider;
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
-import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfiles;
 
 public class TCWeaponCapabilityPresets {
 	public static final Collider SLEDGE_HAMMER = ColliderPreset.registerCollider(ResourceLocation.fromNamespaceAndPath(EpicFightTinkerCompat.MODID, "sledge_hammer"), new MultiOBBCollider(3, 0.6D, 0.6D, 0.5D, 0D, 0D, -1.5D));
@@ -64,7 +60,7 @@ public class TCWeaponCapabilityPresets {
 			.canBePlacedOffhand(true)
 			.reach(1.0F)
 			.styleProvider((patch) -> {
-				if (TCWeaponUtils.getDynamicProperty(patch, patch.getHoldingItemCapability(InteractionHand.OFF_HAND), InteractionHand.OFF_HAND, CapabilityItem::getWeaponCategory, TCWeaponCapability::getWeaponCategory) == WeaponCategories.SWORD) {
+				if (patch.getHoldingItemCapability(InteractionHand.OFF_HAND).getWeaponCategory() == WeaponCategories.SWORD) {
 					return Styles.TWO_HAND;
 				}
 				return Styles.ONE_HAND;
@@ -85,7 +81,7 @@ public class TCWeaponCapabilityPresets {
 			.livingMotionModifier(Styles.TWO_HAND, LivingMotions.SWIM, Animations.BIPED_HOLD_DUAL_WEAPON)
 			.livingMotionModifier(Styles.TWO_HAND, LivingMotions.FLOAT, Animations.BIPED_HOLD_DUAL_WEAPON)
 			.livingMotionModifier(Styles.TWO_HAND, LivingMotions.FALL, Animations.BIPED_HOLD_DUAL_WEAPON)
-			.weaponCombinationPredicator((entitypatch) -> EpicFightCapabilities.getItemStackCapability(entitypatch.getOriginal().getOffhandItem()).getWeaponCategory() == WeaponCategories.SWORD);
+			.weaponCombinationPredicator((entitypatch) -> entitypatch.getHoldingItemCapability(InteractionHand.OFF_HAND).getWeaponCategory() == WeaponCategories.SWORD);
 
 	public static final Function<Item, CapabilityItem.Builder> TC_AXE = (item) -> TCWeaponCapability.builder()
 			.category(WeaponCategories.AXE)
@@ -121,7 +117,7 @@ public class TCWeaponCapabilityPresets {
 			.hitParticle(EpicFightParticles.HIT_BLADE.get())
 			.canBePlacedOffhand(true)
 			.reach(1.0F)
-			.styleProvider((patch) -> TCWeaponUtils.getDynamicProperty(patch, patch.getHoldingItemCapability(InteractionHand.OFF_HAND), InteractionHand.OFF_HAND, CapabilityItem::getWeaponCategory, TCWeaponCapability::getWeaponCategory) == WeaponCategories.DAGGER ? Styles.TWO_HAND : Styles.ONE_HAND)
+			.styleProvider((patch) -> patch.getHoldingItemCapability(InteractionHand.OFF_HAND).getWeaponCategory() == WeaponCategories.DAGGER ? Styles.TWO_HAND : Styles.ONE_HAND)
 			.weaponCombinationPredicator((entitypatch) -> EpicFightCapabilities.getItemStackCapability(entitypatch.getOriginal().getOffhandItem()).getWeaponCategory() == WeaponCategories.DAGGER)
 			.newStyleCombo(Styles.ONE_HAND, Animations.DAGGER_AUTO1, Animations.DAGGER_AUTO2, Animations.DAGGER_AUTO3, Animations.DAGGER_DASH, Animations.DAGGER_AIR_SLASH)
 			.newStyleCombo(Styles.TWO_HAND, Animations.DAGGER_DUAL_AUTO1, Animations.DAGGER_DUAL_AUTO2, Animations.DAGGER_DUAL_AUTO3, Animations.DAGGER_DUAL_AUTO4, Animations.DAGGER_DUAL_DASH, Animations.DAGGER_DUAL_AIR_SLASH)
@@ -203,7 +199,7 @@ public class TCWeaponCapabilityPresets {
 			.hitParticle(EpicFightParticles.HIT_BLADE.get())
 			.zoomInType(CapabilityItem.ZoomInType.USE_TICK)
 			.reach(1.0F)
-			.styleProvider((playerpatch) -> (TCWeaponUtils.getDynamicProperty(playerpatch, playerpatch.getHoldingItemCapability(InteractionHand.OFF_HAND), InteractionHand.OFF_HAND, CapabilityItem::getWeaponCategory, TCWeaponCapability::getWeaponCategory) == WeaponCategories.SHIELD) ? Styles.ONE_HAND : Styles.TWO_HAND)
+			.styleProvider((playerpatch) -> playerpatch.getHoldingItemCapability(InteractionHand.OFF_HAND).getWeaponCategory() == WeaponCategories.SHIELD ? Styles.ONE_HAND : Styles.TWO_HAND)
 			.newStyleCombo(Styles.ONE_HAND, Animations.SPEAR_ONEHAND_AUTO, Animations.SPEAR_DASH, Animations.SPEAR_ONEHAND_AIR_SLASH)
 			.newStyleCombo(Styles.TWO_HAND, Animations.SPEAR_TWOHAND_AUTO1, Animations.SPEAR_TWOHAND_AUTO2, Animations.SPEAR_DASH, Animations.SPEAR_TWOHAND_AIR_SLASH)
 			.newStyleCombo(Styles.MOUNT, Animations.SPEAR_MOUNT_ATTACK)
@@ -308,7 +304,7 @@ public class TCWeaponCapabilityPresets {
 			.reach(1.0F)
 			.zoomInType(CapabilityItem.ZoomInType.USE_TICK)
 			.styleProvider((patch) -> {
-				if (TCWeaponUtils.getDynamicProperty(patch, patch.getHoldingItemCapability(InteractionHand.OFF_HAND), InteractionHand.OFF_HAND, CapabilityItem::getWeaponCategory, TCWeaponCapability::getWeaponCategory) == WeaponCategories.SHIELD) {
+				if (patch.getHoldingItemCapability(InteractionHand.OFF_HAND).getWeaponCategory() == WeaponCategories.SHIELD) {
 					return Styles.ONE_HAND;
 				}
 				if (patch instanceof PlayerPatch<?> playerPatch && playerPatch.getSkill(SkillSlots.WEAPON_INNATE).isActivated()) {

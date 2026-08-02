@@ -18,7 +18,6 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.UseAnim;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
@@ -33,6 +32,7 @@ import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.skill.Skill;
+import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.skill.guard.GuardSkill;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
@@ -59,6 +59,8 @@ public class TCWeaponCapability extends CapabilityItem {
     protected final ComboCounterHandleEvent.ComboCounterHandler comboCounterHandler;
     protected final CapabilityItem.ZoomInType zoomInType;
     protected final float reach;
+    protected final ToolStack tool;
+
     private static final ModifierId BLOCKING_ID = new ModifierId(TConstruct.MOD_ID, "blocking");
 
     private final Map<ResourceLocation, CapabilityItem> weaponCache = new ConcurrentHashMap<>();
@@ -70,8 +72,6 @@ public class TCWeaponCapability extends CapabilityItem {
         this.styleProvider = tcBuilder.styleProvider;
         this.motionPredicator = tcBuilder.motionPredicator;
         this.guardMotions = tcBuilder.guardMotions;
-
-        // assign copied weapon-capability fields
         this.autoAttackMotions = tcBuilder.autoAttackMotionMap;
         this.innateSkill = tcBuilder.innateSkillByStyle;
         this.passiveSkill = tcBuilder.passiveSkill;
@@ -85,10 +85,11 @@ public class TCWeaponCapability extends CapabilityItem {
         this.comboCounterHandler = tcBuilder.comboCounterHandler;
         this.zoomInType = tcBuilder.zoomInType;
         this.reach = tcBuilder.reach;
+        this.tool = tcBuilder.tool;
     }
 
     public Style getStyle(LivingEntityPatch<?> patch) {
-        CapabilityItem weapon = this.getWeapon(patch);
+        CapabilityItem weapon = this.getWeapon();
         if (weapon != null) {
             Style weaponStyle = weapon.getStyle(patch);
             if (weaponStyle != Styles.COMMON) {
@@ -103,22 +104,18 @@ public class TCWeaponCapability extends CapabilityItem {
         return Styles.COMMON;
     }
 
-    public CapabilityItem getWeapon(LivingEntityPatch<?> patch) {
-        return this.getWeapon(patch, InteractionHand.MAIN_HAND);
-    }
-
-    public CapabilityItem getWeapon(LivingEntityPatch<?> patch, InteractionHand hand) {
+    public CapabilityItem getWeapon() {
         CapabilityItem weapon = null;
-        ModifierProfile modifierProfile = this.getModifierProfile(patch, hand, profile -> profile.weaponType() != null);
+        ModifierProfile modifierProfile = this.getModifierProfile(profile -> profile.weaponType() != null);
         if (modifierProfile != null) {
             ResourceLocation rl = modifierProfile.weaponType();
-            Item dummy = Items.STICK;
+            Item item = this.getToolStack().getItem();
             if (weaponCache.containsKey(rl)) {
                 weapon = weaponCache.get(rl);
             } else {
                 Function<Item, CapabilityItem.Builder> func = WeaponTypeReloadListener.get(rl);
                 if (func != null) {
-                    weapon = func.apply(dummy).build();
+                    weapon = func.apply(item).build();
                     weaponCache.put(rl, weapon);
                 }
             }
@@ -128,7 +125,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public List<AnimationManager.AnimationAccessor<? extends AttackAnimation>> getAutoAttackMotion(PlayerPatch<?> playerpatch) {
-        CapabilityItem delegatedCapability = this.getWeapon(playerpatch);
+        CapabilityItem delegatedCapability = this.getWeapon();
         return delegatedCapability != null ? delegatedCapability.getAutoAttackMotion(playerpatch)
                 : this.autoAttackMotions.getOrDefault(this.styleProvider.apply(playerpatch), this.autoAttackMotions.get(Styles.COMMON));
     }
@@ -154,18 +151,13 @@ public class TCWeaponCapability extends CapabilityItem {
     }
 
     public Skill getInnateSkill(PlayerPatch<?> playerpatch, ItemStack itemstack) {
-        if (itemstack.getItem() instanceof IModifiable) {
-            ToolStack tool = ToolStack.from(itemstack);
-
-            ModifierProfile modifierProfile = this.getModifierProfile(playerpatch, InteractionHand.MAIN_HAND,
-                    profile -> profile.innateSkill() != null && profile.innateSkill().apply(tool, playerpatch) != null);
-
-            if (modifierProfile != null) {
-                return modifierProfile.innateSkill().apply(tool, playerpatch);
-            }
+        ToolStack tool = this.getToolStack();
+        ModifierProfile modifierProfile = this.getModifierProfile(profile -> profile.innateSkill() != null && profile.innateSkill().apply(tool, playerpatch) != null);
+        if (modifierProfile != null) {
+            return modifierProfile.innateSkill().apply(tool, playerpatch);
         }
 
-        CapabilityItem delegatedCapability = this.getWeapon(playerpatch);
+        CapabilityItem delegatedCapability = this.getWeapon();
         if (delegatedCapability != null) {
             Skill skill = delegatedCapability.getInnateSkill(playerpatch, itemstack);
             if (skill != null) {
@@ -177,41 +169,36 @@ public class TCWeaponCapability extends CapabilityItem {
         return innateProvider == null ? null : innateProvider.apply(itemstack);
     }
 
-    public WeaponCategory getWeaponCategory(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
-        ModifierProfile modifierProfile = this.getModifierProfile(entityPatch, hand, profile -> profile.weaponCategory() != null);
+    @Override
+    public WeaponCategory getWeaponCategory() {
+        ModifierProfile modifierProfile = this.getModifierProfile(profile -> profile.weaponCategory() != null);
         if (modifierProfile != null) {
             return modifierProfile.weaponCategory();
         }
 
-        CapabilityItem weapon = this.getWeapon(entityPatch, hand);
+        CapabilityItem weapon = this.getWeapon();
         if (weapon != null && weapon.getWeaponCategory() != WeaponCategories.FIST) {
             return weapon.getWeaponCategory();
         }
 
-        return this.getWeaponCategory();
+        return this.weaponCategory;
     }
 
     @Override
     public Collider getWeaponCollider() {
-        return this.collider;
-    }
-
-    public Collider getWeaponCollider(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
-        Collider collider = null;
-        ToolStack tool = this.getToolStack(entityPatch, hand);
-        ModifierProfile modifierProfile = this.getModifierProfile(entityPatch, hand, profile -> profile.collider() != null
-                && profile.collider().apply(tool) != null);
+        Collider collider = this.collider;
+        ToolStack tool = this.getToolStack();
+        ModifierProfile modifierProfile = this.getModifierProfile(profile -> profile.collider() != null && profile.collider().apply(tool) != null);
         if (modifierProfile != null) {
             collider = modifierProfile.collider().apply(tool);
         }
 
-        // fallback to non-context method
-        return collider != null ? collider : getWeaponCollider();
+        return collider;
     }
 
     @Override
     public Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> getLivingMotionModifier(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
-        CapabilityItem delegatedCapability = this.getWeapon(entityPatch);
+        CapabilityItem delegatedCapability = this.getWeapon();
         if (delegatedCapability != null) {
             return delegatedCapability.getLivingMotionModifier(entityPatch, hand);
         }
@@ -238,7 +225,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public boolean checkOffhandValid(LivingEntityPatch<?> entityPatch) {
-        CapabilityItem delegatedCapability = this.getWeapon(entityPatch);
+        CapabilityItem delegatedCapability = this.getWeapon();
         if (delegatedCapability != null) {
             return delegatedCapability.checkOffhandValid(entityPatch);
         }
@@ -248,7 +235,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public LivingMotion getLivingMotion(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
-        CapabilityItem delegatedCapability = this.getWeapon(entityPatch);
+        CapabilityItem delegatedCapability = this.getWeapon();
 
         if (delegatedCapability != null) {
             LivingMotion motion = delegatedCapability.getLivingMotion(entityPatch, hand);
@@ -260,21 +247,26 @@ public class TCWeaponCapability extends CapabilityItem {
         LivingMotion motion = this.motionPredicator.apply(entityPatch, hand);
         if (motion != null) {
             return motion;
-        };
+        }
 
         if (!entityPatch.getOriginal().isUsingItem()) return null;
-        if (entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.DRINK || entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.EAT || entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.BLOCK) return null;
+        if (entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.DRINK || entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.EAT) return null;
+        if (entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.BLOCK && entityPatch instanceof PlayerPatch<?> playerPatch) {
+            if (!playerPatch.getSkill(SkillSlots.GUARD).isEmpty() && !playerPatch.getOriginal().isCrouching()) {
+                return null;
+            }
+        }
         return LivingMotions.AIM;
     }
 
     @Override
     public AnimationManager.AnimationAccessor<? extends StaticAnimation> getGuardMotion(GuardSkill skill, GuardSkill.BlockType blockType, PlayerPatch<?> playerpatch) {
-        ToolStack toolStack = getToolStack(playerpatch, null);
+        ToolStack toolStack = getToolStack();
         if (toolStack == null || toolStack.getModifierLevel(Objects.requireNonNull(BLOCKING_ID, "blocking modifier id")) <= 0) {
             return null;
         }
 
-        CapabilityItem delegatedCapability = this.getWeapon(playerpatch);
+        CapabilityItem delegatedCapability = this.getWeapon();
         if (delegatedCapability != null && delegatedCapability.getGuardMotion(skill, blockType, playerpatch) != null) {
             return delegatedCapability.getGuardMotion(skill, blockType, playerpatch);
         }
@@ -285,12 +277,12 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public UseAnim getUseAnimation(LivingEntityPatch<?> entityPatch) {
-        CapabilityItem delegatedCap = this.getWeapon(entityPatch);
+        CapabilityItem delegatedCap = this.getWeapon();
         if (delegatedCap != null && delegatedCap.getUseAnimation(entityPatch) != UseAnim.NONE) {
             return delegatedCap.getUseAnimation(entityPatch);
         }
 
-        ToolStack toolStack = getToolStack(entityPatch, null);
+        ToolStack toolStack = getToolStack();
         Style baseStyle = this.styleProvider.apply(entityPatch);
         if (this.livingMotionModifiers.containsKey(baseStyle) && this.livingMotionModifiers.get(baseStyle).containsKey(LivingMotions.BLOCK) && toolStack != null && toolStack.getModifierLevel(BLOCKING_ID) > 0) {
             return UseAnim.BLOCK;
@@ -314,30 +306,20 @@ public class TCWeaponCapability extends CapabilityItem {
     }
 
     @SuppressWarnings("removal")
-    public Skill getPassiveSkill(PlayerPatch<?> playerPatch) {
-        CapabilityItem delegatedCap = this.getWeapon(playerPatch);
+    public Skill getPassiveSkill() {
+        CapabilityItem delegatedCap = this.getWeapon();
         if (delegatedCap != null && delegatedCap.getPassiveSkill() != null) {
             return delegatedCap.getPassiveSkill();
         }
-        return this.getPassiveSkill();
-    }
-
-    @SuppressWarnings("removal")
-    public Skill getPassiveSkill() {
         return this.passiveSkill;
     }
 
-    @SuppressWarnings("null")
-    public ToolStack getToolStack(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
-        if (entityPatch != null) {
-            ItemStack itemStack = entityPatch.getOriginal().getItemInHand(hand != null ? hand : InteractionHand.MAIN_HAND);
-            return itemStack.isEmpty() ? null : ToolStack.from(itemStack);
-        }
-        return null;
+    public ToolStack getToolStack() {
+        return this.tool;
     }
 
-    protected ModifierProfile getModifierProfile(LivingEntityPatch<?> entityPatch, InteractionHand hand, Predicate<ModifierProfile> profilePredicate) {
-        ToolStack toolStack = getToolStack(entityPatch, hand);
+    public ModifierProfile getModifierProfile(Predicate<ModifierProfile> profilePredicate) {
+        ToolStack toolStack = getToolStack();
         ModifierProfile foundProfile = null;
         if (toolStack != null) {
             for (ModifierEntry entry : toolStack.getModifierList()) {
@@ -384,6 +366,7 @@ public class TCWeaponCapability extends CapabilityItem {
         boolean canBePlacedOffhand;
         CapabilityItem.ZoomInType zoomInType;
         float reach;
+        ToolStack tool;
 
         Builder() {
             super();
@@ -405,6 +388,7 @@ public class TCWeaponCapability extends CapabilityItem {
             this.comboCounterHandler = ComboCounterHandleEvent.ComboCounterHandler.DEFAULT_COMBO_HANDLER;
             this.zoomInType = CapabilityItem.ZoomInType.NONE;
             this.reach = 0.2F;
+            this.tool = null;
         }
 
         public Builder innateSkill(Style style, Function<ItemStack, Skill> innateSkill) {
@@ -504,6 +488,13 @@ public class TCWeaponCapability extends CapabilityItem {
 
         public Builder passiveSkill(Skill passiveSkill) {
             this.passiveSkill = passiveSkill;
+            return this;
+        }
+
+        public Builder tool(ItemStack stack) {
+            if (stack.getItem() instanceof IModifiable) {
+                this.tool = ToolStack.from(stack);
+            }
             return this;
         }
 

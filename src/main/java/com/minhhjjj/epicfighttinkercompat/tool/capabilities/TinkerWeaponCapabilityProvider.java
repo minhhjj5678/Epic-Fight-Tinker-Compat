@@ -5,6 +5,9 @@ import com.minhhjjj.epicfighttinkercompat.stats.EpicFightToolStats;
 import com.minhhjjj.epicfighttinkercompat.tool.EpicFightArmorStatsHelper;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import yesman.epicfight.api.forgeevent.WeaponCapabilityPresetRegistryEvent;
 import yesman.epicfight.world.capabilities.item.ArmorCapability;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.Styles;
 
@@ -29,48 +32,49 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
+@Mod.EventBusSubscriber(modid = EpicFightTinkerCompat.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
     private final LazyOptional<CapabilityItem> optionalCapability;
     public static final ResourceLocation EPIC_CAP_ID = ResourceLocation.fromNamespaceAndPath(EpicFightTinkerCompat.MODID, "weapon_cap");
-    private static final Map<String, Function<Item, CapabilityItem.Builder>> WEAPON_CAPABILITY_PRESETS;
+    private static final Map<ResourceLocation, Function<Item, CapabilityItem.Builder>> WEAPON_CAPABILITY_PRESETS;
 
     static {
-        Map<String, Function<Item, CapabilityItem.Builder>> presets = new HashMap<>();
-        presets.put("cleaver", TCWeaponCapabilityPresets.CLEAVER);
-        presets.put("vein_hammer", TCWeaponCapabilityPresets.TC_SWORD);
-        presets.put("javelin", TCWeaponCapabilityPresets.JAVELIN);
-        presets.put("sword", TCWeaponCapabilityPresets.TC_SWORD);
-        presets.put("battlesign", TCWeaponCapabilityPresets.TC_SWORD);
-        presets.put("sledge_hammer", TCWeaponCapabilityPresets.TC_SLEDGE_HAMMER);
-        presets.put("hand_axe", TCWeaponCapabilityPresets.TC_AXE);
-        presets.put("broad_axe", TCWeaponCapabilityPresets.TC_AXE);
-        presets.put("scythe", TCWeaponCapabilityPresets.SCYTHE);
-        presets.put("dagger", TCWeaponCapabilityPresets.TC_DAGGER);
-        presets.put("sky_staff", TCWeaponCapabilityPresets.STAFF);
-        presets.put("earth_staff", TCWeaponCapabilityPresets.STAFF);
-        presets.put("ender_staff", TCWeaponCapabilityPresets.STAFF);
-        presets.put("ichor_staff", TCWeaponCapabilityPresets.STAFF);
-        presets.put("melting_pan", TCWeaponCapabilityPresets.STAFF);
-        presets.put("longbow", TCWeaponCapabilityPresets.LONGBOW);
-        presets.put("crossbow", TinkerCrossbowCapability.TCROSSBOW);
-        presets.put("pickaxe", TCWeaponCapabilityPresets.TC_PICKAXE);
-        presets.put("pickadze", TCWeaponCapabilityPresets.TC_PICKAXE);
-        presets.put("war_pick", TCWeaponCapabilityPresets.TC_PICKAXE);
-        presets.put("shovel", TCWeaponCapabilityPresets.TC_PICKAXE);
-        presets.put("excavator", TCWeaponCapabilityPresets.TC_PICKAXE);
-        presets.put("hoe", TCWeaponCapabilityPresets.TC_PICKAXE);
-        presets.put("kama", TCWeaponCapabilityPresets.TC_PICKAXE);
-        presets.put("mattock", TCWeaponCapabilityPresets.TC_PICKAXE);
-        presets.put("plate_shield", TCWeaponCapabilityPresets.TC_SHIELD);
-        presets.put("travelers_shield", TCWeaponCapabilityPresets.TC_SHIELD);
-        presets.put("swasher", TCWeaponCapabilityPresets.SWASHER);
-        presets.put("fishing_rod", TCWeaponCapabilityPresets.TC_SWORD);
-        presets.put("katana", TCWeaponCapabilityPresets.KATANA);
-        presets.put("fuma_shuriken", TCWeaponCapabilityPresets.FUMA_SHURIKEN);
-        presets.put("shuriken", TCWeaponCapabilityPresets.SHURIKEN);
-        presets.put("throwing_axe", TCWeaponCapabilityPresets.SHURIKEN);
-        presets.put("battlestaff", TCWeaponCapabilityPresets.BATTLE_STAFF);
-        presets.put("flamberge", TCWeaponCapabilityPresets.FLAMBERGE);
+        Map<ResourceLocation, Function<Item, CapabilityItem.Builder>> presets = new HashMap<>();
+        presets.put(rl("cleaver"), TCWeaponCapabilityPresets.CLEAVER);
+        presets.put(rl("vein_hammer"), TCWeaponCapabilityPresets.TC_SWORD);
+        presets.put(rl("javelin"), TCWeaponCapabilityPresets.JAVELIN);
+        presets.put(rl("sword"), TCWeaponCapabilityPresets.TC_SWORD);
+        presets.put(rl("battlesign"), TCWeaponCapabilityPresets.TC_SWORD);
+        presets.put(rl("sledge_hammer"), TCWeaponCapabilityPresets.TC_SLEDGE_HAMMER);
+        presets.put(rl("hand_axe"), TCWeaponCapabilityPresets.TC_AXE);
+        presets.put(rl("broad_axe"), TCWeaponCapabilityPresets.TC_AXE);
+        presets.put(rl("scythe"), TCWeaponCapabilityPresets.SCYTHE);
+        presets.put(rl("dagger"), TCWeaponCapabilityPresets.TC_DAGGER);
+        presets.put(rl("sky_staff"), TCWeaponCapabilityPresets.STAFF);
+        presets.put(rl("earth_staff"), TCWeaponCapabilityPresets.STAFF);
+        presets.put(rl("ender_staff"), TCWeaponCapabilityPresets.STAFF);
+        presets.put(rl("ichor_staff"), TCWeaponCapabilityPresets.STAFF);
+        presets.put(rl("melting_pan"), TCWeaponCapabilityPresets.STAFF);
+        presets.put(rl("longbow"), TCWeaponCapabilityPresets.LONGBOW);
+        presets.put(rl("crossbow"), TinkerCrossbowCapability.TCROSSBOW);
+        presets.put(rl("pickaxe"), TCWeaponCapabilityPresets.TC_PICKAXE);
+        presets.put(rl("pickadze"), TCWeaponCapabilityPresets.TC_PICKAXE);
+        presets.put(rl("war_pick"), TCWeaponCapabilityPresets.TC_PICKAXE);
+        presets.put(rl("shovel"), TCWeaponCapabilityPresets.TC_PICKAXE);
+        presets.put(rl("excavator"), TCWeaponCapabilityPresets.TC_PICKAXE);
+        presets.put(rl("hoe"), TCWeaponCapabilityPresets.TC_PICKAXE);
+        presets.put(rl("kama"), TCWeaponCapabilityPresets.TC_PICKAXE);
+        presets.put(rl("mattock"), TCWeaponCapabilityPresets.TC_PICKAXE);
+        presets.put(rl("plate_shield"), TCWeaponCapabilityPresets.TC_SHIELD);
+        presets.put(rl("travelers_shield"), TCWeaponCapabilityPresets.TC_SHIELD);
+        presets.put(rl("swasher"), TCWeaponCapabilityPresets.SWASHER);
+        presets.put(rl("fishing_rod"), TCWeaponCapabilityPresets.TC_SWORD);
+        presets.put(rl("katana"), TCWeaponCapabilityPresets.KATANA);
+        presets.put(rl("fuma_shuriken"), TCWeaponCapabilityPresets.FUMA_SHURIKEN);
+        presets.put(rl("shuriken"), TCWeaponCapabilityPresets.SHURIKEN);
+        presets.put(rl("throwing_axe"), TCWeaponCapabilityPresets.SHURIKEN);
+        presets.put(rl("battlestaff"), TCWeaponCapabilityPresets.BATTLE_STAFF);
+        presets.put(rl("flamberge"), TCWeaponCapabilityPresets.FLAMBERGE);
         WEAPON_CAPABILITY_PRESETS = Map.copyOf(presets);
     }
 
@@ -99,9 +103,12 @@ public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
                 .stunArmor(stunArmor);
         }
         else {
-            Function<Item, CapabilityItem.Builder> preset = WEAPON_CAPABILITY_PRESETS.getOrDefault(weaponType, TCWeaponCapabilityPresets.UNKNOWN);
+            Function<Item, CapabilityItem.Builder> preset = WEAPON_CAPABILITY_PRESETS.getOrDefault(rl(weaponType), TCWeaponCapabilityPresets.UNKNOWN);
             if (preset != null) {
                 builder = preset.apply(tool.getItem());
+                if (builder instanceof TCWeaponCapability.Builder tcBuilder) {
+                    tcBuilder.tool(stack);
+                }
             }
         }
 
@@ -145,5 +152,14 @@ public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
             return optionalCapability.cast();
         }
         return LazyOptional.empty();
+    }
+
+    private static ResourceLocation rl(String path) {
+        return ResourceLocation.fromNamespaceAndPath(EpicFightTinkerCompat.MODID, path);
+    }
+
+    @SubscribeEvent
+    public static void register(WeaponCapabilityPresetRegistryEvent event) {
+        event.getTypeEntry().putAll(WEAPON_CAPABILITY_PRESETS);
     }
 }
