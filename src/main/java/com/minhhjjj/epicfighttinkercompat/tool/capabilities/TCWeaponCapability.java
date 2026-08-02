@@ -41,7 +41,6 @@ import net.minecraft.sounds.SoundEvent;
 import yesman.epicfight.particle.HitParticleType;
 import yesman.epicfight.world.entity.eventlistener.ComboCounterHandleEvent;
 
-
 public class TCWeaponCapability extends CapabilityItem {
     protected Function<LivingEntityPatch<?>, Style> styleProvider;
     protected BiFunction<LivingEntityPatch<?>, InteractionHand, LivingMotion> motionPredicator;
@@ -64,7 +63,6 @@ public class TCWeaponCapability extends CapabilityItem {
     private static final ModifierId BLOCKING_ID = new ModifierId(TConstruct.MOD_ID, "blocking");
 
     private final Map<ResourceLocation, CapabilityItem> weaponCache = new ConcurrentHashMap<>();
-
 
     protected TCWeaponCapability(CapabilityItem.Builder builder) {
         super(builder);
@@ -132,21 +130,29 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public SoundEvent getSmashingSound() {
+        CapabilityItem delegatedCap = this.getWeapon();
+        if (delegatedCap != null) return delegatedCap.getSmashingSound();
         return this.smashingSound == null ? super.getSmashingSound() : this.smashingSound;
     }
 
     @Override
     public SoundEvent getHitSound() {
+        CapabilityItem delegatedCap = this.getWeapon();
+        if (delegatedCap != null) return delegatedCap.getHitSound();
         return this.hitSound == null ? super.getHitSound() : this.hitSound;
     }
 
     @Override
     public HitParticleType getHitParticle() {
+        CapabilityItem delegatedCap = this.getWeapon();
+        if (delegatedCap != null) return delegatedCap.getHitParticle();
         return this.hitParticle == null ? super.getHitParticle() : this.hitParticle;
     }
 
     @SuppressWarnings("removal")
     public List<AnimationManager.AnimationAccessor<? extends AttackAnimation>> getMountAttackMotion() {
+        CapabilityItem delegatedCap = this.getWeapon();
+        if (delegatedCap != null) return delegatedCap.getMountAttackMotion();
         return this.autoAttackMotions.get(Styles.MOUNT);
     }
 
@@ -186,14 +192,18 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public Collider getWeaponCollider() {
-        Collider collider = this.collider;
         ToolStack tool = this.getToolStack();
         ModifierProfile modifierProfile = this.getModifierProfile(profile -> profile.collider() != null && profile.collider().apply(tool) != null);
         if (modifierProfile != null) {
-            collider = modifierProfile.collider().apply(tool);
+            return modifierProfile.collider().apply(tool);
         }
 
-        return collider;
+        CapabilityItem delegatedCap = this.getWeapon();
+        if (delegatedCap != null) {
+            return delegatedCap.getWeaponCollider();
+        }
+
+        return this.collider;
     }
 
     @Override
@@ -229,7 +239,7 @@ public class TCWeaponCapability extends CapabilityItem {
         if (delegatedCapability != null) {
             return delegatedCapability.checkOffhandValid(entityPatch);
         }
-        
+
         return super.checkOffhandValid(entityPatch) || this.weaponCombinationPredicator.apply(entityPatch);
     }
 
@@ -292,16 +302,22 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public boolean canBePlacedOffhand() {
+        CapabilityItem delegatedCap = this.getWeapon();
+        if (delegatedCap != null) return delegatedCap.canBePlacedOffhand();
         return this.canBePlacedOffhand;
     }
 
     @Override
     public CapabilityItem.ZoomInType getZoomInType() {
+        CapabilityItem delegatedCap = this.getWeapon();
+        if (delegatedCap != null) return delegatedCap.getZoomInType();
         return this.zoomInType == ZoomInType.NONE ? ZoomInType.AIMING : this.zoomInType;
     }
 
     @Override
     public float getReach() {
+        CapabilityItem delegatedCap = this.getWeapon();
+        if (delegatedCap != null) return delegatedCap.getReach();
         return this.reach;
     }
 
@@ -337,11 +353,15 @@ public class TCWeaponCapability extends CapabilityItem {
     }
 
     public boolean canHoldInOffhandAlone() {
+        CapabilityItem delegatedCap = this.getWeapon();
+        if (delegatedCap != null) return delegatedCap.canHoldInOffhandAlone();
         return this.canBePlacedOffhand;
     }
 
     @SuppressWarnings("removal")
     public boolean availableOnHorse() {
+        CapabilityItem delegatedCap = this.getWeapon();
+        if (delegatedCap != null) return delegatedCap.availableOnHorse();
         return this.autoAttackMotions.containsKey(Styles.MOUNT);
     }
 
