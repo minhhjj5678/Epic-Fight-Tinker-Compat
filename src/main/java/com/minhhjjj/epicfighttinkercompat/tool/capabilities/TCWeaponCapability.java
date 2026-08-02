@@ -104,7 +104,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
     public CapabilityItem getWeapon() {
         CapabilityItem weapon = null;
-        ModifierProfile modifierProfile = this.getModifierProfile(profile -> profile.weaponType() != null);
+        ModifierProfile modifierProfile = this.getModifierProfile(profile -> profile.weaponType() != null && WeaponTypeReloadListener.get(profile.weaponType()) != null);
         if (modifierProfile != null) {
             ResourceLocation rl = modifierProfile.weaponType();
             Item item = this.getToolStack().getItem();
@@ -112,10 +112,8 @@ public class TCWeaponCapability extends CapabilityItem {
                 weapon = weaponCache.get(rl);
             } else {
                 Function<Item, CapabilityItem.Builder> func = WeaponTypeReloadListener.get(rl);
-                if (func != null) {
-                    weapon = func.apply(item).build();
-                    weaponCache.put(rl, weapon);
-                }
+                weapon = func.apply(item).build();
+                weaponCache.put(rl, weapon);
             }
         }
         return weapon;

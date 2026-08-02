@@ -14,6 +14,7 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoader;
 import org.jetbrains.annotations.NotNull;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
@@ -75,6 +76,9 @@ public class ModifierProfileReloadListener extends SimpleJsonResourceReloadListe
             ResourceLocation weaponType = ResourceLocation.tryParse(tag.getString("weapon_type"));
             if (weaponType != null) {
                 builder.type(weaponType);
+                if (!ModList.get().isLoaded(weaponType.getNamespace())) {
+                    EpicFightTinkerCompat.LOGGER.warn("Modifier profile '{}' references weapon type '{}', but the mod '{}' is not loaded.", rl, weaponType, weaponType.getNamespace());
+                }
             }
         }
 

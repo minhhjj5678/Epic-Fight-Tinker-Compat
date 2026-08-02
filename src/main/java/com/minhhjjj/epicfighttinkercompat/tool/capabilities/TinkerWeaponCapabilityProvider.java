@@ -7,6 +7,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import slimeknights.tconstruct.library.tools.item.IModifiable;
 import yesman.epicfight.api.forgeevent.WeaponCapabilityPresetRegistryEvent;
 import yesman.epicfight.world.capabilities.item.ArmorCapability;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.Styles;
@@ -90,6 +91,7 @@ public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
 
     @SuppressWarnings("null")
 	private CapabilityItem createCapabilityItem(String weaponType, ItemStack stack) {
+        if (!(stack.getItem() instanceof IModifiable)) return null;
         ToolStack tool = ToolStack.from(stack);
         CapabilityItem.Builder builder = null;
         if (tool.getItem() instanceof net.minecraft.world.item.ArmorItem) {
