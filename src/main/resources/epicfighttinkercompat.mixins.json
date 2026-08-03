@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "epicfighttinkercompat.refmap.json",
   "mixins": [
+    "MixinServerPlayerPatch",
     "doublejump.MixinDoubleJumpHandler",
     "lifesteal.MixinToolAttackContext",
     "skill.MixinGuardSkill",
