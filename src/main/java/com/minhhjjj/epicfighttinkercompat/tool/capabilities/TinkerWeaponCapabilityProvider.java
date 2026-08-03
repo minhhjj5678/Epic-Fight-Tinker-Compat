@@ -5,8 +5,6 @@ import com.minhhjjj.epicfighttinkercompat.stats.EpicFightToolStats;
 import com.minhhjjj.epicfighttinkercompat.tool.EpicFightArmorStatsHelper;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import yesman.epicfight.api.forgeevent.WeaponCapabilityPresetRegistryEvent;
 import yesman.epicfight.world.capabilities.item.ArmorCapability;
@@ -33,7 +31,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
-@Mod.EventBusSubscriber(modid = EpicFightTinkerCompat.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
     private final LazyOptional<CapabilityItem> optionalCapability;
     public static final ResourceLocation EPIC_CAP_ID = ResourceLocation.fromNamespaceAndPath(EpicFightTinkerCompat.MODID, "weapon_cap");
@@ -160,7 +157,6 @@ public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
         return ResourceLocation.fromNamespaceAndPath(EpicFightTinkerCompat.MODID, path);
     }
 
-    @SubscribeEvent
     public static void register(WeaponCapabilityPresetRegistryEvent event) {
         event.getTypeEntry().putAll(WEAPON_CAPABILITY_PRESETS);
     }

@@ -1,6 +1,7 @@
 package com.minhhjjj.epicfighttinkercompat;
 
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfileReloadListener;
+import com.minhhjjj.epicfighttinkercompat.tool.capabilities.TinkerWeaponCapabilityProvider;
 import com.mojang.logging.LogUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackType;
@@ -61,6 +62,7 @@ public class EpicFightTinkerCompat
         ItemRegistry.ITEMS.register(modEventBus);
 
         modEventBus.addListener(this::addCreative);
+        modEventBus.addListener(TinkerWeaponCapabilityProvider::register);
     }
 
     @SuppressWarnings("null")
