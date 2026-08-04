@@ -27,11 +27,16 @@ public class NetworkManager {
                 SyncModifierProfilesPacket::new,
                 SyncModifierProfilesPacket::handle
         );
+        CHANNEL.registerMessage(id++, SyncLivingMotionPacket.class,
+                SyncLivingMotionPacket::toBytes,
+                SyncLivingMotionPacket::new,
+                SyncLivingMotionPacket::handle
+        );
     }
 
     @SubscribeEvent
     public static void onDatapackSync(OnDatapackSyncEvent event) {
-        if (event.getPlayer() != null && event.getPlayer().getServer().isSingleplayerOwner(event.getPlayer().getGameProfile())) {
+        if (event.getPlayer() != null && event.getPlayer().getServer() != null && event.getPlayer().getServer().isSingleplayerOwner(event.getPlayer().getGameProfile())) {
             return;
         }
 

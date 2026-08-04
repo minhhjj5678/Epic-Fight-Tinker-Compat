@@ -1,6 +1,7 @@
 package com.minhhjjj.epicfighttinkercompat;
 
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfileReloadListener;
+import com.minhhjjj.epicfighttinkercompat.network.NetworkManager;
 import com.minhhjjj.epicfighttinkercompat.tool.capabilities.TinkerWeaponCapabilityProvider;
 import com.mojang.logging.LogUtils;
 import net.minecraft.network.chat.Component;
@@ -70,6 +71,7 @@ public class EpicFightTinkerCompat
     {
         event.enqueueWork(() -> {
         EpicFightToolStats.register();
+        NetworkManager.register();
         MaterialRegistry.getInstance().registerStatType(EpicFightHandleStats.TYPE);
         MaterialRegistry.getInstance().registerStatType(EpicFightHeadStats.TYPE);
         MaterialRegistry.getInstance().registerStatType(EpicFightBindingStats.TYPE);
