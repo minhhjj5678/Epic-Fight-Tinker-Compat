@@ -197,11 +197,6 @@ public class TCWeaponCapability extends CapabilityItem {
             return modifierProfile.collider().apply(tool);
         }
 
-        CapabilityItem delegatedCap = this.getWeapon();
-        if (delegatedCap != null) {
-            return delegatedCap.getWeaponCollider();
-        }
-
         return this.collider;
     }
 

@@ -1,10 +1,12 @@
 package com.minhhjjj.epicfighttinkercompat;
 
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfileReloadListener;
+import com.minhhjjj.epicfighttinkercompat.modifiers.TagLimitModule;
 import com.minhhjjj.epicfighttinkercompat.network.NetworkManager;
 import com.minhhjjj.epicfighttinkercompat.tool.capabilities.TinkerWeaponCapabilityProvider;
 import com.mojang.logging.LogUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
@@ -45,6 +47,8 @@ import com.minhhjjj.epicfighttinkercompat.tool.item.ItemRegistry;
 import com.minhhjjj.epicfighttinkercompat.client.armor.ArmorTextureBaker;
 
 import org.slf4j.Logger;
+import slimeknights.tconstruct.library.modifiers.ModifierManager;
+import slimeknights.tconstruct.library.modifiers.modules.ModifierModule;
 
 @Mod(EpicFightTinkerCompat.MODID)
 public class EpicFightTinkerCompat
@@ -72,6 +76,7 @@ public class EpicFightTinkerCompat
         event.enqueueWork(() -> {
         EpicFightToolStats.register();
         NetworkManager.register();
+        ModifierModule.LOADER.register(ResourceLocation.fromNamespaceAndPath(MODID, "tag_limit"), TagLimitModule.LOADER);
         MaterialRegistry.getInstance().registerStatType(EpicFightHandleStats.TYPE);
         MaterialRegistry.getInstance().registerStatType(EpicFightHeadStats.TYPE);
         MaterialRegistry.getInstance().registerStatType(EpicFightBindingStats.TYPE);

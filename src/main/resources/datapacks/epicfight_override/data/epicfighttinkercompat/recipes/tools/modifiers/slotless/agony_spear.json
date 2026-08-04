@@ -44,6 +44,6 @@
   "level": 1,
   "result": "epicfighttinkercompat:agony_spear",
   "tools": {
-    "item": "tconstruct:javelin"
+    "tag": "tconstruct:modifiable/melee"
   }
 }

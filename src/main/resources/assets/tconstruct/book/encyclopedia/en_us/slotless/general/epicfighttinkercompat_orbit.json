@@ -1,0 +1,14 @@
+{
+  "modifier_id": "epicfighttinkercompat:orbit",
+  "text": [
+    {
+      "text": "Changes tool moveset to the Orbit moveset."
+    }
+  ],
+  "more_text_space": true,
+  "effects": [
+    "Maximum of 1 level",
+    "Applies custom Orbit moveset",
+    "Does not require a modifier slot"
+  ]
+}

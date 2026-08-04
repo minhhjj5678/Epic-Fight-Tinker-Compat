@@ -2,13 +2,13 @@
   "modifier_id": "epicfighttinkercompat:agony_spear",
   "text": [
     {
-      "text": "Changes javelin moveset to the Agony moveset."
+      "text": "Changes tool moveset to the Agony moveset."
     }
   ],
   "more_text_space": true,
   "effects": [
     "Maximum of 1 level",
-    "Applies custom Agony moveset and collider",
+    "Applies custom Agony moveset",
     "Does not require a modifier slot"
   ]
 }

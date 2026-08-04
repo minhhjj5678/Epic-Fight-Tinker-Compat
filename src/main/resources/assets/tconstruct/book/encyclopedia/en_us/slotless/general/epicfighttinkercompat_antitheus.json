@@ -1,0 +1,14 @@
+{
+  "modifier_id": "epicfighttinkercompat:antitheus",
+  "text": [
+    {
+      "text": "Changes tool moveset to the Antitheus moveset."
+    }
+  ],
+  "more_text_space": true,
+  "effects": [
+    "Maximum of 1 level",
+    "Applies custom Antitheus moveset",
+    "Does not require a modifier slot"
+  ]
+}

@@ -44,6 +44,6 @@
   "level": 1,
   "result": "epicfighttinkercompat:torment_blade",
   "tools": {
-    "item": "tconstruct:scythe"
+    "tag": "tconstruct:modifiable/melee"
   }
 }

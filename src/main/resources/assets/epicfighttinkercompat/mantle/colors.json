@@ -14,6 +14,17 @@
     "axe": "#BF1DAA",
     "dagger": "#BF1DAA",
     "arrow_tempest": "#ED2D1F",
-    "eagle_eye": "#BFBEA6"
+    "eagle_eye": "#BFBEA6",
+    "antitheus": "#d92525",
+    "herrscher": "#d9a5a5",
+    "moonless": "#140a6e",
+    "napoleon": "#2c4170",
+    "orbit": "#4a4a4a",
+    "solar": "#ffb100",
+    "enhanced_shortsword": "#784771",
+    "enhanced_longsword": "#784771",
+    "enhanced_greatsword": "#784771",
+    "enhanced_spear": "#784771",
+    "enhanced_tachi": "#784771"
   }
 }

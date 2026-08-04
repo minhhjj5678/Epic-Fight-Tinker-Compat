@@ -25,6 +25,34 @@
     {
       "id": "epicfighttinkercompat:agony_spear",
       "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:moonless",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:solar",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:orbit",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:herrscher",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:antitheus",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:napoleon",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:enhanced_shorstsword",
+      "required": false
     }
   ]
 }

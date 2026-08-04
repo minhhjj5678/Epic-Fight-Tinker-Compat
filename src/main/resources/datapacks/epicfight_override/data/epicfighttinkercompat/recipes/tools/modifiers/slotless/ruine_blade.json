@@ -19,6 +19,6 @@
   "level": 1,
   "result": "epicfighttinkercompat:ruine_blade",
   "tools": {
-    "item": "tconstruct:cleaver"
+    "tag": "tconstruct:modifiable/melee"
   }
 }

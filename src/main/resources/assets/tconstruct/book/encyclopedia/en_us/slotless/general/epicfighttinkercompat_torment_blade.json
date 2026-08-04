@@ -2,13 +2,13 @@
   "modifier_id": "epicfighttinkercompat:torment_blade",
   "text": [
     {
-      "text": "Changes scythe moveset to the Torment moveset."
+      "text": "Changes tool moveset to the Torment moveset."
     }
   ],
   "more_text_space": true,
   "effects": [
     "Maximum of 1 level",
-    "Applies custom Torment moveset and collider",
+    "Applies custom Torment moveset",
     "Does not require a modifier slot"
   ]
 }

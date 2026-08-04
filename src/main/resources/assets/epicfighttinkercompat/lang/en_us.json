@@ -16,6 +16,7 @@
   "stat.epicfighttinkercompat.max_strikes.description": "Maximum number of enemies hit per swing.",
   "stat.epicfighttinkercompat.armor_negation": "Armor Negation: ",
   "stat.epicfighttinkercompat.armor_negation.description": "Percentage of enemy armor ignored.",
+
   "stat.epicfighttinkercompat.weight": "Weight: ",
   "stat.epicfighttinkercompat.weight.description": "Reduces the stun duration when hit, but also increases stamina consumption for skills and decreases attack speed. Items with higher attack speed will experience a more significant effect.",
   "stat.epicfighttinkercompat.stun_armor": "Stun Armor: ",
@@ -24,44 +25,100 @@
   "modifier.epicfighttinkercompat.so_sticky": "So Sticky",
   "modifier.epicfighttinkercompat.so_sticky.flavor": "Sticks right to your hands!",
   "modifier.epicfighttinkercompat.so_sticky.description": "Increases the maximum number of targets you can hit in a single strike",
+
   "modifier.epicfighttinkercompat.weightless": "Weightless",
   "modifier.epicfighttinkercompat.weightless.flavor": "Am I flying?",
   "modifier.epicfighttinkercompat.weightless.description": "Reduces the weight penalty of your armor, decreasing stamina consumption in combat",
+
   "modifier.epicfighttinkercompat.speary": "Speary",
   "modifier.epicfighttinkercompat.speary.flavor": "Is this possible??",
   "modifier.epicfighttinkercompat.speary.description": "Makes your weapon stranger",
+
   "modifier.epicfighttinkercompat.shortsword": "Shortsword",
   "modifier.epicfighttinkercompat.shortsword.flavor": "This is a sword now!",
   "modifier.epicfighttinkercompat.shortsword.description": "Change the tool's moveset to Sword",
+
   "modifier.epicfighttinkercompat.longsword": "Longsword",
   "modifier.epicfighttinkercompat.longsword.flavor": "This is a longsword now!",
   "modifier.epicfighttinkercompat.longsword.description": "Change the tool's moveset to Longsword",
+
   "modifier.epicfighttinkercompat.greatsword": "Greatsword",
   "modifier.epicfighttinkercompat.greatsword.flavor": "This is a greatsword now!",
   "modifier.epicfighttinkercompat.greatsword.description": "Change the tool's moveset to Greatsword",
+
   "modifier.epicfighttinkercompat.tachi": "Tachi",
   "modifier.epicfighttinkercompat.tachi.flavor": "This is a tachi now!",
   "modifier.epicfighttinkercompat.tachi.description": "Change the tool's moveset to Tachi",
+
   "modifier.epicfighttinkercompat.uchigatana": "Uchigatana",
   "modifier.epicfighttinkercompat.uchigatana.flavor": "This is a uchigatana now!",
   "modifier.epicfighttinkercompat.uchigatana.description": "Change the tool's moveset to Uchigatana",
+
   "modifier.epicfighttinkercompat.axe": "Axe",
   "modifier.epicfighttinkercompat.axe.flavor": "This is a axe now!",
   "modifier.epicfighttinkercompat.axe.description": "Change the tool's moveset to Axe",
+
   "modifier.epicfighttinkercompat.dagger": "Dagger",
   "modifier.epicfighttinkercompat.dagger.flavor": "This is a dagger now!",
   "modifier.epicfighttinkercompat.dagger.description": "Change the tool's moveset to Dagger",
+
   "modifier.epicfighttinkercompat.torment_blade": "Torment Blade",
   "modifier.epicfighttinkercompat.torment_blade.flavor": "Why not?",
-  "modifier.epicfighttinkercompat.torment_blade.description": "Changes scythe moveset to the Torment moveset",
+  "modifier.epicfighttinkercompat.torment_blade.description": "Changes the tool's moveset to the Torment moveset",
+
   "modifier.epicfighttinkercompat.ruine_blade": "Ruine Blade",
   "modifier.epicfighttinkercompat.ruine_blade.flavor": "Why not?",
-  "modifier.epicfighttinkercompat.ruine_blade.description": "Changes cleaver moveset to the Ruine moveset",
+  "modifier.epicfighttinkercompat.ruine_blade.description": "Changes the tool's moveset to the Ruine moveset",
+
   "modifier.epicfighttinkercompat.agony_spear": "Agony Spear",
   "modifier.epicfighttinkercompat.agony_spear.flavor": "Why not?",
   "modifier.epicfighttinkercompat.agony_spear.description": "Changes javelin moveset to the Agony moveset",
-  "modifier.epicfighttinkercompat.speary.requirements": "Cannot be combined with other modifier moveset",
-  "modifier.epicfighttinkercompat.agony_spear.requirements": "Cannot be combined with other modifier moveset",
+
+  "modifier.epicfighttinkercompat.moonless": "Moonless",
+  "modifier.epicfighttinkercompat.moonless.flavor": "Embrace the shadows",
+  "modifier.epicfighttinkercompat.moonless.description": "Changes the tool's moveset to the Moonless moveset.",
+
+  "modifier.epicfighttinkercompat.orbit": "Orbit",
+  "modifier.epicfighttinkercompat.orbit.flavor": "Gravity is just a suggestion",
+  "modifier.epicfighttinkercompat.orbit.description": "Changes the tool's moveset to the Orbit moveset.",
+
+  "modifier.epicfighttinkercompat.solar": "Solar",
+  "modifier.epicfighttinkercompat.solar.flavor": "Harness the power of the sun",
+  "modifier.epicfighttinkercompat.solar.description": "Changes the tool's moveset to the Solar moveset.",
+
+  "modifier.epicfighttinkercompat.napoleon": "Napoleon",
+  "modifier.epicfighttinkercompat.napoleon.flavor": "Conquer the battlefield. Vive l'Empereur",
+  "modifier.epicfighttinkercompat.napoleon.description": "Changes the tool's moveset to the Napoleon moveset.",
+
+  "modifier.epicfighttinkercompat.antitheus": "Antitheus",
+  "modifier.epicfighttinkercompat.antitheus.flavor": "Stand against the divine",
+  "modifier.epicfighttinkercompat.antitheus.description": "Changes the tool's moveset to the Antitheus moveset.",
+
+  "modifier.epicfighttinkercompat.herrscher": "Herrscher",
+  "modifier.epicfighttinkercompat.herrscher.flavor": "Bow before the absolute sovereign",
+  "modifier.epicfighttinkercompat.herrscher.description": "Changes the tool's moveset to the Herrscher moveset.",
+
+  "modifier.epicfighttinkercompat.enhanced_shortsword": "Enhanced Shortsword",
+  "modifier.epicfighttinkercompat.enhanced_shortsword.flavor": "Swift strikes, perfected",
+  "modifier.epicfighttinkercompat.enhanced_shortsword.description": "Changes the tool's moveset to the Enhanced Shortsword moveset.",
+
+  "modifier.epicfighttinkercompat.enhanced_longsword": "Enhanced Longsword",
+  "modifier.epicfighttinkercompat.enhanced_longsword.flavor": "Balance and reach, honed to a razor's edge",
+  "modifier.epicfighttinkercompat.enhanced_longsword.description": "Changes the tool's moveset to the Enhanced Longsword moveset.",
+
+  "modifier.epicfighttinkercompat.enhanced_greatsword": "Enhanced Greatsword",
+  "modifier.epicfighttinkercompat.enhanced_greatsword.flavor": "Devastating momentum for those with the strength to wield it",
+  "modifier.epicfighttinkercompat.enhanced_greatsword.description": "Changes the tool's moveset to the Enhanced Greatsword moveset.",
+
+  "modifier.epicfighttinkercompat.enhanced_spear": "Enhanced Spear",
+  "modifier.epicfighttinkercompat.enhanced_spear.flavor": "Pierce the heavens with a single, flawless thrust",
+  "modifier.epicfighttinkercompat.enhanced_spear.description": "Changes the tool's moveset to the Enhanced Spear moveset.",
+
+  "modifier.epicfighttinkercompat.enhanced_tachi": "Enhanced Tachi",
+  "modifier.epicfighttinkercompat.enhanced_tachi.flavor": "Swift as the wind, elegant as a falling leaf",
+  "modifier.epicfighttinkercompat.enhanced_tachi.description": "Changes the tool's moveset to the Enhanced Tachi moveset.",
+
+  "modifier.epicfighttinkercompat.moveset.limit1": "Cannot be combined with other modifier moveset",
 
   "modifier.epicfighttinkercompat.arrow_tempest": "Arrow Tempest",
   "modifier.epicfighttinkercompat.arrow_tempest.1": "Arrow Tempest",
