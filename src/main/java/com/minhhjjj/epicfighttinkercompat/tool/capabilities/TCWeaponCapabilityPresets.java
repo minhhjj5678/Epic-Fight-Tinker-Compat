@@ -140,7 +140,9 @@ public class TCWeaponCapabilityPresets {
 			.swingSound(EpicFightSounds.WHOOSH_SMALL.get())
 			.canBePlacedOffhand(true)
 			.reach(0.5F)
-			.styleProvider((patch) -> Styles.ONE_HAND);
+			.styleProvider((patch) -> Styles.ONE_HAND)
+			.alternativeUseAnimations(null, null)
+			.livingMotionModifier(Styles.COMMON, LivingMotions.BLOCK_SHIELD, Animations.BIPED_BLOCK);
 
 	public static final Function<Item, CapabilityItem.Builder> SCYTHE = (item) -> TCWeaponCapability.builder()
 			.category(WeaponCategories.GREATSWORD)
@@ -223,8 +225,7 @@ public class TCWeaponCapabilityPresets {
 			.styleProvider((patch) -> Styles.TWO_HAND)
 			.livingMotionModifier(Styles.COMMON, LivingMotions.IDLE, Animations.BIPED_IDLE)
 			.livingMotionModifier(Styles.COMMON, LivingMotions.WALK, Animations.BIPED_WALK)
-			.livingMotionModifier(Styles.COMMON, LivingMotions.AIM, Animations.BIPED_BOW_AIM)
-			.livingMotionModifier(Styles.COMMON, LivingMotions.SHOT, Animations.BIPED_BOW_SHOT);
+			.alternativeUseAnimations(Animations.BIPED_BOW_AIM, Animations.BIPED_BOW_SHOT);
 
 	public static final Function<Item, CapabilityItem.Builder> STAFF = (item) -> TCWeaponCapability.builder()
 			.category(WeaponCategories.TRIDENT)
@@ -384,8 +385,7 @@ public class TCWeaponCapabilityPresets {
 			.livingMotionModifier(Styles.TWO_HAND, LivingMotions.SWIM, Animations.BIPED_HOLD_DUAL_WEAPON)
 			.livingMotionModifier(Styles.TWO_HAND, LivingMotions.FLOAT, Animations.BIPED_HOLD_DUAL_WEAPON)
 			.livingMotionModifier(Styles.TWO_HAND, LivingMotions.FALL, Animations.BIPED_HOLD_DUAL_WEAPON)
-			.livingMotionModifier(Styles.COMMON, LivingMotions.AIM, EFTAnimations.BIPED_SWASHER_AIM)
-			.livingMotionModifier(Styles.COMMON, LivingMotions.SHOT, EFTAnimations.BIPED_SWASHER_SHOT);
+			.alternativeUseAnimations(EFTAnimations.BIPED_SWASHER_AIM, EFTAnimations.BIPED_SWASHER_SHOT);
 
 	public static final Function<Item, CapabilityItem.Builder> UNKNOWN = (item) -> TCWeaponCapability.builder()
 			.category(WeaponCategories.FIST)

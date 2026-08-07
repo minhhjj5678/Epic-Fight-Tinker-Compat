@@ -14,16 +14,20 @@ import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfileRelo
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import slimeknights.tconstruct.TConstruct;
+import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import slimeknights.tconstruct.tools.item.ModifiableSwordItem;
+import slimeknights.tconstruct.tools.modifiers.ability.interaction.BlockingModifier;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.LivingMotion;
 import yesman.epicfight.api.animation.LivingMotions;
@@ -40,6 +44,8 @@ import yesman.epicfight.world.capabilities.item.*;
 import net.minecraft.sounds.SoundEvent;
 import yesman.epicfight.particle.HitParticleType;
 import yesman.epicfight.world.entity.eventlistener.ComboCounterHandleEvent;
+
+import javax.annotation.Nullable;
 
 public class TCWeaponCapability extends CapabilityItem {
     protected Function<LivingEntityPatch<?>, Style> styleProvider;
@@ -253,9 +259,16 @@ public class TCWeaponCapability extends CapabilityItem {
             return motion;
         }
 
-        if (!entityPatch.getOriginal().isUsingItem()) return null;
-        if (entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.DRINK || entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.EAT) return null;
-        if (entityPatch.getOriginal().getUseItem().getUseAnimation() == UseAnim.BLOCK && entityPatch instanceof PlayerPatch<?> playerPatch) {
+        LivingEntity entity = entityPatch.getOriginal();
+        if (!entity.isUsingItem()) return null;
+        if (entity.getUsedItemHand() != hand) return null;
+
+        ItemStack useItem = entity.getUseItem();
+        if (useItem.getUseAnimation() == UseAnim.DRINK || useItem.getUseAnimation() == UseAnim.EAT) return null;
+        if (useItem.getUseAnimation() == UseAnim.BLOCK && entityPatch instanceof PlayerPatch<?> playerPatch) {
+            if (useItem.is(TinkerTags.Items.SHIELDS)) {
+                return null;
+            }
             if (!playerPatch.getSkill(SkillSlots.GUARD).isEmpty() && !playerPatch.getOriginal().isCrouching()) {
                 return null;
             }
@@ -509,6 +522,21 @@ public class TCWeaponCapability extends CapabilityItem {
             if (stack.getItem() instanceof IModifiable) {
                 this.tool = ToolStack.from(stack);
             }
+            return this;
+        }
+
+        public Builder alternativeUseAnimations(@Nullable AnimationManager.AnimationAccessor<? extends StaticAnimation> aimAnimation, @Nullable AnimationManager.AnimationAccessor<? extends StaticAnimation> shotAnimation) {
+            var map = this.livingMotionModifiers.computeIfAbsent(Styles.COMMON, k -> new HashMap<>());
+            map.remove(LivingMotions.AIM);
+            map.remove(LivingMotions.SHOT);
+            if (aimAnimation != null) {
+                this.livingMotionModifier(Styles.COMMON, LivingMotions.AIM, aimAnimation);
+            }
+
+            if (shotAnimation != null) {
+                this.livingMotionModifier(Styles.COMMON, LivingMotions.SHOT, shotAnimation);
+            }
+
             return this;
         }
 
