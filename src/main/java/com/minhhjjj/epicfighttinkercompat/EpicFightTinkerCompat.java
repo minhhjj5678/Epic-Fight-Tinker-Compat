@@ -1,6 +1,7 @@
 package com.minhhjjj.epicfighttinkercompat;
 
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfileReloadListener;
+import com.minhhjjj.epicfighttinkercompat.modifiers.ChargeableModule;
 import com.minhhjjj.epicfighttinkercompat.modifiers.TagLimitModule;
 import com.minhhjjj.epicfighttinkercompat.network.NetworkManager;
 import com.minhhjjj.epicfighttinkercompat.tool.capabilities.TinkerWeaponCapabilityProvider;
@@ -77,6 +78,7 @@ public class EpicFightTinkerCompat
         EpicFightToolStats.register();
         NetworkManager.register();
         ModifierModule.LOADER.register(ResourceLocation.fromNamespaceAndPath(MODID, "tag_limit"), TagLimitModule.LOADER);
+        ModifierModule.LOADER.register(ResourceLocation.fromNamespaceAndPath(MODID, "chargeable"), ChargeableModule.LOADER);
         MaterialRegistry.getInstance().registerStatType(EpicFightHandleStats.TYPE);
         MaterialRegistry.getInstance().registerStatType(EpicFightHeadStats.TYPE);
         MaterialRegistry.getInstance().registerStatType(EpicFightBindingStats.TYPE);

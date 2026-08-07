@@ -8,6 +8,9 @@
       "type": "epicfighttinkercompat:tag_limit",
       "tag": "epicfighttinkercompat:moveset",
       "translation_key": "modifier.epicfighttinkercompat.moveset.limit1"
+    },
+    {
+      "type": "epicfighttinkercompat:chargeable"
     }
   ],
   "level_display": "tconstruct:no_levels",
