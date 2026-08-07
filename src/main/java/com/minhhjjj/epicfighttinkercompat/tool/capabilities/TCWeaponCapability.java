@@ -26,12 +26,11 @@ import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
-import slimeknights.tconstruct.tools.item.ModifiableSwordItem;
-import slimeknights.tconstruct.tools.modifiers.ability.interaction.BlockingModifier;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.LivingMotion;
 import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.animation.types.AttackAnimation;
+import yesman.epicfight.api.animation.types.MainFrameAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.gameasset.Animations;
@@ -95,10 +94,7 @@ public class TCWeaponCapability extends CapabilityItem {
     public Style getStyle(LivingEntityPatch<?> patch) {
         CapabilityItem weapon = this.getWeapon();
         if (weapon != null) {
-            Style weaponStyle = weapon.getStyle(patch);
-            if (weaponStyle != Styles.COMMON) {
-                return weaponStyle;
-            }
+            return weapon.getStyle(patch);
         }
 
         if (this.styleProvider != null) {
@@ -131,6 +127,13 @@ public class TCWeaponCapability extends CapabilityItem {
         CapabilityItem delegatedCapability = this.getWeapon();
         return delegatedCapability != null ? delegatedCapability.getAutoAttackMotion(playerpatch)
                 : this.autoAttackMotions.getOrDefault(this.styleProvider.apply(playerpatch), this.autoAttackMotions.get(Styles.COMMON));
+    }
+
+    @Override
+    public int handleComboCounter(ComboCounterHandleEvent.Causal causal, PlayerPatch<?> entitypatch, @Nullable AnimationManager.AnimationAccessor<? extends MainFrameAnimation> nextAnimation, int original) {
+        CapabilityItem delegatedCap = this.getWeapon();
+        if (delegatedCap != null) return delegatedCap.handleComboCounter(causal, entitypatch, nextAnimation, original);
+        return super.handleComboCounter(causal, entitypatch, nextAnimation, original);
     }
 
     @Override

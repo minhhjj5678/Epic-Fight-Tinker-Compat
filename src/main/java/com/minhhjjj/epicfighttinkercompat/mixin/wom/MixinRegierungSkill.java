@@ -20,9 +20,6 @@ import yesman.epicfight.skill.SkillContainer;
 public class MixinRegierungSkill {
 
     @Unique
-    private static final ModifierId tinkercompat$gesetz = new ModifierId("epicfighttinkercompat", "gesetz");
-
-    @Unique
     private static final ModifierId tinkercompat$herrscher = new ModifierId("epicfighttinkercompat", "herrscher");
 
     @Inject(method = "canExecute", at = @At("RETURN"), cancellable = true)
@@ -38,10 +35,6 @@ public class MixinRegierungSkill {
             }
 
             boolean offhandValid = container.getExecutor().getHoldingItemCapability(InteractionHand.OFF_HAND) instanceof GesetzCapability;
-            if (!offhandValid && offHand.getItem() instanceof IModifiable) {
-                ToolStack offhandTool = ToolStack.from(offHand);
-                offhandValid = !offhandTool.isBroken() && offhandTool.getModifierLevel(tinkercompat$gesetz) > 0;
-            }
 
             if (mainHandValid && offhandValid) {
                 cir.setReturnValue(true);
