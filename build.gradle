@@ -100,6 +100,7 @@ dependencies {
 mixin {
     add sourceSets.main, "epicfighttinkercompat.refmap.json"
     config "epicfighttinkercompat.mixins.json"
+    config "wom_compat.mixins.json"
 }
 
 tasks.named('processResources', ProcessResources).configure {
@@ -127,7 +128,7 @@ tasks.named('jar', Jar).configure {
                 'Implementation-Version'  : project.jar.archiveVersion,
                 'Implementation-Vendor'   : mod_authors,
                 'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                'MixinConfigs'            : 'epicfighttinkercompat.mixins.json'
+                'MixinConfigs'            : 'epicfighttinkercompat.mixins.json,wom_compat.mixins.json'
         ])
     }
 

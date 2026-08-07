@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.minhhjjj.epicfighttinkercompat.mixin.wom",
+  "compatibilityLevel": "JAVA_17",
+  "plugin": "com.minhhjjj.epicfighttinkercompat.mixin.wom.OptionalCompatMixinPlugin",
+  "mixins": [
+    "MixinRegierungSkill"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
