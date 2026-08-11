@@ -4,13 +4,12 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfile;
-import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfileReloadListener;
+import com.minhhjjj.epicfighttinkercompat.tool.ModifierProfileManager;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -22,7 +21,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerTags;
-import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
@@ -106,7 +104,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
     public CapabilityItem getWeapon() {
         CapabilityItem weapon = null;
-        ModifierProfile modifierProfile = this.getModifierProfile(profile -> profile.weaponType() != null && WeaponTypeReloadListener.get(profile.weaponType()) != null);
+        ModifierProfile modifierProfile = ModifierProfileManager.getProfile(this.getToolStack(), ModifierProfileManager.WEAPON_FILTER);
         if (modifierProfile != null) {
             ResourceLocation rl = modifierProfile.weaponType();
             Item item = this.getToolStack().getItem();
@@ -166,7 +164,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
     public Skill getInnateSkill(PlayerPatch<?> playerpatch, ItemStack itemstack) {
         ToolStack tool = this.getToolStack();
-        ModifierProfile modifierProfile = this.getModifierProfile(profile -> profile.innateSkill() != null && profile.innateSkill().apply(tool, playerpatch) != null);
+        ModifierProfile modifierProfile = ModifierProfileManager.getProfile(tool, ModifierProfileManager.innateSkillFilter(tool, playerpatch));
         if (modifierProfile != null) {
             return modifierProfile.innateSkill().apply(tool, playerpatch);
         }
@@ -185,7 +183,7 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public WeaponCategory getWeaponCategory() {
-        ModifierProfile modifierProfile = this.getModifierProfile(profile -> profile.weaponCategory() != null);
+        ModifierProfile modifierProfile = ModifierProfileManager.getProfile(this.getToolStack(), ModifierProfileManager.CATEGORY_FILTER);
         if (modifierProfile != null) {
             return modifierProfile.weaponCategory();
         }
@@ -201,7 +199,7 @@ public class TCWeaponCapability extends CapabilityItem {
     @Override
     public Collider getWeaponCollider() {
         ToolStack tool = this.getToolStack();
-        ModifierProfile modifierProfile = this.getModifierProfile(profile -> profile.collider() != null && profile.collider().apply(tool) != null);
+        ModifierProfile modifierProfile = ModifierProfileManager.getProfile(tool, ModifierProfileManager.colliderFilter(tool));
         if (modifierProfile != null) {
             return modifierProfile.collider().apply(tool);
         }
@@ -342,24 +340,6 @@ public class TCWeaponCapability extends CapabilityItem {
 
     public ToolStack getToolStack() {
         return this.tool;
-    }
-
-    public ModifierProfile getModifierProfile(Predicate<ModifierProfile> profilePredicate) {
-        ToolStack toolStack = getToolStack();
-        ModifierProfile foundProfile = null;
-        if (toolStack != null) {
-            for (ModifierEntry entry : toolStack.getModifierList()) {
-                if (entry.getLevel() <= 0) continue;
-                ModifierProfile profile = ModifierProfileReloadListener.get(entry.getId());
-                if (profile != null && (foundProfile == null || profile.priority() > foundProfile.priority())) {
-                    if (profilePredicate.test(profile)) {
-                        foundProfile = profile;
-                    }
-                }
-            }
-        }
-
-        return foundProfile;
     }
 
     public boolean canHoldInOffhandAlone() {
