@@ -1,4 +1,4 @@
-package com.minhhjjj.epicfighttinkercompat.mixin.skill;
+package com.minhhjjj.epicfighttinkercompat.mixin.skill.common;
 
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;

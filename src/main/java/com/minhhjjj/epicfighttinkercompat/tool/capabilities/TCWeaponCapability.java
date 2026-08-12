@@ -210,16 +210,17 @@ public class TCWeaponCapability extends CapabilityItem {
     @Override
     public Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> getLivingMotionModifier(LivingEntityPatch<?> entityPatch, InteractionHand hand) {
         CapabilityItem delegatedCapability = this.getWeapon();
+        Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> returnMotions = null;
         if (delegatedCapability != null) {
-            return delegatedCapability.getLivingMotionModifier(entityPatch, hand);
+            returnMotions = delegatedCapability.getLivingMotionModifier(entityPatch, hand);
         }
 
-        if (this.livingMotionModifiers == null) {
+        if (returnMotions == null && this.livingMotionModifiers == null) {
             return Collections.emptyMap();
         }
 
         Style currentStyle = this.styleProvider.apply(entityPatch);
-        Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> styleMotions = this.livingMotionModifiers.get(currentStyle);
+        Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> styleMotions = returnMotions == null ? this.livingMotionModifiers.get(currentStyle) : returnMotions;
         Map<LivingMotion, AnimationManager.AnimationAccessor<? extends StaticAnimation>> commonMotions = this.livingMotionModifiers.get(Styles.COMMON);
 
         if (commonMotions == null || commonMotions.isEmpty()) {
@@ -317,8 +318,6 @@ public class TCWeaponCapability extends CapabilityItem {
 
     @Override
     public CapabilityItem.ZoomInType getZoomInType() {
-        CapabilityItem delegatedCap = this.getWeapon();
-        if (delegatedCap != null) return delegatedCap.getZoomInType();
         return this.zoomInType == ZoomInType.NONE ? ZoomInType.AIMING : this.zoomInType;
     }
 

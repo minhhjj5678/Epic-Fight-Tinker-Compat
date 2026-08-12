@@ -5,13 +5,15 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "epicfighttinkercompat.refmap.json",
   "mixins": [
-    "MixinLivingEntity",
-    "MixinPlayerEventListener",
+    "itemspoof.common.MixinItemCapabilityReloadListener",
+    "itemspoof.common.MixinLivingEntity",
+    "itemspoof.common.MixinPlayerEventListener",
     "MixinServerPlayerPatch",
+    "itemspoof.common.MixinWeaponCapability",
     "doublejump.MixinDoubleJumpHandler",
     "lifesteal.MixinToolAttackContext",
-    "skill.MixinGuardSkill",
-    "skill.MixinSkillContainer",
+    "skill.common.MixinGuardSkill",
+    "skill.common.MixinSkillContainer",
     "sweepingedge.MixinEnchantmentHelper",
     "sweepingedge.MixinSweepWeaponAttack",
     "tool.MixinBlockingModifier",
@@ -19,6 +21,8 @@
     "tool.MixinToolStack"
   ],
   "client": [
+    "skill.client.MixinSkillContainerClient",
+    "itemspoof.client.MixinItemCapabilityReloadListenerClient",
     "doublejump.MixinPhantomAscentSkill",
     "tool.MixinAnimationTrailParticle",
     "tool.MixinItemSkinsReloadListener",

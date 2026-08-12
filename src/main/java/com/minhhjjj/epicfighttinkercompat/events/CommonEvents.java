@@ -11,6 +11,6 @@ public class CommonEvents {
 
     @SubscribeEvent
     public static void onDatapackFinishLoaded(TagsUpdatedEvent event) {
-        SkillToItemDictionary.init(event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD);
+//        SkillToItemDictionary.init(event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD);
     }
 }

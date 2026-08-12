@@ -1,4 +1,4 @@
-package com.minhhjjj.epicfighttinkercompat.mixin;
+package com.minhhjjj.epicfighttinkercompat.mixin.itemspoof.common;
 
 import com.minhhjjj.epicfighttinkercompat.skill.SkillToItemDictionary;
 import org.spongepowered.asm.mixin.Mixin;
