@@ -21,6 +21,7 @@ public class SkillToItemDictionary {
     private static final Map<Skill, WeaponSpoofProfile> SKILL_TO_ITEM_DICTIONARY = new HashMap<>();
     private static final ThreadLocal<WeaponSpoofProfile> BOX = new ThreadLocal<>();
     private static final ThreadLocal<ItemStack> ORIGINAL_STACK = ThreadLocal.withInitial(() -> ItemStack.EMPTY);
+    private static final ThreadLocal<Integer> NEST_COUNT = ThreadLocal.withInitial(() -> 0);
 
     public record WeaponSpoofProfile(Item spoofItem, ResourceLocation weaponType) {}
 
@@ -106,13 +107,31 @@ public class SkillToItemDictionary {
     }
 
     public static void put(Skill skill, ItemStack originalStack) {
-        WeaponSpoofProfile profile = SKILL_TO_ITEM_DICTIONARY.get(skill);
-        if (profile != null) {
-            BOX.set(profile);
-            ORIGINAL_STACK.set(originalStack);
-        } else {
+        int count = NEST_COUNT.get();
+
+        if (count == 0) {
+            WeaponSpoofProfile profile = SKILL_TO_ITEM_DICTIONARY.get(skill);
+            if (profile != null) {
+                BOX.set(profile);
+                ORIGINAL_STACK.set(originalStack);
+            } else {
+                BOX.remove();
+                ORIGINAL_STACK.remove();
+            }
+        }
+
+        NEST_COUNT.set(count + 1);
+    }
+
+    public static void remove() {
+        int count = NEST_COUNT.get();
+
+        if (count <= 1) {
             BOX.remove();
-            ORIGINAL_STACK.set(ItemStack.EMPTY);
+            ORIGINAL_STACK.remove();
+            NEST_COUNT.remove();
+        } else {
+            NEST_COUNT.set(count - 1);
         }
     }
 
@@ -124,8 +143,4 @@ public class SkillToItemDictionary {
         return BOX.get() == null;
     }
 
-    public static void remove() {
-        BOX.remove();
-        ORIGINAL_STACK.set(ItemStack.EMPTY);
-    }
 }
