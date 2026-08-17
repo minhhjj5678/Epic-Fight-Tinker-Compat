@@ -20,6 +20,7 @@ import java.util.function.Function;
 public class SkillToItemDictionary {
     private static final Map<Skill, WeaponSpoofProfile> SKILL_TO_ITEM_DICTIONARY = new HashMap<>();
     private static final ThreadLocal<WeaponSpoofProfile> BOX = new ThreadLocal<>();
+    private static final ThreadLocal<ItemStack> ORIGINAL_STACK = ThreadLocal.withInitial(() -> ItemStack.EMPTY);
 
     public record WeaponSpoofProfile(Item spoofItem, ResourceLocation weaponType) {}
 
@@ -104,13 +105,19 @@ public class SkillToItemDictionary {
         return BOX.get();
     }
 
-    public static void put(Skill skill) {
+    public static void put(Skill skill, ItemStack originalStack) {
         WeaponSpoofProfile profile = SKILL_TO_ITEM_DICTIONARY.get(skill);
         if (profile != null) {
             BOX.set(profile);
+            ORIGINAL_STACK.set(originalStack);
         } else {
             BOX.remove();
+            ORIGINAL_STACK.set(ItemStack.EMPTY);
         }
+    }
+
+    public static ItemStack getRealItemStack() {
+        return ORIGINAL_STACK.get();
     }
 
     public static boolean isEmpty() {
@@ -119,5 +126,6 @@ public class SkillToItemDictionary {
 
     public static void remove() {
         BOX.remove();
+        ORIGINAL_STACK.set(ItemStack.EMPTY);
     }
 }

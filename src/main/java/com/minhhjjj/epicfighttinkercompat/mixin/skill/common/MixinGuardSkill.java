@@ -1,5 +1,6 @@
 package com.minhhjjj.epicfighttinkercompat.mixin.skill.common;
 
+import com.minhhjjj.epicfighttinkercompat.skill.SkillToItemDictionary;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -26,7 +27,10 @@ public class MixinGuardSkill {
         if (itemCapability == null || playerpatch == null || playerpatch.getOriginal() == null) {
             return;
         }
-        ItemStack stack = playerpatch.getOriginal().getMainHandItem();
+        ItemStack stack = SkillToItemDictionary.getRealItemStack();
+        if (stack == null || stack.isEmpty()) {
+            stack = playerpatch.getOriginal().getMainHandItem();
+        }
 
         if (stack.isEmpty() || !(stack.getItem() instanceof ModifiableItem)) {
             return;

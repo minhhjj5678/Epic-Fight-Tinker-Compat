@@ -1,6 +1,7 @@
 package com.minhhjjj.epicfighttinkercompat.mixin.itemspoof.common;
 
 import com.minhhjjj.epicfighttinkercompat.skill.SkillToItemDictionary;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,8 +21,12 @@ public class MixinPlayerEventListener {
         if (event instanceof AbstractPlayerEvent<?> playerEvent) {
             PlayerPatch<?> playerPatch = playerEvent.getPlayerPatch();
             SkillContainer innateSkill = playerPatch.getSkill(SkillSlots.WEAPON_INNATE);
+            ItemStack realItem = ItemStack.EMPTY;
+            if (playerPatch.getOriginal().getInventory() != null) {
+                realItem = playerPatch.getOriginal().getMainHandItem().isEmpty() ? playerPatch.getOriginal().getOffhandItem() : playerPatch.getOriginal().getMainHandItem();
+            }
             if (innateSkill != null && innateSkill.getSkill() != null) {
-                SkillToItemDictionary.put(innateSkill.getSkill());
+                SkillToItemDictionary.put(innateSkill.getSkill(), realItem);
             }
         }
     }
