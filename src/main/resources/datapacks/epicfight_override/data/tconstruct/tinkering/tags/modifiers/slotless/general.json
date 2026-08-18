@@ -51,7 +51,27 @@
       "required": false
     },
     {
-      "id": "epicfighttinkercompat:enhanced_shorstsword",
+      "id": "epicfighttinkercompat:enhanced_shortsword",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:enhanced_greatsword",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:enhanced_longsword",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:enhanced_spear",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:enhanced_tachi",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:crimson_fang",
       "required": false
     }
   ]

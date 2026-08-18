@@ -1,5 +1,4 @@
 {
   "modifier_id": "epicfighttinkercompat:torment_blade",
-  "weapon_type": "wom:torment",
-  "priority": 70
+  "weapon_type": "wom:torment"
 }

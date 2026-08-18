@@ -118,6 +118,10 @@
   "modifier.epicfighttinkercompat.enhanced_tachi.flavor": "Swift as the wind, elegant as a falling leaf",
   "modifier.epicfighttinkercompat.enhanced_tachi.description": "Changes the tool's moveset to the Enhanced Tachi moveset.",
 
+  "modifier.epicfighttinkercompat.crimson_fang": "Crimson Fang",
+  "modifier.epicfighttinkercompat.crimson_fang.flavor": "A savage bite that leaves a crimson trail.",
+  "modifier.epicfighttinkercompat.crimson_fang.description": "Changes the tool's moveset to the Crimson Fang moveset.",
+
   "modifier.epicfighttinkercompat.moveset.limit1": "Cannot be combined with other modifier moveset",
 
   "modifier.epicfighttinkercompat.arrow_tempest": "Arrow Tempest",

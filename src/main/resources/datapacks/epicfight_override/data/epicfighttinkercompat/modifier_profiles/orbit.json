@@ -1,5 +1,4 @@
 {
   "modifier_id": "epicfighttinkercompat:orbit",
-  "weapon_type": "wom:orbit",
-  "priority": 80
+  "weapon_type": "wom:orbit"
 }

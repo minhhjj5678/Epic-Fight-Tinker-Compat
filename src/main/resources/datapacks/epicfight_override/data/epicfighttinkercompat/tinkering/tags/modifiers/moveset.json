@@ -17,6 +17,11 @@
     "epicfighttinkercompat:herrscher",
     "epicfighttinkercompat:antitheus",
     "epicfighttinkercompat:napoleon",
-    "epicfighttinkercompat:enhanced_shortsword"
+    "epicfighttinkercompat:enhanced_shortsword",
+    "epicfighttinkercompat:enhanced_greatsword",
+    "epicfighttinkercompat:enhanced_longsword",
+    "epicfighttinkercompat:enhanced_spear",
+    "epicfighttinkercompat:enhanced_tachi",
+    "epicfighttinkercompat:crimson_fang"
   ]
 }

@@ -1,0 +1,33 @@
+{
+  "type": "tconstruct:modifier",
+  "allow_crystal": true,
+  "inputs": [
+    {
+      "ingredient": [
+        {
+          "item": "cdmoveset:s_wooden_sword"
+        },
+        {
+          "item": "cdmoveset:s_stone_sword"
+        },
+        {
+          "item": "cdmoveset:s_iron_sword"
+        },
+        {
+          "item": "cdmoveset:s_golden_sword"
+        },
+        {
+          "item": "cdmoveset:s_diamond_sword"
+        },
+        {
+          "item": "cdmoveset:s_netherite_sword"
+        }
+      ]
+    }
+  ],
+  "level": 1,
+  "result": "epicfighttinkercompat:enhanced_shortsword",
+  "tools": {
+    "tag": "tconstruct:modifiable/melee"
+  }
+}

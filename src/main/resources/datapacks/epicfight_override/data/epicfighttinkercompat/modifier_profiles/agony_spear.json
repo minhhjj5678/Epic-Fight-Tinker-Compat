@@ -1,5 +1,4 @@
 {
   "modifier_id": "epicfighttinkercompat:agony_spear",
-  "weapon_type": "wom:agony",
-  "priority": 60
+  "weapon_type": "wom:agony"
 }

@@ -1,0 +1,14 @@
+{
+  "modifier_id": "epicfighttinkercompat:enhanced_spear",
+  "text": [
+    {
+      "text": "Changes tool behavior to use spear-style handling in Epic Fight."
+    }
+  ],
+  "more_text_space": true,
+  "effects": [
+    "Maximum of 1 level",
+    "Applies to all tools",
+    "Does not require a modifier slot"
+  ]
+}

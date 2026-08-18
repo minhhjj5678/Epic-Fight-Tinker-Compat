@@ -1,5 +1,4 @@
 {
   "modifier_id": "epicfighttinkercompat:herrscher",
-  "weapon_type": "wom:herrscher",
-  "priority": 85
+  "weapon_type": "wom:herrscher"
 }

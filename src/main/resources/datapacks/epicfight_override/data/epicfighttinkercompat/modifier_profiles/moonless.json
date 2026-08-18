@@ -1,5 +1,4 @@
 {
   "modifier_id": "epicfighttinkercompat:moonless",
-  "weapon_type": "wom:moonless",
-  "priority": 75
+  "weapon_type": "wom:moonless"
 }

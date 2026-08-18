@@ -1,0 +1,33 @@
+{
+  "type": "tconstruct:modifier",
+  "allow_crystal": true,
+  "inputs": [
+    {
+      "ingredient": [
+        {
+          "item": "cdmoveset:s_wooden_tachi"
+        },
+        {
+          "item": "cdmoveset:s_stone_tachi"
+        },
+        {
+          "item": "cdmoveset:s_iron_tachi"
+        },
+        {
+          "item": "cdmoveset:s_golden_tachi"
+        },
+        {
+          "item": "cdmoveset:s_diamond_tachi"
+        },
+        {
+          "item": "cdmoveset:s_netherite_tachi"
+        }
+      ]
+    }
+  ],
+  "level": 1,
+  "result": "epicfighttinkercompat:enhanced_tachi",
+  "tools": {
+    "tag": "tconstruct:modifiable/melee"
+  }
+}

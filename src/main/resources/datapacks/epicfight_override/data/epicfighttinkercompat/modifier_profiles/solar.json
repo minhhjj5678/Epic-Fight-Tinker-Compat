@@ -1,5 +1,4 @@
 {
   "modifier_id": "epicfighttinkercompat:solar",
-  "weapon_type": "wom:solar",
-  "priority": 100
+  "weapon_type": "wom:solar"
 }

@@ -1,5 +1,4 @@
 {
   "modifier_id": "epicfighttinkercompat:ruine_blade",
-  "weapon_type": "wom:ruine",
-  "priority": 65
+  "weapon_type": "wom:ruine"
 }
