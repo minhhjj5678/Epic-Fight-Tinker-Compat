@@ -2,6 +2,7 @@ package com.minhhjjj.epicfighttinkercompat;
 
 import com.minhhjjj.epicfighttinkercompat.gameasset.profiles.ModifierProfileReloadListener;
 import com.minhhjjj.epicfighttinkercompat.modifiers.ChargeableModule;
+import com.minhhjjj.epicfighttinkercompat.modifiers.RecipeSerializerRegistry;
 import com.minhhjjj.epicfighttinkercompat.modifiers.TagLimitModule;
 import com.minhhjjj.epicfighttinkercompat.network.NetworkManager;
 import com.minhhjjj.epicfighttinkercompat.tool.capabilities.TinkerWeaponCapabilityProvider;
@@ -63,6 +64,7 @@ public class EpicFightTinkerCompat
         EpicFightModifiers.MODIFIERS.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
+        RecipeSerializerRegistry.register(modEventBus);
 //        modEventBus.addListener(this::onAddPackFinders);
         MinecraftForge.EVENT_BUS.register(this);
         ItemRegistry.ITEMS.register(modEventBus);

@@ -1,0 +1,17 @@
+{
+  "type": "epicfighttinkercompat:rare_weapon_extraction",
+  "tools": {
+    "tag": "tconstruct:modifiable/melee"
+  },
+  "inputs": [
+    {
+      "item": "minecraft:diamond"
+    }
+  ],
+  "mappings": [
+    {
+      "modifier": "epicfighttinkercompat:crimson_fang",
+      "result": "cdmoveset:great_tachi"
+    }
+  ]
+}
