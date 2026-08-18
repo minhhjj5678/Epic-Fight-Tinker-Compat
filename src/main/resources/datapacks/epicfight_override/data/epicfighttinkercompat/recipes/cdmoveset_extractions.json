@@ -1,4 +1,10 @@
 {
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "cdmoveset"
+    }
+  ],
   "type": "epicfighttinkercompat:rare_weapon_extraction",
   "tools": {
     "tag": "tconstruct:modifiable/melee"

@@ -1,0 +1,18 @@
+{
+  "type": "tconstruct:modifier",
+  "allow_crystal": true,
+  "inputs": [
+    {
+      "ingredient": [
+        {
+          "item": "wom:antitheus"
+        }
+      ]
+    }
+  ],
+  "level": 1,
+  "result": "epicfighttinkercompat:antitheus",
+  "tools": {
+    "tag": "tconstruct:modifiable/melee"
+  }
+}

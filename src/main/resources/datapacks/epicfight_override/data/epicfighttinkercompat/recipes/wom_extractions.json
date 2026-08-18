@@ -1,0 +1,43 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "wom"
+    }
+  ],
+  "type": "epicfighttinkercompat:rare_weapon_extraction",
+  "tools": {
+    "tag": "tconstruct:modifiable/melee"
+  },
+  "inputs": [
+    {
+      "item": "minecraft:diamond"
+    }
+  ],
+  "mappings": [
+    {
+      "modifier": "epicfighttinkercompat:moonless",
+      "result": "wom:moonless"
+    },
+    {
+      "modifier": "epicfighttinkercompat:solar",
+      "result": "wom:solar"
+    },
+    {
+      "modifier": "epicfighttinkercompat:orbit",
+      "result": "wom:orbit"
+    },
+    {
+      "modifier": "epicfighttinkercompat:herrscher",
+      "result": "wom:herrscher"
+    },
+    {
+      "modifier": "epicfighttinkercompat:antitheus",
+      "result": "wom:antitheus"
+    },
+    {
+      "modifier": "epicfighttinkercompat:napoleon",
+      "result": "wom:napoleon"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "type": "tconstruct:modifier",
+  "allow_crystal": true,
+  "inputs": [
+    {
+      "ingredient": [
+        {
+          "item": "wom:moonless"
+        }
+      ]
+    }
+  ],
+  "level": 1,
+  "result": "epicfighttinkercompat:moonless",
+  "tools": {
+    "tag": "tconstruct:modifiable/melee"
+  }
+}

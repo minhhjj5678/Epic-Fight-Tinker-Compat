@@ -1,0 +1,18 @@
+{
+  "type": "tconstruct:modifier",
+  "allow_crystal": true,
+  "inputs": [
+    {
+      "ingredient": [
+        {
+          "item": "wom:orbit"
+        }
+      ]
+    }
+  ],
+  "level": 1,
+  "result": "epicfighttinkercompat:orbit",
+  "tools": {
+    "tag": "tconstruct:modifiable/melee"
+  }
+}
