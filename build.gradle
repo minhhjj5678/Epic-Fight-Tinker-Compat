@@ -91,6 +91,7 @@ dependencies {
     implementation fg.deobf("curse.maven:sword-soaring-1011068:7984120")
     implementation fg.deobf("curse.maven:epicfight-nightfall-1307848:8366962")
     implementation fg.deobf("curse.maven:epic-fight-avalon-1268823:7619938")
+    implementation fg.deobf("curse.maven:tinkers-compatibility-1201964:8399540")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     compileOnly("io.github.llamalad7:mixinextras-common:0.5.0")
@@ -137,13 +138,6 @@ tasks.named('jar', Jar).configure {
     }
 
     finalizedBy 'reobfJar'
-}
-
-idea {
-    module {
-        downloadSources = true
-        downloadJavadoc = true
-    }
 }
 
 publishing {

@@ -1,8 +1,8 @@
 {
-  "modifier_id": "epicfighttinkercompat:napoleon",
+  "modifier_id": "epicfighttinkercompat:crescentmoon",
   "text": [
     {
-      "text": "Changes tool moveset to the Napoleon moveset."
+      "text": "Changes tool moveset to the Crescent Moon moveset."
     },
     {
       "text": "Place the tool and a diamond in the tinker station to extract the weapon.",
@@ -12,7 +12,7 @@
   "more_text_space": true,
   "effects": [
     "Maximum of 1 level",
-    "Applies custom Napoleon moveset",
+    "Applies to all tools",
     "Does not require a modifier slot"
   ]
 }

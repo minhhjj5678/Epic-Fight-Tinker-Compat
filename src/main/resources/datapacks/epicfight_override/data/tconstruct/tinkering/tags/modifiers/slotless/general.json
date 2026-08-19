@@ -73,6 +73,58 @@
     {
       "id": "epicfighttinkercompat:crimson_fang",
       "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:bloodlust",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:broadblade",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:crescentmoon",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:hf_blade",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:kusabimaru",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:meenlance",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:murasama",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:night_fall_scythe",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:pioneer",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:ruinsgreatsword",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:runic_shortsword",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:thornwheel",
+      "required": false
+    },
+    {
+      "id": "epicfighttinkercompat:yamato",
+      "required": false
     }
   ]
 }

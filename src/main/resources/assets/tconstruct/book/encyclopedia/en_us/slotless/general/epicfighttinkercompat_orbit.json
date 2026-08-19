@@ -3,6 +3,10 @@
   "text": [
     {
       "text": "Changes tool moveset to the Orbit moveset."
+    },
+    {
+      "text": "Place the tool and a diamond in the tinker station to extract the weapon.",
+      "paragraph": true
     }
   ],
   "more_text_space": true,

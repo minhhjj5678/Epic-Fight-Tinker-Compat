@@ -122,6 +122,58 @@
   "modifier.epicfighttinkercompat.crimson_fang.flavor": "A savage bite that leaves a crimson trail.",
   "modifier.epicfighttinkercompat.crimson_fang.description": "Changes the tool's moveset to the Crimson Fang moveset.",
 
+  "modifier.epicfighttinkercompat.bloodlust": "Bloodlust",
+  "modifier.epicfighttinkercompat.bloodlust.flavor": "Give in to the carnage!",
+  "modifier.epicfighttinkercompat.bloodlust.description": "Changes the tool's moveset to the Bloodlust moveset.",
+
+  "modifier.epicfighttinkercompat.broadblade": "Broadblade",
+  "modifier.epicfighttinkercompat.broadblade.flavor": "Weight is a reliable ally!",
+  "modifier.epicfighttinkercompat.broadblade.description": "Changes the tool's moveset to the Broadblade moveset.",
+
+  "modifier.epicfighttinkercompat.crescentmoon": "Crescent Moon",
+  "modifier.epicfighttinkercompat.crescentmoon.flavor": "Dance under the pale light!",
+  "modifier.epicfighttinkercompat.crescentmoon.description": "Changes the tool's moveset to the Crescent Moon moveset.",
+
+  "modifier.epicfighttinkercompat.hf_blade": "HF-Blade",
+  "modifier.epicfighttinkercompat.hf_blade.flavor": "Vibrates at a frequency that parts molecules! Rules of nature!",
+  "modifier.epicfighttinkercompat.hf_blade.description": "Changes the tool's moveset to the High-Frequency Blade moveset.",
+
+  "modifier.epicfighttinkercompat.kusabimaru": "Kusabimaru",
+  "modifier.epicfighttinkercompat.kusabimaru.flavor": "A shinobi's fang, bound by loyalty!",
+  "modifier.epicfighttinkercompat.kusabimaru.description": "Changes the tool's moveset to the Kusabimaru moveset.",
+
+  "modifier.epicfighttinkercompat.meenlance": "Duskfire",
+  "modifier.epicfighttinkercompat.meenlance.flavor": "A flame that burns brightest before the dark!",
+  "modifier.epicfighttinkercompat.meenlance.description": "Changes the tool's moveset to the Duskfire moveset.",
+
+  "modifier.epicfighttinkercompat.murasama": "HF-Murasama",
+  "modifier.epicfighttinkercompat.murasama.flavor": "A cursed blade stained by a bloody legacy!",
+  "modifier.epicfighttinkercompat.murasama.description": "Changes the tool's moveset to the Murasama moveset.",
+
+  "modifier.epicfighttinkercompat.night_fall_scythe": "Nightfall Scythe",
+  "modifier.epicfighttinkercompat.night_fall_scythe.flavor": "The sun sets, and the harvest begins!",
+  "modifier.epicfighttinkercompat.night_fall_scythe.description": "Changes the tool's moveset to the Nightfall Scythe moveset.",
+
+  "modifier.epicfighttinkercompat.pioneer": "Pioneer",
+  "modifier.epicfighttinkercompat.pioneer.flavor": "Carve a path through the unknown!",
+  "modifier.epicfighttinkercompat.pioneer.description": "Changes the tool's moveset to the Pioneer moveset.",
+
+  "modifier.epicfighttinkercompat.ruinsgreatsword": "Ruins Greatsword",
+  "modifier.epicfighttinkercompat.ruinsgreatsword.flavor": "A colossal remnant of a fallen civilization!",
+  "modifier.epicfighttinkercompat.ruinsgreatsword.description": "Changes the tool's moveset to the Ruins Greatsword moveset.",
+
+  "modifier.epicfighttinkercompat.runic_shortsword": "Runic Shortsword",
+  "modifier.epicfighttinkercompat.runic_shortsword.flavor": "Ancient magic hums within the steel!",
+  "modifier.epicfighttinkercompat.runic_shortsword.description": "Changes the tool's moveset to the Runic Shortsword moveset.",
+
+  "modifier.epicfighttinkercompat.thornwheel": "Thornwheel",
+  "modifier.epicfighttinkercompat.thornwheel.flavor": "Shreds flesh and armor with a relentless grind!",
+  "modifier.epicfighttinkercompat.thornwheel.description": "Changes the tool's moveset to the Thornwheel moveset.",
+
+  "modifier.epicfighttinkercompat.yamato": "Yamato",
+  "modifier.epicfighttinkercompat.yamato.flavor": "A blade that can sever reality itself!",
+  "modifier.epicfighttinkercompat.yamato.description": "Changes the tool's moveset to the Yamato moveset.",
+
   "modifier.epicfighttinkercompat.moveset.limit1": "Cannot be combined with other modifier moveset",
 
   "modifier.epicfighttinkercompat.arrow_tempest": "Arrow Tempest",

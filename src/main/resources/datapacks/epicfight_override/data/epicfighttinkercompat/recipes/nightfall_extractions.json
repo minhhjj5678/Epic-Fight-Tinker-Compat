@@ -1,0 +1,71 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "efn"
+    }
+  ],
+  "type": "epicfighttinkercompat:rare_weapon_extraction",
+  "tools": {
+    "tag": "tconstruct:modifiable/melee"
+  },
+  "inputs": [
+    {
+      "item": "minecraft:diamond"
+    }
+  ],
+  "mappings": [
+    {
+      "modifier": "epicfighttinkercompat:bloodlust",
+      "result": "efn:air_tachi"
+    },
+    {
+      "modifier": "epicfighttinkercompat:broadblade",
+      "result": "efn:broadblade"
+    },
+    {
+      "modifier": "epicfighttinkercompat:crescentmoon",
+      "result": "efn:crescent_moon"
+    },
+    {
+      "modifier": "epicfighttinkercompat:hf_blade",
+      "result": "efn:hf_blade"
+    },
+    {
+      "modifier": "epicfighttinkercompat:murasama",
+      "result": "efn:hf_murasama"
+    },
+    {
+      "modifier": "epicfighttinkercompat:kusabimaru",
+      "result": "efn:kusabimaru"
+    },
+    {
+      "modifier": "epicfighttinkercompat:meenlance",
+      "result": "efn:meen_spear"
+    },
+    {
+      "modifier": "epicfighttinkercompat:pioneer",
+      "result": "efn:sword_of_pioneer"
+    },
+    {
+      "modifier": "epicfighttinkercompat:ruinsgreatsword",
+      "result": "efn:ruinsgreatsword"
+    },
+    {
+      "modifier": "epicfighttinkercompat:runic_shortsword",
+      "result": "efn:nf_shortsword_2"
+    },
+    {
+      "modifier": "epicfighttinkercompat:thornwheel",
+      "result": "efn:thornwheel"
+    },
+    {
+      "modifier": "epicfighttinkercompat:yamato",
+      "result": "efn:yamato_dmc_in_sheath"
+    },
+    {
+      "modifier": "epicfighttinkercompat:night_fall_scythe",
+      "result": "efn:crimson_moon"
+    }
+  ]
+}

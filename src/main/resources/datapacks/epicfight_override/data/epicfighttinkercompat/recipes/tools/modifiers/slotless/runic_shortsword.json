@@ -1,0 +1,18 @@
+{
+  "type": "tconstruct:modifier",
+  "allow_crystal": true,
+  "inputs": [
+    {
+      "ingredient": [
+        {
+          "item": "efn:nf_shortsword_2"
+        }
+      ]
+    }
+  ],
+  "level": 1,
+  "result": "epicfighttinkercompat:runic_shortsword",
+  "tools": {
+    "tag": "tconstruct:modifiable/melee"
+  }
+}
