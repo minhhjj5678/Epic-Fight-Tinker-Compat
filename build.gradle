@@ -78,6 +78,7 @@ dependencies {
     implementation fg.deobf("curse.maven:weapons-of-miracles-epicfight-918614:7517612")
     implementation fg.deobf("curse.maven:tinkers-katanas-884944:7912163")
     implementation fg.deobf("curse.maven:json-things-541617:7949740")
+    implementation fg.deobf("curse.maven:tinkers-things-json-811436:7375264")
     implementation fg.deobf("curse.maven:epicfight-resurrection-1151542:6931390")
     implementation fg.deobf("curse.maven:epicfight-resurrection-crash-fix-1520550:8086417")
 //    implementation fg.deobf("curse.maven:constructs-casting-1000007:8104673")

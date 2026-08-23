@@ -12,5 +12,8 @@ public class ItemRegistry {
             () -> new Item(new Item.Properties())); 
 
     public static final RegistryObject<Item> WIND_ESSENCE = ITEMS.register("wind_essence",
-            () -> new Item(new Item.Properties())); 
+            () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> SCABBARD = ITEMS.register("scabbard",
+            () -> new Item(new Item.Properties()));
 }
