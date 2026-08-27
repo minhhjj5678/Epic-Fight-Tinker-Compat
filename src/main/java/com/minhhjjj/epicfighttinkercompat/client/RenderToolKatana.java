@@ -10,13 +10,19 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import slimeknights.tconstruct.library.materials.definition.MaterialId;
+import slimeknights.tconstruct.library.tools.definition.module.ToolHooks;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.nbt.MaterialNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
+import yesman.epicfight.api.client.forgeevent.PatchedRenderersEvent;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.client.renderer.patched.item.RenderItemBase;
@@ -28,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 public class RenderToolKatana extends RenderItemBase {
+    private static final ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(EpicFightTinkerCompat.MODID, "tinker_katana");
     private static final Map<Pair<ResourceLocation, List<MaterialId>>, ItemStack> CACHE = new HashMap<>();
 
     private final SheathMaker sheathMaker;
@@ -56,42 +63,56 @@ public class RenderToolKatana extends RenderItemBase {
 
     public RenderToolKatana(JsonElement jsonElement) {
         super(jsonElement);
-
         SheathMaker tempMaker = null;
 
-        if (jsonElement.getAsJsonObject().has("sheath")) {
-            JsonObject sheathObject = jsonElement.getAsJsonObject().get("sheath").getAsJsonObject();
-            if (sheathObject.has("item") && sheathObject.has("sheath_parts_count") && sheathObject.has("tool_parts_count")) {
-
-                var item = ForgeRegistries.ITEMS.getValue(ResourceLocation.parse(sheathObject.get("item").getAsString()));
-                boolean isValidItem = item instanceof IModifiable;
-                if (!isValidItem && item != null) {
-                    EpicFightTinkerCompat.LOGGER.warn("Invalid sheath item: {}, sheath item must be a Modifiable item. Using the default sheath builder", item.getDefaultInstance().getDisplayName().getString());
+        try {
+            if (jsonElement.getAsJsonObject().has("sheath")) {
+                JsonObject sheathObject = jsonElement.getAsJsonObject().get("sheath").getAsJsonObject();
+                boolean isValidBaseItem = false;
+                Item baseItem = null;
+                if (sheathObject.has("base_item")) {
+                    baseItem = ForgeRegistries.ITEMS.getValue(ResourceLocation.parse(sheathObject.get("base_item").getAsString()));
+                    if (baseItem instanceof IModifiable) {
+                        isValidBaseItem = true;
+                    }
                 }
 
-                int sheathPartCount = sheathObject.get("sheath_parts_count").getAsInt();
-                boolean isValidSheathPartCount = sheathPartCount > 0;
-                if (!isValidSheathPartCount) {
-                    EpicFightTinkerCompat.LOGGER.warn("Invalid sheath parts count: {}, must be greater than 0. Using the default sheath builder", sheathPartCount);
-                }
+                if (!isValidBaseItem) {
+                    EpicFightTinkerCompat.LOGGER.error("Unable to load item skin for item {}", sheathObject);
+                } else if (sheathObject.has("sheath_item") && sheathObject.has("sheath_parts_count") && sheathObject.has("tool_parts_count")) {
+                    Item item = ForgeRegistries.ITEMS.getValue(ResourceLocation.parse(sheathObject.get("sheath_item").getAsString()));
+                    boolean isValidItem = item instanceof IModifiable;
+                    if (!isValidItem && item != null) {
+                        EpicFightTinkerCompat.LOGGER.warn("Invalid sheath item: {}, sheath item must be a Modifiable item. Using the default sheath builder", item.getDefaultInstance().getDisplayName().getString());
+                    }
 
-                int toolPartCount = sheathObject.get("tool_parts_count").getAsInt();
-                boolean isValidToolPartCount = toolPartCount > 0 && toolPartCount >= sheathPartCount;
-                if (!isValidToolPartCount) {
-                    EpicFightTinkerCompat.LOGGER.warn("Invalid tool parts count: {}, must be greater than 0 and not less than sheath parts count. Using the default tool builder", toolPartCount);
-                }
+                    ToolStack tool = isValidItem ? ToolStack.from(new ItemStack(item)) : null;
+                    int sheathPartCount = sheathObject.get("sheath_parts_count").getAsInt();
+                    boolean isValidSheathPartCount = sheathPartCount > 0 && isValidItem && tool.getHook(ToolHooks.TOOL_PARTS).getParts(tool.getDefinition()).size() == sheathPartCount;
+                    if (!isValidSheathPartCount) {
+                        EpicFightTinkerCompat.LOGGER.warn("Invalid sheath parts count: {}, must be greater than 0 and equal the number of sheath tool parts. Using the default sheath builder", sheathPartCount);
+                    }
 
-                if (isValidItem && isValidSheathPartCount && isValidToolPartCount) {
-                    tempMaker = new SheathMaker(ToolStack.from(new ItemStack(item)), sheathPartCount, toolPartCount);
+                    int toolPartCount = sheathObject.get("tool_parts_count").getAsInt();
+                    ToolStack baseTool = ToolStack.from(new ItemStack(baseItem));
+                    boolean isValidToolPartCount = toolPartCount > 0 && toolPartCount >= sheathPartCount && (baseTool.getHook(ToolHooks.TOOL_PARTS).getParts(baseTool.getDefinition()).size() == toolPartCount);
+                    if (!isValidToolPartCount) {
+                        EpicFightTinkerCompat.LOGGER.warn("Invalid tool parts count: {}, must be greater than 0 and not less than sheath parts count and equal the number of base tool part. Using the default tool builder", toolPartCount);
+                    }
+
+                    if (isValidItem && isValidSheathPartCount && isValidToolPartCount) {
+                        tempMaker = new SheathMaker(ToolStack.from(new ItemStack(item)), sheathPartCount, toolPartCount);
+                    }
                 }
-            }                        
+            }
+        } catch (Exception e) {
+            EpicFightTinkerCompat.LOGGER.error("Error loading ToolKatana JSON!", e);
         }
 
         if (tempMaker == null) {
             EpicFightTinkerCompat.LOGGER.warn("Invalid sheath configuration, using the default sheath builder");
             tempMaker = new SheathMaker(ToolStack.from(new ItemStack(ItemRegistry.SHEATH.get())), 2, 6);
         }
-
         this.sheathMaker = tempMaker;
     }
 
@@ -123,5 +144,14 @@ public class RenderToolKatana extends RenderItemBase {
         MathUtils.mulStack(poseStack, modelMatrix);
         itemRenderer.renderStatic(sheathStack, ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, packedLight, OverlayTexture.NO_OVERLAY, poseStack, buffer, null, 0);
         poseStack.popPose();
+    }
+
+    @Mod.EventBusSubscriber(modid = EpicFightTinkerCompat.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static class Events {
+
+        @SubscribeEvent
+        public static void onItemRendererRegister(PatchedRenderersEvent.RegisterItemRenderer event) {
+            event.addItemRenderer(rl, RenderToolKatana::new);
+        }
     }
 }
