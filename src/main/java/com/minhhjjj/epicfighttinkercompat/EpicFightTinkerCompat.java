@@ -68,6 +68,7 @@ public class EpicFightTinkerCompat
 //        modEventBus.addListener(this::onAddPackFinders);
         MinecraftForge.EVENT_BUS.register(this);
         ItemRegistry.ITEMS.register(modEventBus);
+        ItemRegistry.TOOLS.register(modEventBus);
 
         modEventBus.addListener(this::addCreative);
         modEventBus.addListener(TinkerWeaponCapabilityProvider::register);
