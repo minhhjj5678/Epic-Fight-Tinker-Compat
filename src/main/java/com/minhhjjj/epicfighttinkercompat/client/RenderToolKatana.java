@@ -3,7 +3,6 @@ package com.minhhjjj.epicfighttinkercompat.client;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
-import com.minhhjjj.epicfighttinkercompat.tool.item.ItemRegistry;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -37,11 +36,14 @@ public class RenderToolKatana extends RenderItemBase {
     private static final ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(EpicFightTinkerCompat.MODID, "tinker_katana");
     private static final Map<Pair<ResourceLocation, List<MaterialId>>, ItemStack> CACHE = new HashMap<>();
 
+    private static final SubToolMaker EMPTY_SUB_TOOL_MAKER = new SubToolMaker(null, 0, 0);
     private final SubToolMaker sheathMaker;
     private final SubToolMaker unsheathedMaker;
 
     private record SubToolMaker(ToolStack mold, int startIndex, int partCount) {
         public ItemStack createSubTool(ToolStack tool) {
+            if (this.isEmpty()) return ItemStack.EMPTY;
+
             ItemStack subTool = new ItemStack(mold.getItem());
             MaterialNBT materials = mold.getMaterials();
             for (int i = 0; i < partCount; i++) {
@@ -53,6 +55,8 @@ public class RenderToolKatana extends RenderItemBase {
         }
 
         public Pair<ResourceLocation, List<MaterialId>> getKeyFrom(ToolStack tool) {
+            if (this.isEmpty()) return Pair.of(rl, null);
+
             List<MaterialId> materialIds = new ArrayList<>();
             MaterialNBT materials = tool.getMaterials();
             for (int i = 0; i < partCount; i++) {
@@ -60,17 +64,21 @@ public class RenderToolKatana extends RenderItemBase {
             }
             return Pair.of(ForgeRegistries.ITEMS.getKey(mold.getItem()), materialIds);
         }
+
+        public boolean isEmpty() {
+            return mold == null || partCount < 1;
+        }
     }
 
     public RenderToolKatana(JsonElement jsonElement) {
         super(jsonElement);
         SubToolMaker tempSheathMaker = null;
         SubToolMaker tempUnsheathedMaker = null;
+        boolean isValidBaseItem = false;
 
         try {
             if (jsonElement.getAsJsonObject().has("sheath")) {
                 JsonObject sheathObject = jsonElement.getAsJsonObject().get("sheath").getAsJsonObject();
-                boolean isValidBaseItem = false;
                 Item baseItem = null;
                 if (sheathObject.has("base_item")) {
                     baseItem = ForgeRegistries.ITEMS.getValue(ResourceLocation.parse(sheathObject.get("base_item").getAsString()));
@@ -107,14 +115,14 @@ public class RenderToolKatana extends RenderItemBase {
                     Item unsheathedItem = ForgeRegistries.ITEMS.getValue(ResourceLocation.parse(sheathObject.get("unsheathed_item").getAsString()));
                     boolean isValidUnsheathed = unsheathedItem instanceof IModifiable;
                     if (!isValidUnsheathed && unsheathedItem != null) {
-                        EpicFightTinkerCompat.LOGGER.warn("Invalid sheath item: {}, unsheathed item must be a Modifiable item. Using the default sheath builder", unsheathedItem.getDefaultInstance().getDisplayName().getString());
+                        EpicFightTinkerCompat.LOGGER.warn("Invalid sheath item: {}, unsheathed item must be a Modifiable item. Using the default base item", unsheathedItem.getDefaultInstance().getDisplayName().getString());
                     }
 
                     ToolStack unsheathedTool = isValidUnsheathed ? ToolStack.from(new ItemStack(unsheathedItem)) : null;
                     int unsheathedPartCount = isValidUnsheathed ? unsheathedTool.getHook(ToolHooks.TOOL_PARTS).getParts(unsheathedTool.getDefinition()).size() : 0;
                     boolean isValidUnsheathedPartCount = unsheathedPartCount > 0 && unsheathedPartCount <= toolPartCount;
                     if (!isValidUnsheathedPartCount) {
-                        EpicFightTinkerCompat.LOGGER.warn("Invalid unsheathed parts count: {}, must be greater than 0 and equal the number of sheath tool parts. Using the default sheath builder", unsheathedPartCount);
+                        EpicFightTinkerCompat.LOGGER.warn("Invalid unsheathed parts count: {}, must be greater than 0 and equal the number of sheath tool parts. Using the default base item", unsheathedPartCount);
                     }
 
                     if (isValidToolPartCount) {
@@ -124,6 +132,8 @@ public class RenderToolKatana extends RenderItemBase {
 
                         if (isValidUnsheathed && isValidUnsheathedPartCount) {
                             tempUnsheathedMaker = new SubToolMaker(unsheathedTool, 0, unsheathedPartCount);
+                        } else {
+                            tempUnsheathedMaker = new SubToolMaker(baseTool, 0, toolPartCount);
                         }
                     }
                 }
@@ -132,18 +142,23 @@ public class RenderToolKatana extends RenderItemBase {
             EpicFightTinkerCompat.LOGGER.error("Error loading ToolKatana JSON!", e);
         }
 
-        if (tempSheathMaker == null) {
-            EpicFightTinkerCompat.LOGGER.warn("Invalid sheath configuration, using the default sheath builder");
-            tempSheathMaker = new SubToolMaker(ToolStack.from(new ItemStack(ItemRegistry.ODACHI_SHEATH.get())), 4, 2);
-        }
+        if (isValidBaseItem) {
+            if (tempSheathMaker == null) {
+                EpicFightTinkerCompat.LOGGER.warn("Invalid sheath configuration, sheath will not be loaded!");
+                tempSheathMaker = EMPTY_SUB_TOOL_MAKER;
+            }
 
-        if (tempUnsheathedMaker == null) {
-            EpicFightTinkerCompat.LOGGER.warn("Invalid unsheathed configuration, using the default unsheathed builder");
-            tempUnsheathedMaker = new SubToolMaker(ToolStack.from(new ItemStack(ItemRegistry.UNSHEATHED_ODACHI.get())), 0, 4);
-        }
+            if (tempUnsheathedMaker == null) {
+                EpicFightTinkerCompat.LOGGER.warn("Invalid unsheathed configuration, using the default base item");
+                tempUnsheathedMaker = EMPTY_SUB_TOOL_MAKER;
+            }
 
-        this.sheathMaker = tempSheathMaker;
-        this.unsheathedMaker = tempUnsheathedMaker;
+            this.sheathMaker = tempSheathMaker;
+            this.unsheathedMaker = tempUnsheathedMaker;
+        } else {
+            this.sheathMaker = EMPTY_SUB_TOOL_MAKER;
+            this.unsheathedMaker = EMPTY_SUB_TOOL_MAKER;
+        }
     }
 
     @Override
@@ -160,13 +175,15 @@ public class RenderToolKatana extends RenderItemBase {
 
         poseStack.pushPose();
 
-        ItemStack sheathStack = getSubTool(stack, this.sheathMaker);
+        ItemStack sheathStack = this.sheathMaker.isEmpty() ? ItemStack.EMPTY : getSubTool(stack, this.sheathMaker);
         MathUtils.mulStack(poseStack, modelMatrix);
         itemRenderer.renderStatic(sheathStack, ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, packedLight, OverlayTexture.NO_OVERLAY, poseStack, buffer, null, 0);
         poseStack.popPose();
     }
 
     private static ItemStack getSubTool(ItemStack stack, SubToolMaker toolMaker) {
+        if (toolMaker.isEmpty()) return stack;
+
         if (stack.getItem() instanceof IModifiable) {
             ToolStack tool = ToolStack.from(stack);
             var key = toolMaker.getKeyFrom(tool);
