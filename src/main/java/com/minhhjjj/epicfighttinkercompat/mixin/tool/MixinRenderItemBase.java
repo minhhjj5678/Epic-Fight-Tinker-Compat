@@ -6,12 +6,10 @@ import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Objects;
 
@@ -21,6 +19,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import slimeknights.tconstruct.common.TinkerTags;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.client.renderer.patched.item.RenderItemBase;
@@ -36,16 +35,15 @@ public abstract class MixinRenderItemBase {
     public abstract OpenMatrix4f getCorrectionMatrix(LivingEntityPatch<?> entitypatch, InteractionHand hand, OpenMatrix4f[] poses);
 
     @Inject(method = "renderItemInHand", at = @At("HEAD"), cancellable = true)
-    private void injectTinkerLongbowRender(ItemStack itemstack, LivingEntityPatch<?> entitypatch, InteractionHand hand, OpenMatrix4f[] poses, MultiBufferSource buffer, PoseStack poseStack, int packedLight, float partialTicks, CallbackInfo ci) {
-        ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(itemstack.getItem());
-        if (itemId != null && itemId.getNamespace().equals("tconstruct") && itemId.getPath().equals("longbow")) {
+    private void injectTinkerLongbowRender(ItemStack stack, LivingEntityPatch<?> entitypatch, InteractionHand hand, OpenMatrix4f[] poses, MultiBufferSource buffer, PoseStack poseStack, int packedLight, float partialTicks, CallbackInfo ci) {
+        if (stack.is(TinkerTags.Items.LONGBOWS)) {
             LivingEntity livingEntity = Objects.requireNonNull((LivingEntity) entitypatch.getOriginal(), "livingEntity");
             OpenMatrix4f modelMatrix = this.getCorrectionMatrix(entitypatch, InteractionHand.OFF_HAND, poses);
             poseStack.pushPose();
             MathUtils.mulStack(poseStack, modelMatrix);
             itemInHandRenderer.renderItem(
                 livingEntity,
-                itemstack,
+                    stack,
                 ItemDisplayContext.THIRD_PERSON_RIGHT_HAND,
                 false,
                 poseStack,
@@ -66,19 +64,18 @@ public abstract class MixinRenderItemBase {
         ),
         cancellable = true
     )
-    private void injectTinkerShieldRender(ItemStack itemstack, LivingEntityPatch<?> entitypatch, InteractionHand hand, OpenMatrix4f[] poses, MultiBufferSource buffer, PoseStack poseStack, int packedLight, float partialTicks, CallbackInfo ci) {
-        ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(itemstack.getItem());
-        if (itemId != null && itemId.getNamespace().equals("tconstruct") && (itemId.getPath().equals("plate_shield") || itemId.getPath().equals("travelers_shield"))) {
+    private void injectTinkerShieldRender(ItemStack stack, LivingEntityPatch<?> entitypatch, InteractionHand hand, OpenMatrix4f[] poses, MultiBufferSource buffer, PoseStack poseStack, int packedLight, float partialTicks, CallbackInfo ci) {
+        if (stack.is(TinkerTags.Items.SHIELDS)) {
 
             ItemDisplayContext transformType = (hand == InteractionHand.MAIN_HAND) ? ItemDisplayContext.THIRD_PERSON_RIGHT_HAND : ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
             boolean leftHand = !(hand == InteractionHand.MAIN_HAND);
             net.minecraft.client.renderer.entity.ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
 
-            BakedModel baseModel = itemRenderer.getItemModelShaper().getItemModel(itemstack);
+            BakedModel baseModel = itemRenderer.getItemModelShaper().getItemModel(stack);
 
             BakedModel finalModel = baseModel.getOverrides().resolve(
-                baseModel, 
-                itemstack, 
+                baseModel,
+                    stack,
                 (net.minecraft.client.multiplayer.ClientLevel) entitypatch.getOriginal().level(), 
                 entitypatch.getOriginal(), 
                 entitypatch.getOriginal().getId()
@@ -93,7 +90,7 @@ public abstract class MixinRenderItemBase {
             baseModel.applyTransform(transformType, poseStack, leftHand);
 
             itemRenderer.render(
-                itemstack,
+                    stack,
                 ItemDisplayContext.NONE,
                 leftHand,
                 poseStack,

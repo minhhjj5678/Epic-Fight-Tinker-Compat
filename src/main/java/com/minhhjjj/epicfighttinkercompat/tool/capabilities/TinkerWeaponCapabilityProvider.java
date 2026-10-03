@@ -5,6 +5,7 @@ import com.minhhjjj.epicfighttinkercompat.stats.EpicFightToolStats;
 import com.minhhjjj.epicfighttinkercompat.tool.EpicFightArmorStatsHelper;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.item.ItemStack;
+import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import yesman.epicfight.api.forgeevent.WeaponCapabilityPresetRegistryEvent;
 import yesman.epicfight.world.capabilities.item.ArmorCapability;
@@ -103,11 +104,17 @@ public class TinkerWeaponCapabilityProvider implements ICapabilityProvider {
         }
         else {
             Function<Item, CapabilityItem.Builder> preset = WEAPON_CAPABILITY_PRESETS.getOrDefault(rl(weaponType), TCWeaponCapabilityPresets.UNKNOWN);
-            if (preset != null) {
-                builder = preset.apply(tool.getItem());
-                if (builder instanceof TCWeaponCapability.Builder tcBuilder) {
-                    tcBuilder.tool(stack);
+            if (preset == TCWeaponCapabilityPresets.UNKNOWN) {
+                if (stack.is(TinkerTags.Items.SHIELDS)) {
+                    preset = TCWeaponCapabilityPresets.TC_SHIELD;
+                } else if (stack.is(TinkerTags.Items.LONGBOWS)) {
+                    preset = TCWeaponCapabilityPresets.LONGBOW;
                 }
+            }
+
+            builder = preset.apply(tool.getItem());
+            if (builder instanceof TCWeaponCapability.Builder tcBuilder) {
+                tcBuilder.tool(stack);
             }
         }
 
