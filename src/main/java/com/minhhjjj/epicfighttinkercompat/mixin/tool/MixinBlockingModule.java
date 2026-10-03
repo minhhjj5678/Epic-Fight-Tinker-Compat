@@ -6,17 +6,16 @@ import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.hook.interaction.InteractionSource;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
-import slimeknights.tconstruct.tools.modifiers.ability.interaction.BlockingModifier;
+import slimeknights.tconstruct.tools.modules.combat.BlockingModule;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
-@Mixin(value = BlockingModifier.class, remap = false)
-public class MixinBlockingModifier {
+@Mixin(value = BlockingModule.class, remap = false)
+public class MixinBlockingModule {
     @Inject(method = "onToolUse", at = @At("HEAD"), cancellable = true)
     private void epicfighttinkercompat$onToolUse(IToolStackView tool, ModifierEntry modifier, Player player, InteractionHand hand, InteractionSource source, CallbackInfoReturnable<InteractionResult> cir) {
         PlayerPatch<?> patch = EpicFightCapabilities.getPlayerPatch(player);

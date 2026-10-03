@@ -1,16 +1,17 @@
 package com.minhhjjj.epicfighttinkercompat.modifiers;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.TooltipFlag;
 import javax.annotation.Nullable;
 
+import org.jetbrains.annotations.NotNull;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.build.ToolStatsModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.display.TooltipModifierHook;
+import slimeknights.tconstruct.library.modifiers.util.ModifierTooltip;
 import slimeknights.tconstruct.library.module.ModuleHookMap;
 import slimeknights.tconstruct.library.tools.nbt.IToolContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
@@ -23,7 +24,6 @@ import slimeknights.mantle.client.TooltipKey;
 
 import yesman.epicfight.world.entity.ai.attribute.EpicFightAttributes;
 
-import com.minhhjjj.epicfighttinkercompat.EpicFightTinkerCompat;
 import com.minhhjjj.epicfighttinkercompat.stats.EpicFightHeadStats;
 import com.minhhjjj.epicfighttinkercompat.stats.EpicFightToolStats;
 import com.minhhjjj.epicfighttinkercompat.stats.EpicFightHandleStats;
@@ -43,7 +43,7 @@ public class EpicFightPartStatModifier extends Modifier implements ToolStatsModi
     }
 
     @Override
-    public boolean shouldDisplay(boolean advanced) {
+    public boolean shouldDisplay(@NotNull ModifierTooltip context) {
         return false;
     }
 

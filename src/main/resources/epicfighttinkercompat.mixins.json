@@ -17,7 +17,7 @@
     "skill.common.MixinSkillContainer",
     "sweepingedge.MixinEnchantmentHelper",
     "sweepingedge.MixinSweepWeaponAttack",
-    "tool.MixinBlockingModifier",
+    "tool.MixinBlockingModule",
     "tool.MixinModifiableItem",
     "tool.MixinToolStack"
   ],
