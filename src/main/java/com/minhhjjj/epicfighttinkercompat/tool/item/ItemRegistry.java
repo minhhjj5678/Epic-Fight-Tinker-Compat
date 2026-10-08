@@ -19,13 +19,13 @@ public class ItemRegistry {
     public static final RegistryObject<Item> WIND_ESSENCE = ITEMS.register("wind_essence",
             () -> new Item(new Item.Properties()));
 
-    public static final ItemObject<ModifiableItem> ODACHI;
-    public static final ItemObject<ModifiableItem> ODACHI_SHEATH;
-    public static final ItemObject<ModifiableItem> UNSHEATHED_ODACHI;
-
-    static {
-        ODACHI = TOOLS.register("odachi", () -> new ModifiableItem((new Item.Properties()).stacksTo(1), EFTToolDefinitions.ODACHI));
-        ODACHI_SHEATH = TOOLS.register("odachi_sheath", () -> new ModifiableItem((new Item.Properties()).stacksTo(1), EFTToolDefinitions.ODACHI_SHEATH));
-        UNSHEATHED_ODACHI = TOOLS.register("unsheathed_odachi", () -> new ModifiableItem((new Item.Properties()).stacksTo(1), EFTToolDefinitions.UNSHEATHED_ODACHI));
-    }
+//    public static final ItemObject<ModifiableItem> ODACHI;
+//    public static final ItemObject<ModifiableItem> ODACHI_SHEATH;
+//    public static final ItemObject<ModifiableItem> UNSHEATHED_ODACHI;
+//
+//    static {
+//        ODACHI = TOOLS.register("odachi", () -> new ModifiableItem((new Item.Properties()).stacksTo(1), EFTToolDefinitions.ODACHI));
+//        ODACHI_SHEATH = TOOLS.register("odachi_sheath", () -> new ModifiableItem((new Item.Properties()).stacksTo(1), EFTToolDefinitions.ODACHI_SHEATH));
+//        UNSHEATHED_ODACHI = TOOLS.register("unsheathed_odachi", () -> new ModifiableItem((new Item.Properties()).stacksTo(1), EFTToolDefinitions.UNSHEATHED_ODACHI));
+//    }
 }
