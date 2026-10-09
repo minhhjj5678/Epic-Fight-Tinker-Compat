@@ -39,7 +39,7 @@ public class EpicFightPartStatModifier extends Modifier implements ToolStatsModi
 
     @Override
     public int getPriority() {
-        return 99999; 
+        return 99999;
     }
 
     @Override
@@ -48,10 +48,9 @@ public class EpicFightPartStatModifier extends Modifier implements ToolStatsModi
     }
 
     @Override
-    protected void registerHooks(ModuleHookMap.Builder hookBuilder) {
+    protected void registerHooks(ModuleHookMap.@NotNull Builder hookBuilder) {
         super.registerHooks(hookBuilder);
-        hookBuilder.addHook(this, ModifierHooks.TOOL_STATS);
-        hookBuilder.addHook(this, ModifierHooks.TOOLTIP); 
+        hookBuilder.addHook(this, ModifierHooks.TOOL_STATS, ModifierHooks.TOOLTIP);
     }
 
     @Override
@@ -115,7 +114,7 @@ public class EpicFightPartStatModifier extends Modifier implements ToolStatsModi
                 MaterialRegistry.getInstance().getMaterialStats(material.getId(), EpicFightHandleStats.ID)
                     .ifPresent(stats -> {
                         if (stats instanceof EpicFightHandleStats handleStats) {
-                            EpicFightToolStats.MAX_STRIKES.percent(builder, handleStats.maxStrikes()); 
+                            EpicFightToolStats.MAX_STRIKES.percent(builder, handleStats.maxStrikes());
                         }
                     });
             }
@@ -167,8 +166,8 @@ public class EpicFightPartStatModifier extends Modifier implements ToolStatsModi
                 MaterialRegistry.getInstance().getMaterialStats(material.getId(), EpicFightMailleStats.ID)
                     .ifPresent(stats -> {
                         if (stats instanceof EpicFightMailleStats mailleStats) {
-                            EpicFightToolStats.WEIGHT.percent(builder, mailleStats.weight()); 
-                            EpicFightToolStats.STUN_ARMOR.percent(builder, mailleStats.stunArmor()); 
+                            EpicFightToolStats.WEIGHT.percent(builder, mailleStats.weight());
+                            EpicFightToolStats.STUN_ARMOR.percent(builder, mailleStats.stunArmor());
                         }
                     });
             }
